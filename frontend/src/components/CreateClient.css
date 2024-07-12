@@ -1,0 +1,219 @@
+  @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+  .nav {
+    display: flex;
+    align-items: center; /* Adjusted to center align items */
+    padding: 10px;
+    backdrop-filter: blur(10px);
+    color: rgb(0, 0, 0);
+    border: 1px solid black;
+    width: 100%; 
+    box-sizing: border-box;
+    z-index: 2;
+  }
+
+  .sorter {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+  }
+
+  .sorter img {
+    width: 50px;
+    height: 50px;
+    padding: 5px;
+    padding-right: 10px;
+    border-radius: 50%;
+  }
+
+  .createform {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 30px; 
+  }
+
+  .createform input {
+    display: none;
+    border: 1px solid black;
+  }
+
+  .createform a {
+    padding: 10px;
+    border: 1px solid black;
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.25s, background-color 0.25s;
+  }
+
+  .createform a:hover {
+    opacity: 1;
+    background-color: rgb(174, 174, 174);
+    color: white;
+  }
+
+  .applicant {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    background-color: rgb(174, 174, 174);
+  }
+
+  .applicant-number {
+    font-weight: bold;
+  }
+
+  .position {
+    color: #333;
+  }
+
+  .skillset {
+    font-style: italic;
+  }
+
+  .dropdown {
+    position: relative;
+    display: inline-block;
+    width: auto;
+    z-index: 4;
+  }
+
+  .dropdown-menu {
+    display: block;
+    position: absolute;
+    background-color: rgb(174, 174, 174);
+    border: 1px solid #ccc;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 150%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .dropdown-item {
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: opacity 0.25s;
+  }
+
+  .dropdown-item:hover {
+    opacity: 0.5;
+    background-color: #f1f1f1;
+    color: black;
+  }
+
+  .appendform {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 3;
+    padding-top: 15vh;
+  }
+
+  .addapplicantform {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(174, 174, 174);
+    color: white;
+    border: 1px solid #000000;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .formgroup {
+    margin: 10px;
+    color: black;
+  }
+
+  .formgroup label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  .formgroup input,
+  .formgroup select {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #000000;
+    border-radius: 4px;
+  }
+
+  .add-applicant-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: rgb(174, 174, 174);
+    border: 1px solid rgb(0, 0, 0);
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+
+  .add-applicant-button:hover {
+    background-color: #ffffff;
+    color: rgb(174, 174, 174);
+  }
+
+  .close-form-link {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    padding: 10px;
+    margin-left: 20px;
+    height: 5px;
+    width: 5px;
+  }
+
+  .close-form-link:hover {
+    background-color: white;
+    color: black;
+  }
+
+  .filter-form {
+    position: fixed;
+    top: 20vh; 
+
+    background-color: rgb(174, 174, 174);
+    border: 1px solid #000000;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 4; /* Ensure it's above other content */
+  }
+
+  .apply-filter {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    transition: background-color 0.25s;
+    padding: 10px;
+  }
+
+  .apply-filter:hover {
+    background-color: #ffffff;
+    text-decoration: none;
+    color: black;
+  }
+
+  /* Add vertical padding to each dropdown option */
+  .language-priorities-index {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .filter-button{
+    text-decoration: none;
+    color:black;
+    transition: background-color 0.25s 
+  }
+  .filter-button:hover{
+    text-decoration: none;
+    color:rgb(255, 255, 255);
+  }

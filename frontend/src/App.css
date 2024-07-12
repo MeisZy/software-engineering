@@ -1,0 +1,19 @@
+
+* {
+    margin: 0px;
+    padding:0px; 
+
+  }
+*::-webkit-scrollbar {
+  color: red;
+}
+
+:root {
+    background-image: url("./components/images/corporate.jpg");
+    height: 100vh;
+    background-position: center;
+    background-size: cover;
+    font-family: "Philosopher",sans-serif;
+}
+    
+  
