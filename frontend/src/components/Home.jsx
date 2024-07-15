@@ -12,6 +12,7 @@ function Home() {
 
   const fetchData = async (position = null) => {
     try {
+      
       const url = position ? `http://localhost:5000/get/${position}` : 'http://localhost:5000/get';
       const response = await axios.get(url);
       const sortedApplicants = response.data.sort((a, b) => b.instance.score - a.instance.score);

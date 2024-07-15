@@ -1,8 +1,10 @@
 {
   "rewrites": [
-    {
-     "source": "/(.*)",
-     "destination": "/"
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "build": {
+    "env": {
+      "REACT_APP_API_URL": "https://software-engineering-gamma.vercel.app/" 
     }
-  ]
+  }
 }
