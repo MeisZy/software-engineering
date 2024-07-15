@@ -4,6 +4,7 @@ const cors = require('cors');
 const Applicants = require('./models/Applicants');
 
 const app = express();
+const port = 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -18,11 +19,11 @@ mongoose.connect(mongoURI, {
   .catch((error) => console.error('Error connecting to MongoDB Atlas:', error));
 
 app.use(cors({
-  origin: 'http://localhost:5173', // Replace with your frontend's URL if different
+  origin: 'http://localhost:5173',
   optionsSuccessStatus: 200
 }));
 
-app.post('/api/add', async (req, res) => {
+app.post('/add', async (req, res) => {
   try {
     const { instance } = req.body;
     const todo = new Applicants({ instance });
@@ -33,7 +34,7 @@ app.post('/api/add', async (req, res) => {
   }
 });
 
-app.delete('/api/delete/:id', async (req, res) => {
+app.delete('/delete/:id', async (req, res) => {
   try {
     const id = req.params.id;
     const deletedApplicant = await Applicants.findByIdAndDelete(id);
@@ -46,7 +47,7 @@ app.delete('/api/delete/:id', async (req, res) => {
   }
 });
 
-app.get('/api/get', async (req, res) => {
+app.get('/get', async (req, res) => {
   try {
     const todos = await Applicants.find({});
     res.json(todos);
@@ -55,7 +56,7 @@ app.get('/api/get', async (req, res) => {
   }
 });
 
-app.get('/api/get/:position', async (req, res) => {
+app.get('/get/:position', async (req, res) => {
   try {
     const position = req.params.position;
     const todos = await Applicants.find({ 'instance.position': position });
@@ -65,7 +66,7 @@ app.get('/api/get/:position', async (req, res) => {
   }
 });
 
-app.delete('/api/clear', async (req, res) => {
+app.delete('/clear', async (req, res) => {
   try {
     await Applicants.deleteMany({});
     res.status(200).json({ message: 'All applicants deleted' });
@@ -74,7 +75,7 @@ app.delete('/api/clear', async (req, res) => {
   }
 });
 
-app.get('/api/checkName/:name', async (req, res) => {
+app.get('/checkName/:name', async (req, res) => {
   const { name } = req.params;
   try {
     const existingApplicant = await Applicants.findOne({ 'instance.name': name });
@@ -88,4 +89,6 @@ app.get('/api/checkName/:name', async (req, res) => {
   }
 });
 
-module.exports = app;
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
