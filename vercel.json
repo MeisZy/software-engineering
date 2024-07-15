@@ -4,10 +4,7 @@
   ],
   "build": {
     "env": {
-      "REACT_APP_API_URL": "https://software-engineering-gamma.vercel.app" 
+      "REACT_APP_API_URL": "https://software-engineering-gamma.vercel.app/"
     }
-  },
-  "devDependencies": {
-    "vercel": "^34.3.1"
   }
 }
