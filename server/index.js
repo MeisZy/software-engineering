@@ -19,7 +19,9 @@ mongoose.connect(mongoURI, {
   .catch((error) => console.error('Error connecting to MongoDB Atlas:', error));
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ["software-engineering-kz8dbvqp7-meiszys-projects.vercel.app"],
+  methods: ["POST","GET","ADD","CLEAR","DELETE"],
+  credentials: true,
   optionsSuccessStatus: 200
 }));
 
