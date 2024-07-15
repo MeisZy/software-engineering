@@ -4,7 +4,6 @@ const cors = require('cors');
 const Applicants = require('./models/Applicants');
 
 const app = express();
-const port = 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -23,7 +22,7 @@ app.use(cors({
   optionsSuccessStatus: 200
 }));
 
-app.post('/add', async (req, res) => {
+app.post('/api/add', async (req, res) => {
   try {
     const { instance } = req.body;
     const todo = new Applicants({ instance });
@@ -34,7 +33,7 @@ app.post('/add', async (req, res) => {
   }
 });
 
-app.delete('/delete/:id', async (req, res) => {
+app.delete('/api/delete/:id', async (req, res) => {
   try {
     const id = req.params.id;
     const deletedApplicant = await Applicants.findByIdAndDelete(id);
@@ -47,7 +46,7 @@ app.delete('/delete/:id', async (req, res) => {
   }
 });
 
-app.get('/get', async (req, res) => {
+app.get('/api/get', async (req, res) => {
   try {
     const todos = await Applicants.find({});
     res.json(todos);
@@ -56,7 +55,7 @@ app.get('/get', async (req, res) => {
   }
 });
 
-app.get('/get/:position', async (req, res) => {
+app.get('/api/get/:position', async (req, res) => {
   try {
     const position = req.params.position;
     const todos = await Applicants.find({ 'instance.position': position });
@@ -66,7 +65,7 @@ app.get('/get/:position', async (req, res) => {
   }
 });
 
-app.delete('/clear', async (req, res) => {
+app.delete('/api/clear', async (req, res) => {
   try {
     await Applicants.deleteMany({});
     res.status(200).json({ message: 'All applicants deleted' });
@@ -75,7 +74,7 @@ app.delete('/clear', async (req, res) => {
   }
 });
 
-app.get('/checkName/:name', async (req, res) => {
+app.get('/api/checkName/:name', async (req, res) => {
   const { name } = req.params;
   try {
     const existingApplicant = await Applicants.findOne({ 'instance.name': name });
@@ -89,6 +88,4 @@ app.get('/checkName/:name', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+module.exports = app;
