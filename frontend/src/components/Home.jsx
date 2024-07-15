@@ -87,7 +87,7 @@ function Home() {
                 <p className="instance_skillset">Skillset: {applicant.instance.skillset}</p>
                 <p className="instance_languages">Languages: {applicant.instance.languages.join(', ')}</p>
                 <p className="instance_score">Score: {applicant.instance.score}</p>
-                <p className="instance_score">Email: {applicant.instance.email}</p>
+                <p className="instance_email">Email: {applicant.instance.email}</p>
                 <button className="instance_remove" onClick={() => handleDelete(applicant)}>Remove Applicant</button>
               </div>
             </div>

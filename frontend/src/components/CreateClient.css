@@ -4,7 +4,7 @@
     display: flex;
     align-items: center; /* Adjusted to center align items */
     padding: 10px;
-    backdrop-filter: blur(10px);
+    background-color: #3961bf;
     color: rgb(0, 0, 0);
     border: 1px solid black;
     width: 100%; 

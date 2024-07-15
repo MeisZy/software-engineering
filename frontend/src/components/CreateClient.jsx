@@ -199,7 +199,7 @@ function CreateClient({ onAdd, onFilter }) {
       <nav className="nav">
         <div className="sorter">
           <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src={Logo} alt="Logo" className="logo"/></a>
-          <a>IT-Based Applicant Sorter</a>
+          <a>SE prototype</a>
         </div>
         <div className="createform">
           <input

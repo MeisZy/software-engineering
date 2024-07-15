@@ -1,16 +1,12 @@
+import './ConfirmationDialog.css'
 import PropTypes from 'prop-types';
-import './ConfirmationDialog.css';
 
 const ConfirmationDialog = ({ message, onConfirm, onCancel }) => {
   return (
     <div className="confirmation-dialog">
-      <div className="confirmation-content">
-        <p>{message}</p>
-        <div className="button-container">
-          <button className="confirm-button" onClick={onConfirm}>Confirm</button>
-          <button className="cancel-button" onClick={onCancel}>Cancel</button>
-        </div>
-      </div>
+      <p>{message}</p>
+      <button onClick={onConfirm} className="confirm-button">Yes</button>
+      <button onClick={onCancel} className="cancel-button">No</button>
     </div>
   );
 };

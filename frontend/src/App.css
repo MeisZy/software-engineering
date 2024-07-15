@@ -9,7 +9,7 @@
 }
 
 :root {
-    background-image: url("./components/images/corporate.jpg");
+    background-color:#f8f7f5;
     height: 100vh;
     background-position: center;
     background-size: cover;

@@ -1,5 +1,3 @@
-// todo.js
-
 const mongoose = require('mongoose');
 
 const instanceSchema = new mongoose.Schema({
@@ -11,10 +9,10 @@ const instanceSchema = new mongoose.Schema({
   email: String,
 });
 
-const TodoSchema = new mongoose.Schema({
+const ApplicantsSchema = new mongoose.Schema({
   instance: instanceSchema,
 });
 
-const TodoModel = mongoose.model('Todo', TodoSchema);
+const Applicants = mongoose.model('Applicant', ApplicantsSchema, 'applicants');
 
-module.exports = TodoModel;
+module.exports = Applicants;
