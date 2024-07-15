@@ -1,0 +1,11 @@
+{
+  "name": "software-engineering",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/MeisZy/software-engineering.git",
+  "author": "MeisZy <zyrusnw@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "vercel": "^34.3.1"
+  }
+}

@@ -1,8 +1,6 @@
-  @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
-
   .nav {
     display: flex;
-    align-items: center; /* Adjusted to center align items */
+    align-items: center; 
     padding: 10px;
     background-color: #3961bf;
     color: rgb(0, 0, 0);
@@ -26,40 +24,39 @@
     border-radius: 50%;
   }
 
-  .createform {
+  .navlinks {
     display: flex;
     align-items: center;
     gap: 10px;
     padding-right: 30px; 
   }
 
-  .createform input {
+  .navlinks input {
     display: none;
     border: 1px solid black;
   }
 
-  .createform a {
+  .navlinks a {
     padding: 10px;
-    border: 1px solid black;
     color: rgb(0, 0, 0);
     text-decoration: none;
     cursor: pointer;
     opacity: 0.5;
-    transition: opacity 0.25s, background-color 0.25s;
+   /* transition: opacity 0.25s, background-color 0.25s;*/
   }
 
-  .createform a:hover {
+  .navlinks a:hover {
     opacity: 1;
-    background-color: rgb(174, 174, 174);
-    color: white;
+    background-color:#f8f7f5;
+    color: rgb(0, 0, 0);
   }
 
   .applicant {
-    border: 1px solid #ccc;
+    border: 1px solid #f8f7f5;
     padding: 10px;
     margin: 10px 0;
     border-radius: 5px;
-    background-color: rgb(174, 174, 174);
+    background-color: #f8f7f5;
   }
 
   .applicant-number {
@@ -101,7 +98,7 @@
 
   .dropdown-item:hover {
     opacity: 0.5;
-    background-color: #f1f1f1;
+    background-color:#f8f7f5;
     color: black;
   }
 
@@ -159,7 +156,7 @@
   }
 
   .add-applicant-button:hover {
-    background-color: #ffffff;
+    background-color:#f8f7f5;
     color: rgb(174, 174, 174);
   }
 
@@ -173,7 +170,7 @@
   }
 
   .close-form-link:hover {
-    background-color: white;
+    background-color:#f8f7f5;
     color: black;
   }
 
@@ -197,7 +194,7 @@
   }
 
   .apply-filter:hover {
-    background-color: #ffffff;
+    background-color:#f8f7f5;
     text-decoration: none;
     color: black;
   }

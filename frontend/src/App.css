@@ -1,19 +1,12 @@
-
 * {
     margin: 0px;
     padding:0px; 
-
-  }
-*::-webkit-scrollbar {
-  color: red;
-}
-
-:root {
-    background-color:#f8f7f5;
-    height: 100vh;
-    background-position: center;
-    background-size: cover;
-    font-family: "Philosopher",sans-serif;
-}
     
+  }
+
+body{
+  background-color: #f8f7f5;
+}
+
+
   

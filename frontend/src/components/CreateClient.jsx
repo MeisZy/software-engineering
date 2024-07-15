@@ -17,7 +17,7 @@ function CreateClient({ onAdd, onFilter }) {
   const [selectedLanguages, setSelectedLanguages] = useState(['', '', '']);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const [isFilterFormVisible, setIsFilterFormVisible] = useState(false); //
+  const [isFilterFormVisible, setIsFilterFormVisible] = useState(false); 
 
   const calculateScore = (positionIndex, skillsetIndex, languages) => {
     const baseScore = 10;
@@ -133,8 +133,7 @@ function CreateClient({ onAdd, onFilter }) {
     reader.onload = async (e) => {
       try {
         const applicants = JSON.parse(e.target.result);
-        for (const applicant of applicants) {
-                                                
+        for (const applicant of applicants) {                                 
           const { position, skillset, languages, email } = applicant;
           const positionIndex = positions.indexOf(position);
           const skillsetIndex = skillsets.indexOf(skillset);
@@ -201,7 +200,7 @@ function CreateClient({ onAdd, onFilter }) {
           <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"><img src={Logo} alt="Logo" className="logo"/></a>
           <a>SE prototype</a>
         </div>
-        <div className="createform">
+        <div className="navlinks">
           <input
             type="file"
             accept=".json"

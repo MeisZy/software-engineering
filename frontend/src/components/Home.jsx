@@ -97,7 +97,7 @@ function Home() {
 
       {showConfirmation && (
         <ConfirmationDialog
-          message={`Are you sure you want to remove ${selectedApplicant.instance.name}?`}
+          message={`Are you sure you want to remove "${selectedApplicant.instance.name}"?`}
           onConfirm={confirmDelete}
           onCancel={cancelDelete}
         />
