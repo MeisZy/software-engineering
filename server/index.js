@@ -20,7 +20,7 @@ mongoose.connect(mongoURI, {
 
 app.use(cors({
   origin: ["software-engineering-kz8dbvqp7-meiszys-projects.vercel.app"],
-  methods: ["POST","GET","ADD","CLEAR","DELETE"],
+  methods: ["POST","GET"],
   credentials: true,
   optionsSuccessStatus: 200
 }));
