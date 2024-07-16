@@ -11,6 +11,10 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
+
     },
+  },
+  build: {
+    outDir: 'dist', // Specify the output directory for the build
   },
 });
