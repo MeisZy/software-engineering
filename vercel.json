@@ -6,5 +6,8 @@
     "env": {
       "REACT_APP_API_URL": "https://software-engineering-gamma.vercel.app/"
     }
-  }
+  },
+  "regions":[
+    "sin1"
+  ]
 }
