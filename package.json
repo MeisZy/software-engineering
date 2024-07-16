@@ -6,6 +6,9 @@
   "author": "MeisZy <zyrusnw@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "react": "^18.2.0",  
+    "react-dom": "^18.2.0", 
+    "react-scripts": "^5.0.1", 
     "vercel": "^34.3.1"
   }
 }
