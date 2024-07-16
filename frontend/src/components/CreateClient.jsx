@@ -90,7 +90,7 @@ function CreateClient({ onAdd, onFilter }) {
   
     try {
       // Check if the name already exists
-      const nameExistsResponse = await axios.get(`http://localhost:5000/checkName/${name}`);
+      const nameExistsResponse = await axios.get('http://localhost:5000/checkName/${name}');
       if (nameExistsResponse.data.exists) {
         alert(`Applicant with name '${name}' already exists.`);
         return; // Exit function if name exists
@@ -106,7 +106,6 @@ function CreateClient({ onAdd, onFilter }) {
         return; // Exit function if there's an error
       }
   
-      // Optional: Append to local JSON file
       try {
         const existingData = JSON.parse(await readFile('./applicants.json', 'utf-8')) || [];
         existingData.push(instance);
@@ -125,7 +124,6 @@ function CreateClient({ onAdd, onFilter }) {
       console.error('Error adding applicant:', err);
     }
   };
-  
 
   const handleImport = async (event) => {
     const file = event.target.files[0];

@@ -1,13 +1,39 @@
 {
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["api/models/**"]
+      }
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "frontend/dist"
+      }
+    }
   ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
+    }
+  ],
+  "env": {
+    "MONGODB_URI": "mongodb+srv://zyrusnw:Gr29Sfmw7WBh1lFy@maincluster.tul9uzm.mongodb.net/"
+  },
+  "buildCommand": "npm run build --prefix frontend",
+  "devCommand": "npm run dev --prefix frontend",
   "build": {
     "env": {
-      "REACT_APP_API_URL": "https://software-engineering-gamma.vercel.app/"
+      "MONGODB_URI": "mongodb+srv://zyrusnw:Gr29Sfmw7WBh1lFy@maincluster.tul9uzm.mongodb.net/"
     }
-  },
-  "regions":[
-    "sin1"
-  ]
+  }
 }
