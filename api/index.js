@@ -9,7 +9,8 @@ const port = 5000;
 app.use(cors());
 app.use(express.json());
 
-const mongoURI = 'mongodb+srv://zyrusnw:Gr29Sfmw7WBh1lFy@maincluster.tul9uzm.mongodb.net/'; 
+const mongoURI = 'mongodb+srv://zyrusnw:Gr29Sfmw7WBh1lFy@maincluster.h3yc4.mongodb.net/?retryWrites=true&w=majority&appName=maincluster'; 
+
 
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
