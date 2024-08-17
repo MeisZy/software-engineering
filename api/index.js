@@ -9,8 +9,7 @@ const port = 5000;
 app.use(cors());
 app.use(express.json());
 
-const mongoURI = 'mongodb+srv://zyrusnw:Gr29Sfmw7WBh1lFy@maincluster.h3yc4.mongodb.net/?retryWrites=true&w=majority&appName=maincluster'; 
-
+const mongoURI = 'mongodb+srv://zyrusnw:Gr29Sfmw7WBh1lFy@maincluster.h3yc4.mongodb.net/applicant_manager?retryWrites=true&w=majority&appName=maincluster';
 
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
@@ -27,10 +26,17 @@ app.use(cors({
 app.post('/add', async (req, res) => {
   try {
     const { instance } = req.body;
-    const todo = new Applicants({ instance });
-    await todo.save();
-    res.status(201).json(todo);
+
+    // Validate if all required fields are present
+    if (!instance.name || !instance.position || !instance.skillset || !instance.languages || !instance.email) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const applicant = new Applicants({ instance });
+    await applicant.save();
+    res.status(201).json(applicant);
   } catch (err) {
+    console.error('Error saving applicant:', err);
     res.status(500).json({ message: err.message });
   }
 });
@@ -44,15 +50,17 @@ app.delete('/delete/:id', async (req, res) => {
     }
     res.status(200).json({ message: `Applicant '${deletedApplicant.instance.name}' deleted.` });
   } catch (err) {
+    console.error('Error deleting applicant:', err);
     res.status(500).json({ message: err.message });
   }
 });
 
 app.get('/get', async (req, res) => {
   try {
-    const todos = await Applicants.find({});
-    res.json(todos);
+    const applicants = await Applicants.find({});
+    res.json(applicants);
   } catch (err) {
+    console.error('Error fetching applicants:', err);
     res.status(500).json({ message: err.message });
   }
 });
@@ -60,9 +68,10 @@ app.get('/get', async (req, res) => {
 app.get('/get/:position', async (req, res) => {
   try {
     const position = req.params.position;
-    const todos = await Applicants.find({ 'instance.position': position });
-    res.json(todos);
+    const applicants = await Applicants.find({ 'instance.position': position });
+    res.json(applicants);
   } catch (err) {
+    console.error('Error fetching applicants by position:', err);
     res.status(500).json({ message: err.message });
   }
 });
@@ -72,6 +81,7 @@ app.delete('/clear', async (req, res) => {
     await Applicants.deleteMany({});
     res.status(200).json({ message: 'All applicants deleted' });
   } catch (err) {
+    console.error('Error clearing applicants:', err);
     res.status(500).json({ message: err.message });
   }
 });
@@ -86,6 +96,7 @@ app.get('/checkName/:name', async (req, res) => {
       res.json({ exists: false });
     }
   } catch (err) {
+    console.error('Error checking applicant name:', err);
     res.status(500).json({ message: err.message });
   }
 });
