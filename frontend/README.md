@@ -1,8 +1,22 @@
-# React + Vite
+# Seamless Screening: Web-Based Applicant Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Research program in Partial Fulfillment of Requirements for Software Engineering 1 and 2 (soon).
 
-Currently, two official plugins are available:
+## Members:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Garrido, Regiel Zyrus
+2. Jovellanos, Kenzie
+3. Vasquez, Charles Patrick
+
+## Requirements:
+
+* Nodejs
+* Yarn add dependencies. see package.json
+* Git bash and CLI
+
+## Usage:
+
+*dev must be using Git Bash.
+
+* To run UI : cd frontend -> yarn run dev
+* To run API : cd api -> yarn start
