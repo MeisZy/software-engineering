@@ -2,7 +2,7 @@
     display: flex;
     align-items: center; 
     padding: 10px;
-    background-color: #3961bf;
+    background-color: #2B7A78;
     color: rgb(0, 0, 0);
     border: 1px solid black;
     width: 100%; 
@@ -114,7 +114,7 @@
   .addapplicantform {
     display: flex;
     flex-direction: column;
-    background-color: rgb(174, 174, 174);
+    background-color: #2B7A78;
     color: white;
     border: 1px solid #000000;
     padding: 20px;
@@ -145,7 +145,7 @@
   .add-applicant-button {
     display: inline-block;
     padding: 10px 20px;
-    background-color: rgb(174, 174, 174);
+    background-color: 3aaFA9;
     border: 1px solid rgb(0, 0, 0);
     color: white;
     text-align: center;
@@ -178,7 +178,7 @@
     position: fixed;
     top: 20vh; 
 
-    background-color: rgb(174, 174, 174);
+    background-color: #3AAFA9;
     border: 1px solid #000000;
     padding: 20px;
     border-radius: 8px;

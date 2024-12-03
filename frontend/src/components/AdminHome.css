@@ -24,7 +24,7 @@
 .instance_applicant {
   border: 1px solid black;
   border-radius: 10px;
-  background-color: white;
+  background-color: #3AAFA9;
   width: 360px;
   height: 225px;
   display: flex;

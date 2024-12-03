@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  env: { browser: true, es2020: true, node: true }, // Include 'node' environment
+  env: { browser: true, es2020: true, node: true }, 
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
@@ -19,11 +19,11 @@ module.exports = {
     ],
     'no-unused-vars': [
       'error',
-      { varsIgnorePattern: 'readFile|writeFile', argsIgnorePattern: 'file' }, // Ignore 'readFile' and 'writeFile'
+      { varsIgnorePattern: 'readFile|writeFile', argsIgnorePattern: 'file' }, 
     ],
     'no-undef': [
       'error',
-      { varsIgnorePattern: 'readFile|writeFile', argsIgnorePattern: 'file' }, // Ignore 'readFile' and 'writeFile'
+      { varsIgnorePattern: 'readFile|writeFile', argsIgnorePattern: 'file' }, 
     ],
   },
 };

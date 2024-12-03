@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import CreateClient from './CreateClient';
 import ConfirmationDialog from './ConfirmationDialog';
-import './Home.css';
+import './AdminHome.css';
 
-function Home() {
+
+function AdminHome() {
   const [applicants, setApplicants] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState(null);
@@ -106,4 +107,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default AdminHome;

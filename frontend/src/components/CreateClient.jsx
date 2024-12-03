@@ -224,6 +224,9 @@ function CreateClient({ onAdd, onFilter }) {
           <a href="#" onClick={handleFilterFormToggle}>
             Filter
           </a>
+          <a href="#" onClick={handleFilterFormToggle}>
+            Set Criteria
+          </a>
         </div>
       </nav>
 
@@ -300,34 +303,6 @@ function CreateClient({ onAdd, onFilter }) {
                 <option value=""/>
                 {skillsets.map((skillset, index) => (
                   <option key={index} value={skillset}>{skillset}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="formgroup">
-              <label htmlFor="language1">Programming Languages:</label>
-              <select id="language1" value={selectedLanguages[0]} onChange={(e) => handleLanguageChange(0, e.target.value)}>
-                <option value=""/>
-                {languages.map((language, index) => (
-                  <option key={index} value={language}>{language}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="formgroup">
-              <select id="language2" value={selectedLanguages[1]} onChange={(e) => handleLanguageChange(1, e.target.value)}>
-                <option value=""/>
-                {languages.map((language, index) => (
-                  <option key={index} value={language}>{language}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="formgroup">
-              <select id="language3" value={selectedLanguages[2]} onChange={(e) => handleLanguageChange(2, e.target.value)}>
-                <option value=""/>
-                {languages.map((language, index) => (
-                  <option key={index} value={language}>{language}</option>
                 ))}
               </select>
             </div>

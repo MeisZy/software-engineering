@@ -1,4 +1,6 @@
-import Home from './components/Home.jsx'
+import AdminHome from './components/AdminHome.jsx'
+//import Login from './components/Login.jsx'
+import {Routes, Route} from 'react-router-dom';
 import './App.css'
 
 function App() {
@@ -6,7 +8,9 @@ function App() {
   return (
     <>
      <div className='body'>
-      <Home/>
+        <Routes>
+          <Route path ="/" element ={<AdminHome/>}/>
+        </Routes>
      </div>
     </>
   )
