@@ -2,7 +2,7 @@
     display: flex;
     align-items: center; 
     padding: 10px;
-    background-color: #2B7A78;
+    background-color: #17252a;
     color: rgb(0, 0, 0);
     border: 1px solid black;
     width: 100%; 
@@ -14,6 +14,10 @@
     display: flex;
     align-items: center;
     flex-grow: 1;
+  }
+
+  .sorter a{
+    color: #def2f1;
   }
 
   .sorter img {
@@ -38,10 +42,10 @@
 
   .navlinks a {
     padding: 10px;
-    color: rgb(0, 0, 0);
+    color: #def2f1;
     text-decoration: none;
     cursor: pointer;
-    opacity: 0.5;
+
    /* transition: opacity 0.25s, background-color 0.25s;*/
   }
 

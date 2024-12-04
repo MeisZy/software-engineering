@@ -6,6 +6,7 @@
   align-items: center;
   font-family: "Montserrat", sans-serif;
   font-optical-sizing: auto;
+  background-color: #def2f1;
 }
 
 
@@ -17,14 +18,15 @@
   margin: 50px;
   padding: 50px;
   border: 1px solid black;
-  box-shadow: 1px 1px 1px 1px #a5a5a5;
+  box-shadow: 1px 1px 1px 1px #def2f1;
   backdrop-filter: blur(10px);
+  background-color:#17252a;
 }
 
 .instance_applicant {
   border: 1px solid black;
   border-radius: 10px;
-  background-color: #3AAFA9;
+  background-color: #63c27c;
   width: 360px;
   height: 225px;
   display: flex;
@@ -50,9 +52,10 @@
   display: inline-block;
   padding: 5px;
   text-decoration: none;
-  color: black;
+  color: #def2f1;
   border: 1px solid black;
   transition: opacity 0.5s;
+  background-color:#17252a; 
 }
 
 .instance_remove:hover {
