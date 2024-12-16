@@ -6,7 +6,6 @@
   align-items: center;
   font-family: "Montserrat", sans-serif;
   font-optical-sizing: auto;
-  background-color: #def2f1;
 }
 
 
@@ -17,16 +16,14 @@
   gap: 20px;
   margin: 50px;
   padding: 50px;
-  border: 1px solid black;
-  box-shadow: 1px 1px 1px 1px #def2f1;
   backdrop-filter: blur(10px);
-  background-color:#17252a;
+  background-color:#13714C;
+  border-radius: 20px;
 }
 
 .instance_applicant {
-  border: 1px solid black;
   border-radius: 10px;
-  background-color: #63c27c;
+  background-color: #A2E494;
   width: 360px;
   height: 225px;
   display: flex;

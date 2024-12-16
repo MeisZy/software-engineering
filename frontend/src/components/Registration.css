@@ -1,0 +1,14 @@
+nav{
+    display: flex;
+    align-items: center; 
+    padding: 10px;
+    background-color: #13714C;
+    color: rgb(0, 0, 0);
+    width: 100%; 
+    box-sizing: border-box;
+    z-index: 2;
+}
+
+.registrationform{
+    background-color: pink;
+}

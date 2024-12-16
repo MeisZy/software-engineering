@@ -1,5 +1,7 @@
+//for design viewing, add your component here.
 import AdminHome from './components/AdminHome.jsx'
-//import Login from './components/Login.jsx'
+import HomePage from './components/HomePage.jsx'
+import Registration from './components/Registration'
 import {Routes, Route} from 'react-router-dom';
 import './App.css'
 
@@ -9,7 +11,7 @@ function App() {
     <>
      <div className='body'>
         <Routes>
-          <Route path ="/" element ={<AdminHome/>}/>
+          <Route path ="/" element ={<Registration/>}/>
         </Routes>
      </div>
     </>
