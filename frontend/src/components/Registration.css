@@ -1,14 +1,85 @@
-nav{
+nav {
     display: flex;
     align-items: center; 
     padding: 10px;
     background-color: #13714C;
-    color: rgb(0, 0, 0);
+    color: white;
     width: 100%; 
     box-sizing: border-box;
     z-index: 2;
+    position: fixed; 
+    top: 0;
+    left: 0;
+    height: 60px;
+    font-size: 24px;
 }
 
-.registrationform{
-    background-color: pink;
+.registrationform {
+    position: relative;
+    background-color: #A2E494;
+    margin: 100px auto 0;
+    width: 90%;
+    max-width: 1200px;
+    padding: 30px;
+}
+
+h4 {
+    font-weight: 400;
+    margin: 20px 0;
+    font-size: 28px;
+}
+
+.registrationform p {
+    padding-left: 10px;
+    font-weight: 300;
+    font-size: 18px;
+}
+
+.registrationform input {
+    display: inline-block;
+    width: calc(20% - 20px);
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+}
+
+.registrationform .formcaption {
+    margin-bottom: 20px;
+}
+
+.registrationform .btn {
+    background-color: #13714C;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    margin: 10px auto;
+    display: block;
+    text-align: center;
+    width: fit-content;
+}
+
+.registrationform .formrow {
+    
+}
+
+@media (max-width: 768px) {
+    .registrationform {
+        width: 90%;
+    }
+
+    .registrationform input {
+        width: calc(33% - 20px);
+    }
+
+    h4 {
+        font-size: 22px;
+    }
+
+    .registrationform .formrow {
+        flex-direction: column;
+    }
 }
