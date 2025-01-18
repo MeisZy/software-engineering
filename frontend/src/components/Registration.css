@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 nav {
     display: flex;
     align-items: center; 
@@ -42,8 +44,16 @@ h4 {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 20px;
+    font-size: 14px; 
+    font-family: 'Montserrat', sans-serif; 
+    color: #333;
 }
 
+.registrationform input::placeholder {
+    font-size: 14px; 
+    font-family: 'Montserrat', sans-serif;
+    color: #aaa;
+}
 .registrationform .formcaption {
     margin-bottom: 20px;
 }
@@ -57,14 +67,12 @@ h4 {
     cursor: pointer;
     font-size: 18px;
     margin: 10px auto;
-    display: block;
+    display: flex;
     text-align: center;
     width: fit-content;
 }
 
-.registrationform .formrow {
-    
-}
+
 
 @media (max-width: 768px) {
     .registrationform {
@@ -82,4 +90,35 @@ h4 {
     .registrationform .formrow {
         flex-direction: column;
     }
+}
+
+.select-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 10px;
+}
+
+.gender-label {
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 5px;
+}
+
+select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background-color: white;
+    width: calc(20% - 20px);
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+    color: #333;
+    cursor: pointer;
+}
+select option {
+    font-size: 12px; 
+    font-family: 'Montserrat', sans-serif; 
+    color: #333; 
+    background-color: #fff; 
 }
