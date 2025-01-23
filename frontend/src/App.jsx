@@ -2,6 +2,7 @@
 import AdminHome from './components/AdminHome.jsx'
 import HomePage from './components/HomePage.jsx'
 import Registration from './components/Registration'
+import UserHome from './components/UserHome'
 import {Routes, Route} from 'react-router-dom';
 import './App.css'
 
@@ -11,7 +12,8 @@ function App() {
     <>
      <div className='body'>
         <Routes>
-          <Route path ="/" element ={<Registration/>}/>
+                                      {/*replace this with your component */}
+          <Route path ="/" element ={<UserHome/>}/>
         </Routes>
      </div>
     </>
