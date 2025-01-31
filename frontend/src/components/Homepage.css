@@ -6,6 +6,11 @@
     height: 100vh;
     box-sizing: border-box;
 }
+
+h1{
+    font-weight:400;
+    color:white;
+}
 .leftcomp, .rightcomp{
     flex:1;
     display:flex;
@@ -19,15 +24,15 @@ button{
     font-family: 'Montserrat', sans-serif;
 }
 .register{
-    margin-top:20px;
-    margin-left: 60px;
-    background-color:#13714C;
-    color: #FFFFFF;
-    width: 200px;
-    font-size: 24px;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    border-radius:40px;
+    margin-top: 20px;
+    background: #13714C;
+    color: white;
+    width: 250px;
+    font-size: inherit;
+    border: none;
+    border-radius: 50px;
+    font-size: 28px;
+    height:60px;
 }
 body{
     font-family: Montserrat, sans-serif;
@@ -48,7 +53,7 @@ nav{
     width: 500px;
 }
 p{
-    font-size: 30px;
+    font-size: 20px;
 }
 
 h3{
@@ -59,17 +64,19 @@ form{
     display:flex;
     flex-direction: column;
 }
-form input{
+form input {
+    padding:10px;
     height: 20px;
-    width:400px;
+    width: 400px;
     margin: 10px;
-    border-radius:10px;
-    border:none;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Montserrat', sans-serif; 
 }
 form input::placeholder{
+    padding:10px;
     font-family: 'Montserrat', sans-serif; 
     font-size: 12px;
-    padding-left: 5px;
 }
 form a {
     text-align: center;
@@ -99,6 +106,17 @@ form button {
     align-items: center;
     padding: 20px; /* Padding defines how far the content is from the border */
     box-sizing: border-box;
+}
+
+.forgotlink{
+    text-decoration: none;
+    color: black;
+    font-size:14px;
+    text-align: center;
+    display:block;
+}
+.forgotlink:hover{
+    text-decoration: underline;
 }
 
 /*.navlinks {

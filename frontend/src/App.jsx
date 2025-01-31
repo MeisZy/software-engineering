@@ -13,7 +13,7 @@ function App() {
      <div className='body'>
         <Routes>
                                       {/*replace this with your component */}
-          <Route path ="/" element ={<UserHome/>}/>
+          <Route path ="/" element ={<HomePage/>}/>
         </Routes>
      </div>
     </>

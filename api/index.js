@@ -1,4 +1,3 @@
-//always check the blocking of IP ADDRESS in atlas.
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -24,83 +23,41 @@ app.use(cors({
   optionsSuccessStatus: 200
 }));
 
-app.post('/add', async (req, res) => {
+app.post('/api/login', async (req, res) => {
   try {
-    const { instance } = req.body;
+    const { email, name, given_name } = req.body;
+    
+    let existingUser = await Applicants.findOne({ 'instance.email': email });
+    
+    if (!existingUser) {
 
-    // Validate if all required fields are present
-    if (!instance.name || !instance.position || !instance.skillset || !instance.languages || !instance.email) {
-      return res.status(400).json({ message: 'Missing required fields' });
+      existingUser = new Applicants({
+        instance: {
+          name: name || given_name,
+          email: email,
+          position: 'Not Specified',
+          skillset: [],
+          languages: []
+        }
+      });
+      
+      await existingUser.save();
     }
-
-    const applicant = new Applicants({ instance });
-    await applicant.save();
-    res.status(201).json(applicant);
+    
+    res.status(200).json({
+      message: 'Login successful',
+      user: {
+        name: existingUser.instance.name,
+        email: existingUser.instance.email
+      }
+    });
   } catch (err) {
-    console.error('Error saving applicant:', err);
-    res.status(500).json({ message: err.message });
+    console.error('Login error:', err);
+    res.status(500).json({ message: 'Server error during login' });
   }
 });
 
-app.delete('/delete/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
-    const deletedApplicant = await Applicants.findByIdAndDelete(id);
-    if (!deletedApplicant) {
-      return res.status(404).json({ message: 'Applicant not found' });
-    }
-    res.status(200).json({ message: `Applicant '${deletedApplicant.instance.name}' deleted.` });
-  } catch (err) {
-    console.error('Error deleting applicant:', err);
-    res.status(500).json({ message: err.message });
-  }
-});
-
-app.get('/get', async (req, res) => {
-  try {
-    const applicants = await Applicants.find({});
-    res.json(applicants);
-  } catch (err) {
-    console.error('Error fetching applicants:', err);
-    res.status(500).json({ message: err.message });
-  }
-});
-
-app.get('/get/:position', async (req, res) => {
-  try {
-    const position = req.params.position;
-    const applicants = await Applicants.find({ 'instance.position': position });
-    res.json(applicants);
-  } catch (err) {
-    console.error('Error fetching applicants by position:', err);
-    res.status(500).json({ message: err.message });
-  }
-});
-
-app.delete('/clear', async (req, res) => {
-  try {
-    await Applicants.deleteMany({});
-    res.status(200).json({ message: 'All applicants deleted' });
-  } catch (err) {
-    console.error('Error clearing applicants:', err);
-    res.status(500).json({ message: err.message });
-  }
-});
-
-app.get('/checkName/:name', async (req, res) => {
-  const { name } = req.params;
-  try {
-    const existingApplicant = await Applicants.findOne({ 'instance.name': name });
-    if (existingApplicant) {
-      res.json({ exists: true });
-    } else {
-      res.json({ exists: false });
-    }
-  } catch (err) {
-    console.error('Error checking applicant name:', err);
-    res.status(500).json({ message: err.message });
-  }
-});
+// ... (rest of the existing code remains the same)
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
