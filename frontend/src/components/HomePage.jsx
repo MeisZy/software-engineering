@@ -1,13 +1,30 @@
 //contains : Login submodule  
 
-import './HomePage.css'
-import { Link } from 'react-router-dom'
+import './HomePage.css';
+import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode'; 
-import { useState } from 'react'; 
+import { jwtDecode } from 'jwt-decode';
+import { useState, useEffect } from 'react';
 
 function HomePage() {
   const [userName, setUserName] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('userName');
+    if (storedUser) setUserName(storedUser);
+  }, []);
+
+  const handleLoginSuccess = (credentialResponse) => {
+    const decoded = jwtDecode(credentialResponse?.credential);
+    const name = decoded.given_name || decoded.name.split(' ')[0];
+
+    setUserName(name);
+    localStorage.setItem('userName', name); 
+    console.log('Login Success:', decoded);
+
+    navigate('/userhome');
+  };
 
   return (
     <>
@@ -17,43 +34,31 @@ function HomePage() {
         </div>
       </nav>
       <div className="components">
-        <div className='leftcomp'>
-          <p><h3 style={{fontSize: "60px",fontWeight:"300"}}>New Here?</h3>
-          Sign up and discover a great amount of new opportunities!</p>
-          <button className='register'>Sign Up</button>
+        <div className="leftcomp">
+          <h3 style={{ fontSize: '60px', fontWeight: '300' }}>New Here?</h3>
+          <p>Sign up and discover a great amount of new opportunities!</p>
+          <button className='register' onClick={() => navigate('/registration')}>
+            Sign Up
+          </button>
         </div>
         <div className='rightcomp'>
           <form>
-            <p style={{
-              fontSize: "14px",
-              textAlign: "left",
-              width: "100%"     
-            }}>Login</p>
-            <input type="text" placeholder="Email"></input>
-            <input type="password" placeholder="Password"></input>
+            <p style={{ fontSize: '14px', textAlign: 'left', width: '100%' }}>Login</p>
+            <input type="text" placeholder="Email" />
+            <input type="password" placeholder="Password" />
             <div className='googlecontainer'>
-              <GoogleLogin  
-                onSuccess={(credentialResponse) => {
-                  const decoded = jwtDecode(credentialResponse?.credential);
-
-                  setUserName(decoded.given_name || decoded.name.split(' ')[0]);
-                  console.log('Login Success:', decoded);
-                }}
-                onError={() => {
-                  console.log('Login Failed');
-                }}
-              />
+              <GoogleLogin onSuccess={handleLoginSuccess} onError={() => console.log('Login Failed')} />
               {userName && <p>Welcome, {userName}!</p>}
-            </div>   
-            <a href="{sample link}" className='forgotlink'> 
-              Forgot Password?
-            </a>
-            <button className="login"><b>Login</b></button>
+            </div>
+            <a href="#" className='forgotlink'>Forgot Password?</a>
+            <button type="button" className="login"><b>Login</b></button>
           </form>
         </div>
       </div>
-    </> 
-  )
+    </>
+  );
 }
 
 export default HomePage;
+
+

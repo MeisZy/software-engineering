@@ -9,6 +9,8 @@ nav a {
     margin: 5px;    
     font-size: 18px;
     font-weight: 300;
+    text-decoration:none;
+    color:white;
 }
 
 nav a:hover {

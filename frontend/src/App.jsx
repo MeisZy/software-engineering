@@ -1,23 +1,22 @@
-//for design viewing, add your component here.
-import AdminHome from './components/AdminHome.jsx'
-import HomePage from './components/HomePage.jsx'
-import Registration from './components/Registration'
-import UserHome from './components/UserHome'
-import {Routes, Route} from 'react-router-dom';
-import './App.css'
+import { Routes, Route } from 'react-router-dom';
+import AdminHome from './components/AdminHome.jsx';
+import HomePage from './components/HomePage.jsx';
+import Registration from './components/Registration.jsx';
+import UserHome from './components/UserHome.jsx';
+import './App.css';
 
 function App() {
-
   return (
     <>
-     <div className='body'>
+      <div className='body'>
         <Routes>
-                                      {/*replace this with your component */}
-          <Route path ="/" element ={<HomePage/>}/>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/registration" element={<Registration />} />
+          <Route path="/userhome" element={<UserHome />} />
         </Routes>
-     </div>
+      </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

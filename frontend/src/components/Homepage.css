@@ -24,6 +24,7 @@ button{
     font-family: 'Montserrat', sans-serif;
 }
 .register{
+    cursor:pointer;
     margin-top: 20px;
     background: #13714C;
     color: white;
@@ -117,6 +118,10 @@ form button {
 }
 .forgotlink:hover{
     text-decoration: underline;
+}
+
+.login{
+    border:none;    
 }
 
 /*.navlinks {
