@@ -6,6 +6,8 @@
   "author": "MeisZy <zyrusnw@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@reduxjs/toolkit": "^2.6.0",
+    "redux": "^5.0.1",
     "vercel": "^34.3.1"
   }
 }
