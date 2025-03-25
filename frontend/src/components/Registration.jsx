@@ -5,9 +5,7 @@ function Registration() {
   return (
     <>
       <nav className="nav">
-        <div className="sorter">
-          <a>Collectius</a>
-        </div>
+          <h1>Collectius</h1>
       </nav>
       <form className="registrationform">
         <h4>Registration</h4>

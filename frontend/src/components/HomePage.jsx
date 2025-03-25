@@ -1,5 +1,3 @@
-//contains : Login submodule  
-
 import './HomePage.css';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
@@ -18,12 +16,18 @@ function HomePage() {
   const handleLoginSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse?.credential);
     const name = decoded.given_name || decoded.name.split(' ')[0];
+    const profilePic = decoded.picture; // Assuming the picture URL is in `decoded.picture`
 
     setUserName(name);
-    localStorage.setItem('userName', name); 
+    localStorage.setItem('userName', name);
+    localStorage.setItem('profilePic', profilePic); // Store profile picture URL
     console.log('Login Success:', decoded);
 
     navigate('/userhome');
+  };
+
+  const handleForgotPassword = () => {
+    navigate('/forgotpassword');
   };
 
   return (
@@ -48,9 +52,8 @@ function HomePage() {
             <input type="password" placeholder="Password" />
             <div className='googlecontainer'>
               <GoogleLogin onSuccess={handleLoginSuccess} onError={() => console.log('Login Failed')} />
-              {userName && <p>Welcome, {userName}!</p>}
             </div>
-            <a href="#" className='forgotlink'>Forgot Password?</a>
+            <a className='forgotlink' onClick={handleForgotPassword}>Forgot Password?</a>
             <button type="button" className="login"><b>Login</b></button>
           </form>
         </div>
@@ -60,5 +63,3 @@ function HomePage() {
 }
 
 export default HomePage;
-
-

@@ -5,12 +5,15 @@ import './UserHome.css';
 
 function UserHome() {
   const [userName, setUserName] = useState('');
+  const [profilePic, setProfilePic] = useState(''); 
   const navigate = useNavigate();
 
   useEffect(() => {
     const storedUser = localStorage.getItem('userName');
+    const storedPic = localStorage.getItem('profilePic'); 
     if (storedUser) {
       setUserName(storedUser);
+      setProfilePic(storedPic); 
     } else {
       navigate('/'); 
     }
@@ -18,19 +21,24 @@ function UserHome() {
 
   const handleLogout = () => {
     localStorage.removeItem('userName');
+    localStorage.removeItem('profilePic'); 
     navigate('/');
   };
+
+  const handleFAQs = () => {
+    navigate('/questions');
+  }
 
   return (
     <>
       <nav className="nav">
-        <img src={Placeholder} alt="Profile" />
-        <span>Welcome, {userName}!</span>
+        <img src={profilePic || Placeholder} alt="Profile" /> 
+        <span className="usergreeting">Welcome, {userName}!</span>
         <a href="#">Admin</a>
         <a href="#">Message</a>
         <a href="#">Community</a>
-        <a href="#">FAQs</a>
-        <button className="logout" onClick={handleLogout}>Logout</button>
+        <a href="#" onClick={handleFAQs}>FAQs</a>
+        <a className="logout" onClick={handleLogout}>Logout</a>
       </nav>
       <div className='proper'>
         <div className='container'>
@@ -64,4 +72,3 @@ function UserHome() {
 }
 
 export default UserHome;
-
