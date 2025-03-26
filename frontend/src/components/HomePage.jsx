@@ -39,7 +39,7 @@ function HomePage() {
       </nav>
       <div className="components">
         <div className="leftcomp">
-          <h3 style={{ fontSize: '60px', fontWeight: '300' }}>New Here?</h3>
+        <p style={{ fontSize: '60px', fontWeight: '300' }}>New Here?</p>
           <p>Sign up and discover a great amount of new opportunities!</p>
           <button className='register' onClick={() => navigate('/registration')}>
             Sign Up
