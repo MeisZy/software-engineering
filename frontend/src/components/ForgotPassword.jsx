@@ -6,7 +6,10 @@ import IconLock from '../components/images/fpass_lock.png';
 function ForgotPassword() {
   const navigate = useNavigate();
   
-  const handleHomePage = () => {
+  const redirectHomePage = () => {
+    navigate('/');
+  }
+  const redirectAuthenticator = () => {
     navigate('/');
   }
 
@@ -29,7 +32,7 @@ function ForgotPassword() {
               width:"100%",
               marginTop: "20px"
             }}>
-              <li onClick={handleHomePage} style={{
+              <li onClick={redirectHomePage} style={{
                 listStyle: "none",
                 fontSize: "20px",
                 cursor: "pointer"

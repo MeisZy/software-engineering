@@ -19,7 +19,7 @@
 "@edge-runtime/format@2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@edge-runtime/format/-/format-2.2.1.tgz#10dcedb0d7c2063c9ee360fbab23846c8720f986"
-  integrity sha512-JQTRVuiusQLNNLe2W9tnzBlV/GvSVcozLl4XZHk5swnRZ/v6jp8TqR8P7sqmJsQqblDZ3EztcWmLDbhRje/+8g==
+  integrity sha512-JQTRVu iusQLNNLe2W9tnzBlV/GvSVcozLl4XZHk5swnRZ/v6jp8TqR8P7sqmJsQqblDZ3EztcWmLDbhRje/+8g==
 
 "@edge-runtime/node-utils@2.3.0":
   version "2.3.0"
