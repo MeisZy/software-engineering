@@ -10,7 +10,7 @@ function ForgotPassword() {
     navigate('/');
   }
   const redirectAuthenticator = () => {
-    navigate('/');
+    navigate('/authenticator');
   }
 
   return (
@@ -25,7 +25,7 @@ function ForgotPassword() {
             <img src={IconLock} alt="Lock Icon" /> 
             <p>Enter your Email Address</p>
             <input type="text" placeholder="Email" />
-            <a>Send</a>
+            <a onClick={redirectAuthenticator}>Send</a>
             <div style={{
               display: "flex",
               justifyContent:"flex-end",

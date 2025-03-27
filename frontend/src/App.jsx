@@ -7,6 +7,7 @@
   import UserHome from './components/UserHome.jsx';
   import Questions from './components/Questions.jsx'
   import ForgotPassword from './components/ForgotPassword.jsx';
+  import Authenticator from './components/Authenticator.jsx';
   import './App.css';
 
   function App() {
@@ -19,6 +20,7 @@
             <Route path="/userhome" element={<UserHome />} />
             <Route path="/questions" element={<Questions />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
+            <Route path="/authenticator" element={<Authenticator />} />
           </Routes>
       </>
     );
