@@ -1,3 +1,5 @@
+
+
 nav{
     display: flex;
     align-items: center; 
@@ -7,4 +9,24 @@ nav{
     width: 100%; 
     box-sizing: border-box;
     z-index: 2;
+}
+
+nav a{
+    font-weight:400;
+}
+
+.proper{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #A2E494;
+    z-index:3;
+    width:80vw;
+    max-height:1500px;
+    margin:100px;
+}
+
+.instance{
+    display:flex;
+    flex-direction:column;
 }
