@@ -16,11 +16,11 @@
     const handleLoginSuccess = (credentialResponse) => {
       const decoded = jwtDecode(credentialResponse?.credential);
       const name = decoded.given_name || decoded.name.split(' ')[0];
-      const profilePic = decoded.picture; // Assuming the picture URL is in `decoded.picture`
+      const profilePic = decoded.picture; 
 
       setUserName(name);
       localStorage.setItem('userName', name);
-      localStorage.setItem('profilePic', profilePic); // Store profile picture URL
+      localStorage.setItem('profilePic', profilePic); 
       console.log('Login Success:', decoded);
 
       navigate('/userhome');
@@ -30,12 +30,18 @@
       navigate('/forgotpassword');
     };
 
+    const handleCC = () => {
+      console.log("Navigating to CreateClient");
+      navigate('/createclient');
+    };
+
     return (
       <>
         <nav className="nav">
           <div className="sorter">
             <h1>Collectius</h1>
           </div>
+          <a className='' onClick={handleCC}>CreateClient</a>
         </nav>
         <div className="components">
           <div className="leftcomp">

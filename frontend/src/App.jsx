@@ -8,6 +8,9 @@
   import Questions from './components/Questions.jsx'
   import ForgotPassword from './components/ForgotPassword.jsx';
   import Authenticator from './components/Authenticator.jsx';
+  //temp
+  import CreateClient from './components/CreateClient.jsx'
+  //temp
   import './App.css';
 
   function App() {
@@ -21,6 +24,7 @@
             <Route path="/questions" element={<Questions />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/authenticator" element={<Authenticator />} />
+            <Route path="/createclient" element={<CreateClient />} />
           </Routes>
       </>
     );
