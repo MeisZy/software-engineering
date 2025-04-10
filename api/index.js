@@ -9,7 +9,7 @@ const port = 5000;
 app.use(cors());
 app.use(express.json());
 
-const mongoURI = 'mongodb+srv://CollectiusAdmin:CollectiusHR99756!@@cluster0.tlzwn.mongodb.net/';
+const mongoURI = process.env.CONNECTION_STRING;
 
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
