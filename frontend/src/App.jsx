@@ -8,14 +8,13 @@
   import Questions from './components/Questions.jsx'
   import ForgotPassword from './components/ForgotPassword.jsx';
   import Authenticator from './components/Authenticator.jsx';
-  import NewPass from './components/NewPass.jsx';
   import './App.css';
 
   function App() {
     return (
       <>
           <Routes>
-            <Route path="/" element={<NewPass/>} />
+            <Route path="/" element={<HomePage/>} />
             <Route path="/registration" element={<Registration />} />
             <Route path="/adminhome" element={<AdminHome />} />
             <Route path="/userhome" element={<UserHome />} />

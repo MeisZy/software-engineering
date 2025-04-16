@@ -4,7 +4,7 @@ import App from './App.jsx'
 import { BrowserRouter as Router } from 'react-router-dom'
 import {GoogleOAuthProvider} from '@react-oauth/google'
 //replace with the clientId with the actual next time
-const clientId = process.env.OAUTH_CLIENT_ID
+const clientId = import.meta.env.OAUTH_CLIENT_ID
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
