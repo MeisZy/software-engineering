@@ -19,7 +19,7 @@ function CreateClient({ onAdd, onFilter }) {
           <a href="/" className="logo-link">
             <img src={Logo} alt="Logo" className="logo"/>
           </a>
-          <span>SE prototype</span>
+          <span>Collectius</span>
         </div>
         <div className="navlinks">
           <input
@@ -30,16 +30,16 @@ function CreateClient({ onAdd, onFilter }) {
             onChange={handleImport}
           />
 
-          <button className="nav-button">Custom Add</button>
-          <button className="nav-button" onClick={() => fileInputRef.current?.click()}>
+          <a className="navbutton">Custom Add</a>
+          <a className="navbutton" onClick={() => fileInputRef.current?.click()}>
             Import Applicants
-          </button>
-          <button className="nav-button">Clear List</button>
-          <button className="nav-button">Filter</button>
-          <button className="nav-button">Set Criteria</button>
-          <button className="nav-button" onClick={handleLogout}>
+          </a>
+          <a className="navbutton">Clear List</a>
+          <a className="navbutton">Filter</a>
+          <a className="navbutton">Set Criteria</a>
+          <a className="navbutton" onClick={handleLogout}>
             Logout
-          </button>
+          </a>
         </div>
       </nav>
     </>

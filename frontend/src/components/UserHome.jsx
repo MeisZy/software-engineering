@@ -36,7 +36,7 @@ function UserHome() {
         <span className="usergreeting">Welcome, {userName}!</span>
         <a href="#">Admin</a>
         <a href="#">Message</a>
-        <a href="#">Community</a>
+        <a href="#">Report a Problem</a>
         <a href="#" onClick={handleFAQs}>FAQs</a>
         <a className="logout" onClick={handleLogout}>Logout</a>
       </nav>

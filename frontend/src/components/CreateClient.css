@@ -8,6 +8,9 @@
     box-sizing: border-box;
     z-index: 2;
   }
+  .nav span{
+    color:white;
+  }
 .navlinks {
   display: flex;
   align-items: center;
@@ -20,15 +23,9 @@
 }
 .navlinks a {
   padding: 10px;
-  color: #def2f1;
   text-decoration: none;
   cursor: pointer;
  /* transition: opacity 0.25s, background-color 0.25s;*/
-}
-.navlinks a:hover {
-  opacity: 1;
-  background-color:#f8f7f5;
-  color: rgb(0, 0, 0);
 }
 
   .sorter {
@@ -44,8 +41,6 @@
   .sorter img {
     width: 50px;
     height: 50px;
-    padding: 5px;
-    padding-right: 10px;
     border-radius: 50%;
   }
 
@@ -212,4 +207,9 @@
   .filter-button:hover{
     text-decoration: none;
     color:rgb(255, 255, 255);
+  }
+
+  .navbutton:hover{
+    background-color:#A2E494;
+    color:black;
   }

@@ -33,20 +33,27 @@ function Authenticator() {
   };
 
   return (
-    <div className="auth-container">
-      <h2>OTP Verification</h2>
-      {step === 1 ? (
-        <>
-          <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <button onClick={sendOtp}>Send OTP</button>
-        </>
-      ) : (
-        <>
-          <input type="text" placeholder="Enter OTP" value={otp} onChange={(e) => setOtp(e.target.value)} />
-          <button onClick={verifyOtp}>Verify OTP</button>
-        </>
-      )}
-    </div>
+    <>
+      <nav>
+        <h1>Collectius</h1>
+      </nav>
+        <div className="authcontainer">
+          <div>
+            <h2>OTP Verification</h2>
+            {step === 1 ? (
+              <>
+                <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <a onClick={sendOtp}>Send OTP</a>
+              </>
+            ) : (
+              <>
+                <input type="text" placeholder="Enter OTP" value={otp} onChange={(e) => setOtp(e.target.value)} />
+                <a onClick={verifyOtp}>Verify OTP</a>
+              </>
+            )}
+            </div>
+        </div>
+    </>
   );
 }
 
