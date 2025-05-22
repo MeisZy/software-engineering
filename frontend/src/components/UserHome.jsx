@@ -4,6 +4,24 @@ import Placeholder from '../components/images/pfp_placeholder.png';
 import './UserHome.css';
 
 function UserHome() {
+
+    const workingSchedule = [
+    { label: 'Full Time', id: 'fulltime' },
+    { label: 'Part Time', id: 'parttime' },
+    { label: 'Internship / On-the-Job Training', id: 'internship' },
+  ];
+  const employmentType =[
+    { label: 'Full Day', id: 'fullday' },
+    { label: 'Rotational', id: 'rotational' },
+    { label: 'Shift Work', id: 'shiftwork' },
+    { label: 'Distance Work', id: 'distancework' },
+  ];
+  const workSetup =[
+    { label: 'Work From Home', id: 'workfromhome' },
+    { label: 'On - Site', id: 'onsite' },
+    { label: 'Hybrid', id: 'hybrid' },
+  ];
+
   const [userName, setUserName] = useState('');
   const [profilePic, setProfilePic] = useState(''); 
   const navigate = useNavigate();
@@ -31,7 +49,7 @@ function UserHome() {
 
   return (
     <>
-      <nav className="nav">
+      <nav>
         <img src={profilePic || Placeholder} alt="Profile" /> 
         <span className="usergreeting">Welcome, {userName}!</span>
         <a href="#">Admin</a>
@@ -40,31 +58,46 @@ function UserHome() {
         <a href="#" onClick={handleFAQs}>FAQs</a>
         <a className="logout" onClick={handleLogout}>Logout</a>
       </nav>
-      <div className='proper'>
-        <div className='container'>
-          <h4>Human Resources</h4>
-          <div className='joblength'>Part-time</div>
-          <p className='jobdescription'>
-            We are seeking a creative and talented Graphic Designer to join our dynamic team...
-          </p>
-          <div className='moreinfo'>
-            <div className='infobutton'>
-              <a href="#">Details</a>
-            </div>
+      <div className='usercontainer'>
+        <div className='userleftcomp'>
+        <div className="userverticalfilter">
+            <h2 style={{
+              paddingBottom:"24px",
+              paddingTop:"25px",
+              fontSize:"24px"
+              }}>Filters</h2>
+              <h4 style={{fontSize:"14px",fontWeight:"600"}}>Working Schedule</h4>
+            {workingSchedule.map(option => (
+              <label className="custom-checkbox" key={option.id}>
+                <input type="checkbox" id={option.id} />
+                <span className="checkmark"></span>
+                <p>{option.label}</p>
+              </label>
+            ))}
+          </div>
+          <div className="userverticalfilter">
+            <h4 style={{fontSize:"14px",fontWeight:"600"}}>Employment Type</h4>
+            {employmentType.map(option => (
+              <label className="custom-checkbox" key={option.id}>
+                <input type="checkbox" id={option.id} />
+                <span className="checkmark"></span>
+                <p>{option.label}</p>
+              </label>
+            ))}
+          </div>
+          <div className="userverticalfilter">
+            <h4 style={{fontSize:"14px",fontWeight:"600"}}>Work Setup</h4>
+            {workSetup.map(option => (
+              <label className="custom-checkbox" key={option.id}>
+                <input type="checkbox" id={option.id} />
+                <span className="checkmark"></span>
+                <p>{option.label}</p>
+              </label>
+            ))}
           </div>
         </div>
-
-        <div className='container'>
-          <h4>Recruiter</h4>
-          <div className='joblength'>Full-time</div>
-          <p className='jobdescription'>
-            We are seeking a creative and talented Graphic Designer to join our dynamic team...
-          </p>
-          <div className='moreinfo'>
-            <div className='infobutton'>
-              <a href="#">Details</a>
-            </div>
-          </div>
+        <div className='userrightcomp'>
+          <p>test</p>
         </div>
       </div>
     </>

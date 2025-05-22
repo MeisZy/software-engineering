@@ -24,36 +24,17 @@ img {
     border: 1px solid #A2E494;
 }
 
-.container {
-    display: inline-block;
-    background-color: #A2E494;
-    margin: 100px;
-    width: 90%;
-    max-width: 500px;
-    padding: 10px;
-    border-radius: 20px;
-    border: 1px solid black;
+.usercontainer {
+    width: 100%;
+    display: flex;
+    min-height: 100%;
+    box-sizing: border-box;
 }
 
 .proper {
     margin: 0;
 }
 
-.joblength {
-    border: 1px solid black;
-    border-radius: 10px;
-    max-width: 100px;
-    background-color: #13714C;
-    color: white;
-    font-size: 16px;
-    text-align: center;
-    padding: 5px;
-}
-
-.jobdescription {
-    font-size: 14px;
-    margin: 10px;
-}
 
 .moreinfo {
     display: flex; 
@@ -93,4 +74,38 @@ img {
 
 .logout{
     text-decoration:none;
+}
+
+.userleftcomp {
+    display: flex;
+    position:fixed;
+    min-width: 320px; 
+    max-width: 640px;
+    flex: 0 0 200px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #A2E494;
+    padding-top: 50px;
+    height: 100%;      
+    border:1px solid black;
+}
+
+.userrightcomp {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-top: 50px;
+    margin-left: 320px; /* Add this line */
+}
+
+.userverticalfilter{
+  display:relative;
+  background-color:#A2E494;
 }

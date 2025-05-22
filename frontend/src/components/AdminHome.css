@@ -60,10 +60,11 @@ nav a:hover {
 }
 
 .adminleftcomp {
+    display: flex;
+    position:fixed;
     min-width: 320px; 
     max-width: 640px;
     flex: 0 0 200px;
-    display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
@@ -75,15 +76,16 @@ nav a:hover {
     border:1px solid black;
 }
 
-.adminrightcomp{
-    flex:1;
-    display:flex;
-    flex-direction:column;
+.adminrightcomp {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 20px;
-    box-sizing:border-box;
-    margin-top:50px;
+    box-sizing: border-box;
+    margin-top: 50px;
+    margin-left: 320px; /* Add this line */
 }
 
 .components {
