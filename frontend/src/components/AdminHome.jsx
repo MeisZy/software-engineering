@@ -11,7 +11,7 @@ function AdminHome() {
 
 const sampleJobOpenings = [
   {
-    title: 'Graphic Designer',
+    title: 'Business Process Analyst',
     department: 'Marketing',
     workSchedule: 'Part-time',
     workSetup: 'Hybrid',
@@ -78,6 +78,236 @@ const sampleJobOpenings = [
       'Remote work setup',
       'Hands-on experience'
     ]
+  },
+  {
+    title: 'Software Engineer5',
+    department: 'IT',
+    workSchedule: 'Internship / On-the-Job Training',
+    workSetup: 'Work From Home',
+    employmentType: 'Internship',
+    description: 'Join our team as a Software Engineer and work on exciting projects.',
+    keyResponsibilities: [
+      'Assist in software development projects',
+      'Write clean and efficient code',
+      'Participate in code reviews'
+    ],
+    qualifications: [
+      'Currently pursuing a degree in Computer Science or related field',
+      'Familiarity with JavaScript and React',
+      'Eagerness to learn'
+    ],
+    whatWeOffer: [
+      'Mentorship from senior engineers',
+      'Remote work setup',
+      'Hands-on experience'
+    ]
+  },
+  {
+    title: 'Software Engineer5',
+    department: 'IT',
+    workSchedule: 'Internship / On-the-Job Training',
+    workSetup: 'Work From Home',
+    employmentType: 'Internship',
+    description: 'Join our team as a Software Engineer and work on exciting projects.',
+    keyResponsibilities: [
+      'Assist in software development projects',
+      'Write clean and efficient code',
+      'Participate in code reviews'
+    ],
+    qualifications: [
+      'Currently pursuing a degree in Computer Science or related field',
+      'Familiarity with JavaScript and React',
+      'Eagerness to learn'
+    ],
+    whatWeOffer: [
+      'Mentorship from senior engineers',
+      'Remote work setup',
+      'Hands-on experience'
+    ]
+  },
+  {
+    title: 'Software Engineer5',
+    department: 'IT',
+    workSchedule: 'Internship / On-the-Job Training',
+    workSetup: 'Work From Home',
+    employmentType: 'Internship',
+    description: 'Join our team as a Software Engineer and work on exciting projects.',
+    keyResponsibilities: [
+      'Assist in software development projects',
+      'Write clean and efficient code',
+      'Participate in code reviews'
+    ],
+    qualifications: [
+      'Currently pursuing a degree in Computer Science or related field',
+      'Familiarity with JavaScript and React',
+      'Eagerness to learn'
+    ],
+    whatWeOffer: [
+      'Mentorship from senior engineers',
+      'Remote work setup',
+      'Hands-on experience'
+    ]
+  },
+  {
+    title: 'Software Engineer5',
+    department: 'IT',
+    workSchedule: 'Internship / On-the-Job Training',
+    workSetup: 'Work From Home',
+    employmentType: 'Internship',
+    description: 'Join our team as a Software Engineer and work on exciting projects.',
+    keyResponsibilities: [
+      'Assist in software development projects',
+      'Write clean and efficient code',
+      'Participate in code reviews'
+    ],
+    qualifications: [
+      'Currently pursuing a degree in Computer Science or related field',
+      'Familiarity with JavaScript and React',
+      'Eagerness to learn'
+    ],
+    whatWeOffer: [
+      'Mentorship from senior engineers',
+      'Remote work setup',
+      'Hands-on experience'
+    ]
+  },
+  {
+    title: 'Software Engineer5',
+    department: 'IT',
+    workSchedule: 'Internship / On-the-Job Training',
+    workSetup: 'Work From Home',
+    employmentType: 'Internship',
+    description: 'Join our team as a Software Engineer and work on exciting projects.',
+    keyResponsibilities: [
+      'Assist in software development projects',
+      'Write clean and efficient code',
+      'Participate in code reviews'
+    ],
+    qualifications: [
+      'Currently pursuing a degree in Computer Science or related field',
+      'Familiarity with JavaScript and React',
+      'Eagerness to learn'
+    ],
+    whatWeOffer: [
+      'Mentorship from senior engineers',
+      'Remote work setup',
+      'Hands-on experience'
+    ]
+  },
+  {
+    title: 'Software Engineer5',
+    department: 'IT',
+    workSchedule: 'Internship / On-the-Job Training',
+    workSetup: 'Work From Home',
+    employmentType: 'Internship',
+    description: 'Join our team as a Software Engineer and work on exciting projects.',
+    keyResponsibilities: [
+      'Assist in software development projects',
+      'Write clean and efficient code',
+      'Participate in code reviews'
+    ],
+    qualifications: [
+      'Currently pursuing a degree in Computer Science or related field',
+      'Familiarity with JavaScript and React',
+      'Eagerness to learn'
+    ],
+    whatWeOffer: [
+      'Mentorship from senior engineers',
+      'Remote work setup',
+      'Hands-on experience'
+    ]
+  },
+  {
+    title: 'Software Engineer5',
+    department: 'IT',
+    workSchedule: 'Internship / On-the-Job Training',
+    workSetup: 'Work From Home',
+    employmentType: 'Internship',
+    description: 'Join our team as a Software Engineer and work on exciting projects.',
+    keyResponsibilities: [
+      'Assist in software development projects',
+      'Write clean and efficient code',
+      'Participate in code reviews'
+    ],
+    qualifications: [
+      'Currently pursuing a degree in Computer Science or related field',
+      'Familiarity with JavaScript and React',
+      'Eagerness to learn'
+    ],
+    whatWeOffer: [
+      'Mentorship from senior engineers',
+      'Remote work setup',
+      'Hands-on experience'
+    ]
+  },
+  {
+    title: 'Software Engineer5',
+    department: 'IT',
+    workSchedule: 'Internship / On-the-Job Training',
+    workSetup: 'Work From Home',
+    employmentType: 'Internship',
+    description: 'Join our team as a Software Engineer and work on exciting projects.',
+    keyResponsibilities: [
+      'Assist in software development projects',
+      'Write clean and efficient code',
+      'Participate in code reviews'
+    ],
+    qualifications: [
+      'Currently pursuing a degree in Computer Science or related field',
+      'Familiarity with JavaScript and React',
+      'Eagerness to learn'
+    ],
+    whatWeOffer: [
+      'Mentorship from senior engineers',
+      'Remote work setup',
+      'Hands-on experience'
+    ]
+  },
+  {
+    title: 'Software Engineer9',
+    department: 'IT',
+    workSchedule: 'Internship / On-the-Job Training',
+    workSetup: 'Work From Home',
+    employmentType: 'Internship',
+    description: 'Join our team as a Software Engineer and work on exciting projects.',
+    keyResponsibilities: [
+      'Assist in software development projects',
+      'Write clean and efficient code',
+      'Participate in code reviews'
+    ],
+    qualifications: [
+      'Currently pursuing a degree in Computer Science or related field',
+      'Familiarity with JavaScript and React',
+      'Eagerness to learn'
+    ],
+    whatWeOffer: [
+      'Mentorship from senior engineers',
+      'Remote work setup',
+      'Hands-on experience'
+    ]
+  },
+  {
+    title: 'Software Engineer',
+    department: 'IT',
+    workSchedule: 'Internship / On-the-Job Training',
+    workSetup: 'Work From Home',
+    employmentType: 'Internship',
+    description: 'Join our team as a Software Engineer and work on exciting projects.',
+    keyResponsibilities: [
+      'Assist in software development projects',
+      'Write clean and efficient code',
+      'Participate in code reviews'
+    ],
+    qualifications: [
+      'Currently pursuing a degree in Computer Science or related field',
+      'Familiarity with JavaScript and React',
+      'Eagerness to learn'
+    ],
+    whatWeOffer: [
+      'Mentorship from senior engineers',
+      'Remote work setup',
+      'Hands-on experience'
+    ]
   }
 ];
 
@@ -112,15 +342,15 @@ const sampleJobOpenings = [
           <a>FAQs</a>
           <a>Messages</a>
           <a onClick={handleLogout}>Logout</a>
-          <a>(FOR DEBUGGING ONLY)Import Applicants</a>
+          <a style={{color:"grey"}}>(FOR DEBUGGING ONLY)Import Applicants</a>
         </div>
       </nav>
       <div className='components'>
         <div className='adminleftcomp'>
           <div className="verticalfilter">
             <h2 style={{
-              paddingBottom:"40px",
-              paddingTop:"20px",
+              paddingBottom:"24px",
+              paddingTop:"25px",
               fontSize:"24px"
               }}>Filters</h2>
               <h4 style={{fontSize:"14px",fontWeight:"600"}}>Working Schedule</h4>
@@ -155,9 +385,31 @@ const sampleJobOpenings = [
         </div>
       <div className='adminrightcomp'>
         <div className='jobscontainer'>
-          {sampleJobOpenings.map((job, idx) => (
-            <div className="jobcard" key={idx}>
-              <h2>{job.title}</h2>
+              {sampleJobOpenings.map((job, idx) => (
+              <div style={{border:"1px solid black"}}>
+                <div className="jobcard" key={idx}>
+                  <h2>{job.title}</h2>
+                    <div className='tags'>
+                      <p>{job.workSchedule}</p>
+                      <p>{job.employmentType}</p>
+                      <p>{job.workSetup}</p>
+                    </div>
+                </div>
+                <div className='jobinfo'>
+                  <a>test</a>
+                </div>
+              </div>
+              ))}
+        </div>
+      </div>
+    </div>
+  </>
+  );
+}
+
+export default AdminHome;
+
+/*
               <p><b>Department:</b> {job.department}</p>
               <p><b>Work Schedule:</b> {job.workSchedule}</p>
               <p><b>Work Setup:</b> {job.workSetup}</p>
@@ -187,13 +439,5 @@ const sampleJobOpenings = [
                   ))}
                 </ul>
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      </div>
-    </>
-  );
-}
 
-export default AdminHome;
+*/
