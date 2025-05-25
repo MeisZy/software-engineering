@@ -1,230 +1,263 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-}
-* {
-  margin: 0; /*  all margins */
-  padding: 0; /* Reset all paddings */
-}
-
-nav {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  background-color: #13714C;
-  color: white;
-  width: 100%;
-  height: 50px; /* Set a fixed height for nav */
-  box-sizing: border-box;
-  
-}
-
-nav a {
-  padding: 10px;
-  margin: 5px;
-  font-size: 18px;
-  font-weight: 300;
-  text-decoration: none;
-  color: white;
-  overflow: hidden;
-}
-
-nav a:hover {
-  text-decoration: underline;
-}
-
-.verticalfilter{
-  display:relative;
-  background-color:#A2E494;
-}
-
-
-.filter-option {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px; 
-}
-
-.filter-option p {
-  margin: 0;
-  margin-right: 10px;
-  font-size: 16px;
-}
-
-.filter-option input {
-  transform: scale(1.2);
-}
-
-.adminleftcomp {
-    display: flex;
-    position:fixed;
-    min-width: 320px; 
-    max-width: 640px;
-    flex: 0 0 200px;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    padding: 20px;
-    box-sizing: border-box;
-    background-color: #A2E494;
-    padding-top: 50px;
-    height: 100%;      
-    border:1px solid black;
-}
-
-.adminrightcomp {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    box-sizing: border-box;
-    margin-top: 50px;
-    margin-left: 320px; /* Add this line */
-}
-
-.components {
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
     width: 100%;
+  }
+  * {
+    margin: 0; /*  all margins */
+    padding: 0; /* Reset all paddings */
+  }
+
+  nav {
     display: flex;
-    min-height: 100%;
+    align-items: center;
+    padding: 10px;
+    background-color: #13714C;
+    color: white;
+    width: 100%;
+    height: 50px; /* Set a fixed height for nav */
     box-sizing: border-box;
-}
+    
+  }
+
+  nav a {
+    padding: 10px;
+    margin: 5px;
+    font-size: 18px;
+    font-weight: 300;
+    text-decoration: none;
+    color: white;
+    overflow: hidden;
+  }
+
+  nav a:hover {
+    text-decoration: underline;
+  }
+
+  .verticalfilter{
+    display:relative;
+    background-color:#A2E494;
+  }
 
 
-.custom-checkbox {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  position: relative;
-  user-select: none;
-  width: 220px;           
-  min-width: 260px;
-  max-width: 220px;
-  height: 32px;           
-  box-sizing: border-box;
-  overflow: hidden;
+  .filter-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; 
+  }
 
-}
+  .filter-option p {
+    margin: 0;
+    margin-right: 10px;
+    font-size: 16px;
+  }
 
-.custom-checkbox input[type="checkbox"] {
-  opacity: 0;
-  width: 0;
-  height: 0;
-  position: absolute;
-}
+  .filter-option input {
+    transform: scale(1.2);
+  }
 
-.custom-checkbox .checkmark {
-  height: 20px;
-  width: 20px;
-  background-color: white;
-  border: 2px solid #888;
-  border-radius: 50%;
-  margin-right: 10px;
-  display: inline-block;
-  position: relative;
-  transition: border-color 0.2s;
-  flex-shrink: 0;
-}
+  .adminleftcomp {
+      display: flex;
+      position:fixed;
+      min-width: 320px; 
+      max-width: 640px;
+      flex: 0 0 200px;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding: 20px;
+      box-sizing: border-box;
+      background-color: #A2E494;
+      padding-top: 50px;
+      height: 100%;      
+      border:1px solid black;
+  }
 
-.custom-checkbox input[type="checkbox"]:checked + .checkmark {
-  background-color: #111;
-  border: 2px solid #222;
-}
+  .adminrightcomp {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+      margin-top: 50px;
+      margin-left: 320px; /* Add this line */
+  }
 
-.custom-checkbox input[type="checkbox"]:checked + .checkmark::after {
-  content: "";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #111;
-}
-
-.custom-checkbox p {
-  margin: 0;
-  font-size: 14px;
-  white-space: nowrap;        
-  overflow: hidden;         
-  text-overflow: ellipsis;   
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-h4{
-  padding-bottom:"20px";
-  padding-top:"20px";
-  color: grey;
-
-}
-
-.jobscontainer{
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); 
-  padding: 20px;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-}
-
-.jobcard {
-  width: 180px;
-  height: 216px;
-  border: 1px solid black;
-  margin: 25px;
-  font-size: 16px;
-  background-color: #A2E494;
-  overflow: hidden;
-  border-radius: 25px;
-  display: flex;
-  flex-direction: column;
-}
-
-.jobcard h2{
-  margin:10px;
-  width:160px;
-  height:60px;
-  font-weight:400;
-  font-size:16px;
-  border:1px solid black;
-  text-align: left;
-}
-
-.jobcard p{
-  position:relative;
-}
-
-.tags{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin: 10px;
-}
-.tags p{
-  background-color: #13714C;
-  border:1px solid black;
-  border-radius: 5px;
-  color:white;
-  padding:5px;
-  margin-top:10px;
-  font-size:8px;
-}
+  .components {
+      width: 100%;
+      display: flex;
+      min-height: 100%;
+      box-sizing: border-box;
+  }
 
 
-.jobinfo {
-  background-color: #13714C;
+  .custom-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    width: 220px;           
+    min-width: 260px;
+    max-width: 220px;
+    height: 32px;           
+    box-sizing: border-box;
+    overflow: hidden;
 
-  margin-top: auto;
-  height: 40px;
-}
+  }
 
-.jobinfo a{
+  .custom-checkbox input[type="checkbox"] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+  }
+
+  .custom-checkbox .checkmark {
+    height: 20px;
+    width: 20px;
+    background-color: white;
+    border: 2px solid #888;
+    border-radius: 50%;
+    margin-right: 10px;
+    display: inline-block;
+    position: relative;
+    transition: border-color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .custom-checkbox input[type="checkbox"]:checked + .checkmark {
+    background-color: #111;
+    border: 2px solid #222;
+  }
+
+  .custom-checkbox input[type="checkbox"]:checked + .checkmark::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #111;
+  }
+
+  .custom-checkbox p {
+    margin: 0;
+    font-size: 14px;
+    white-space: nowrap;        
+    overflow: hidden;         
+    text-overflow: ellipsis;   
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  h4{
+    padding-bottom:"20px";
+    padding-top:"20px";
+    color: grey;
+
+  }
+
+  .jobscontainer{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+  }
+
   
+  .tags{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 10px;
+  }
+  .tags a{
+    background-color: #13714C;
+    border:1px solid black;
+    border-radius: 5px;
+    color:white;
+    padding:5px;
+    margin-top:10px;
+    font-size:8px;
+  }
+  
+  
+.jobinfo {
+    background-color: #13714C;
+    width: 100%; /* Full width of the job card */
+    border-radius: 0 0 25px 25px;
+    height: 40px;
+    position: absolute; 
+    bottom: 0; 
+    left: 0;
+    right: 0;
+    z-index: 0; 
+    display: flex; /* Enable flexbox */
+    justify-content: flex-end; /* Align items to the right */
+    align-items: center; /* Center vertically */
+    padding: 0 -0px; /* Add some padding for aesthetics */
 }
+  
+  .jobinfo a{
+    color: white;
+    text-decoration: none;
+    font-size: 10px;
+    padding: 2.5px;
+    display: flex;
+    justify-content: center;
+    flex-direction: row-reverse;
+    text-align: center;
+    position:relative;
+    margin:10px;
+    background-color:white;
+    border: 2px solid black;
+    color:black;
+    pointer:cursor;
+    border-radius:  25px;
+  }
+
+  .jobinfo a:hover{
+    background-color: #A2E494;
+    color: black;
+    border:2px solid black;
+    border-radius:  25px;
+  }
+
+  .jobcard {
+    width: 200px;
+    height: 240px;
+    border: 1px solid black;
+    margin: 25px;
+    font-size: 16px;
+    background-color: #A2E494;
+    overflow: hidden;
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    position: relative; 
+    z-index: 1; 
+  }
+
+  .jobcard h2{
+    margin:20px;
+    width:160px;
+    height:60px;
+    font-weight:400;
+    font-size:16px;
+    border:1px solid black;
+    text-align: left;
+  }
+
+  .jobcard p{
+    position:relative;
+  }

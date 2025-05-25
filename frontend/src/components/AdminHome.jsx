@@ -388,15 +388,16 @@ const sampleJobOpenings = [
               {sampleJobOpenings.map((job, idx) => (
               <div style={{border:"1px solid black"}}>
                 <div className="jobcard" key={idx}>
-                  <h2>{job.title}</h2>
+                    <h2>{job.title}</h2>
                     <div className='tags'>
-                      <p>{job.workSchedule}</p>
-                      <p>{job.employmentType}</p>
-                      <p>{job.workSetup}</p>
+                        <a>{job.workSchedule}</a>
+                        <a>{job.employmentType}</a>
+                        <a>{job.workSetup}</a>
                     </div>
-                </div>
-                <div className='jobinfo'>
-                  <a>test</a>
+                    <div className='jobinfo'>
+                        <a href="https://google.com">View Applicants</a>
+                        <a href="https://google.com">Details</a>
+                    </div>
                 </div>
               </div>
               ))}
