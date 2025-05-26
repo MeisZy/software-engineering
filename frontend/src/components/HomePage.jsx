@@ -27,7 +27,12 @@ function HomePage() {
         setUserName(name);
         localStorage.setItem('userName', name);
         localStorage.setItem('profilePic', profilePic);
-        navigate('/userhome');
+
+        if (decoded.name === "Collectius HR Admin") {
+          navigate('/adminhome');
+        } else {
+          navigate('/userhome');
+        }
       } else {
         console.warn('Missing name or profile picture in decoded token');
       }

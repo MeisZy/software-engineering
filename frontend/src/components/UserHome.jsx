@@ -52,7 +52,6 @@ function UserHome() {
       <nav>
         <img src={profilePic || Placeholder} alt="Profile" /> 
         <span className="usergreeting">Welcome, {userName}!</span>
-        <a href="#">Admin</a>
         <a href="#">Message</a>
         <a href="#">Report a Problem</a>
         <a href="#" onClick={handleFAQs}>FAQs</a>
