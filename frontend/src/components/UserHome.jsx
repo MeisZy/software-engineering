@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Placeholder from '../components/images/pfp_placeholder.png';
+import SubmitArrow from '../components/assets/submitarrow.png';
 import './UserHome.css';
 
 function UserHome() {
@@ -24,6 +25,7 @@ function UserHome() {
 
   const [userName, setUserName] = useState('');
   const [profilePic, setProfilePic] = useState(''); 
+  const [showReport, setShowReport] = useState(false); // Add this state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,13 +49,20 @@ function UserHome() {
     navigate('/questions');
   }
 
+    const handleReportProblem = (e) => {
+    e.preventDefault();
+    setShowReport(true);
+  };
+
+  const closeReport = () => setShowReport(false);
+
   return (
     <>
       <nav>
         <img src={profilePic || Placeholder} alt="Profile" /> 
         <span className="usergreeting">Welcome, {userName}!</span>
         <a href="#">Message</a>
-        <a href="#">Report a Problem</a>
+        <a href="#" onClick={handleReportProblem}>Report a Problem</a>
         <a href="#" onClick={handleFAQs}>FAQs</a>
         <a className="logout" onClick={handleLogout}>Logout</a>
       </nav>
@@ -98,6 +107,49 @@ function UserHome() {
         <div className='userrightcomp'>
           <p>test</p>
         </div>
+                {showReport && (
+                  <div className='reportsdetailsdarkgreen'>
+                    <div className='reportsdetailslightgreen'>
+                        <div>
+                          <h3 style={{ marginBottom: 0 }}>Report a Problem</h3>
+                        </div>
+                          <a onClick={closeReport} aria-label="Close"> ×</a>
+                      <div className="reportsdetails" onClick={closeReport}>
+                        <div className="reportsdetailsblock" onClick={e => e.stopPropagation()} style={{   background: 'white',   backgroundImage: 'none',   backgroundSize: 'cover',   backgroundPosition: 'center' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          </div>
+                          <div className="reportsdetailsgrid">
+                              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                <label htmlFor="reportfrom" style={{ marginBottom: 0 }}>From:</label>
+                                <input id="reportfrom" type="text" placeholder="Your email or name" style={{ marginBottom: 0 }} />
+                              </div>
+                              <label htmlFor="reporttext">Describe your issue:</label>
+                              <textarea id="reporttext" placeholder="Please describe the problem you encountered..." />
+                              <a
+                                href="#"
+                                onClick={closeReport}
+                                className="submitarrow"
+                                style={{
+                                  width: "120px",
+                                  position: "absolute",
+                                  right: 0,
+                                  bottom: 0,
+                                  margin: "32px 0 0 0",
+                                  alignSelf: "flex-end",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  gap: "8px"
+                                }}
+                              >
+                                <img src={SubmitArrow} alt="Submit" style={{ width: "80px", height: "40px" }} />
+                              </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
       </div>
     </>
   );

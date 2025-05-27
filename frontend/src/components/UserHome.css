@@ -4,6 +4,14 @@ body {
     font-family: "Montserrat", sans-serif;
 }
 
+nav img{
+    width:40px;
+    height:40px;
+    border-radius: 50%;
+    margin: 5px;
+}
+
+
 nav a {
     padding: 10px;
     margin: 5px;    
@@ -16,14 +24,6 @@ nav a {
 nav a:hover {
     text-decoration: underline;
 }
-
-img {
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-    border: 1px solid #A2E494;
-}
-
 .usercontainer {
     width: 100%;
     display: flex;
@@ -102,10 +102,136 @@ img {
     padding: 20px;
     box-sizing: border-box;
     margin-top: 50px;
-    margin-left: 320px; /* Add this line */
+    margin-left:  320px; 
+}
+
+.adminrightcomp img{
+    width:4 0px;
+    height:40px;
+    border-radius: 50%;
+    margin: 5px;
 }
 
 .userverticalfilter{
   display:relative;
   background-color:#A2E494;
+}
+
+.reportsdetailsdarkgreen {
+  position: fixed;
+  top: 16%;
+  left: 24%;
+  width: 1024px;
+  height: 512px;
+  background: #13714C;
+  border-radius: 18px;
+  z-index: 10;
+  border:1px solid black;
+}
+
+.reportsdetailsdarkgreen a{
+    cursor:pointer;
+}
+
+.reportsdetailslightgreen {
+  width: 1012px;
+  height: 500px;
+  background: #A2E494;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;      /* Add this */
+  align-items: flex-start;     /* Add this */
+  justify-content: flex-start; /* Add this */
+  border:1px solid black;   
+  position: relative;
+}
+
+.reportsdetailslightgreen h3{
+  margin: 0;
+  padding: 24px 32px 0 32px;  /* Add top/left padding for spacing */
+  align-self: flex-start;      /* Ensure it's at the left */
+  font-size: 2rem;
+  font-weight: 600;
+  color: Black;
+  background: none;
+  border: none;
+  line-height: 1.2;
+  max-width: 400px;
+  overflow-wrap: break-word;
+}
+
+.reportsdetails{
+
+
+}
+.reportsdetailsblock {
+
+  
+}
+
+.reportsdetailsblock p{
+
+}
+.reportsdetailsblock ul{
+
+}
+
+
+.reportsdetailsgrid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 32px 32px 32px;
+  width: 100%;
+  background-color: #A2E494;
+  position: relative;
+}
+
+.reportsdetailsgrid a{
+  width: 120px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin: 32px 0 0 0;
+  align-self: flex-end;
+}
+.reportsdetailsgrid label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  font-size: 1rem;
+  color: black;
+}
+.reportsdetailsgrid input[type="text"] {
+  width: 400px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  border: 1px solid #13714C;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  background: #f8f8f8;
+}
+
+.reportsdetailsgrid textarea {
+  width: 800px;
+  height: 120px;
+  font-size: 16px;
+  padding: 8px;
+  border: 1px solid #13714C;
+  border-radius: 6px;
+  resize: vertical;
+  background: #f8f8f8;
+}
+
+.submitarrow img{
+    width: 80px;
+    height: 40px;
+    position: absolute;
+    right: 0;
+    bottom:0;
+    margin: 32px 0 0 0;
+    align-self: flex-end;
+    display: flex;
+    align-items: center;
+    justify-content: "center";
+    gap: 8px;
 }
