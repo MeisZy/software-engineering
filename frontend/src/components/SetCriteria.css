@@ -1,0 +1,15 @@
+.criteria {
+    margin-top:10vh;
+    margin-left:5vw;
+}
+.criteria a{
+    width:200px;
+    height:50px;
+    background-color:#A2E494;
+    font-weight:400;
+    border:1px solid black;
+    border-radius:3vh;
+    font-size:20px;
+    margin:10px;
+    padding:10px;
+}

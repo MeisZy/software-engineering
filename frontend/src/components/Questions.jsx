@@ -15,9 +15,17 @@ function Questions() {
         <nav>
             <a href="#" onClick={handleReturn}>Back</a>
         </nav>
-        <div className='proper'>
-          <div className='instance'>
-            <p>test</p>
+        <div className='questionscontainer'>
+          <div className='questionsleftcomp'>
+            <ul>FAQs</ul>
+            <ul>User Guides</ul>
+            <ul>Contact Information</ul>
+            <ul>User Roles</ul>
+          </div>
+          <div className='questionsrightcomp'>
+            <div className='instance'>
+              <h5>Frequently Asked Questions</h5>
+            </div>
           </div>
         </div>
     </>

@@ -11,6 +11,7 @@ function AdminHome() {
   const [openApplicantsIdx, setOpenApplicantsIdx] = useState(null);
   
   const handleLogout = () => navigate('/');
+  const handleSetCriteria = () => navigate('/setcriteria');
 
 const sampleJobOpenings = [
   {
@@ -411,6 +412,7 @@ const sampleJobOpenings = [
           <a>Interviews</a>
           <a>FAQs</a>
           <a>Messages</a>
+          <a onClick={handleSetCriteria}>Manage Jobs</a>
           <a onClick={handleLogout}>Logout</a>
           <a style={{color:"grey"}}>(FOR DEBUGGING ONLY)Import Applicants</a>
         </div>

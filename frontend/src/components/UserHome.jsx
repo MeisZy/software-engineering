@@ -108,48 +108,70 @@ function UserHome() {
           <p>test</p>
         </div>
                 {showReport && (
-                  <div className='reportsdetailsdarkgreen'>
-                    <div className='reportsdetailslightgreen'>
-                        <div>
-                          <h3 style={{ marginBottom: 0 }}>Report a Problem</h3>
-                        </div>
-                          <a onClick={closeReport} aria-label="Close"> ×</a>
-                      <div className="reportsdetails" onClick={closeReport}>
-                        <div className="reportsdetailsblock" onClick={e => e.stopPropagation()} style={{   background: 'white',   backgroundImage: 'none',   backgroundSize: 'cover',   backgroundPosition: 'center' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          </div>
-                          <div className="reportsdetailsgrid">
-                              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                                <label htmlFor="reportfrom" style={{ marginBottom: 0 }}>From:</label>
-                                <input id="reportfrom" type="text" placeholder="Your email or name" style={{ marginBottom: 0 }} />
-                              </div>
-                              <label htmlFor="reporttext">Describe your issue:</label>
-                              <textarea id="reporttext" placeholder="Please describe the problem you encountered..." />
-                              <a
-                                href="#"
-                                onClick={closeReport}
-                                className="submitarrow"
-                                style={{
-                                  width: "120px",
-                                  position: "absolute",
-                                  right: 0,
-                                  bottom: 0,
-                                  margin: "32px 0 0 0",
-                                  alignSelf: "flex-end",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  gap: "8px"
-                                }}
-                              >
-                                <img src={SubmitArrow} alt="Submit" style={{ width: "80px", height: "40px" }} />
-                              </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
+  <div className='reportsdetailsdarkgreen'>
+    <div className='reportsdetailslightgreen'>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <h3 style={{ marginBottom: 0 }}>Report a Problem</h3>
+        <a
+          onClick={closeReport}
+          aria-label="Close"
+          style={{
+            fontSize: '2rem',
+            fontWeight: 'bold',
+            color: '#13714C',
+            textDecoration: 'none',
+            cursor: 'pointer',
+            marginRight: '32px',
+            marginTop: '20px',
+            lineHeight: '1'
+          }}
+        >
+          ×
+        </a>
+      </div>
+      <div className="reportsdetails" onClick={closeReport}>
+        <div
+          className="reportsdetailsblock"
+          onClick={e => e.stopPropagation()}
+          style={{
+            background: 'white',
+            backgroundImage: 'none',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        >
+          <div className="reportsdetailsgrid">
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <label htmlFor="reportfrom" style={{ marginBottom: 0 }}>From:</label>
+              <input id="reportfrom" type="text" placeholder="Your email or name" style={{ marginBottom: 0 }} />
+            </div>
+            <label htmlFor="reporttext">Describe your issue:</label>
+            <textarea id="reporttext" placeholder="Please describe the problem you encountered..." />
+            <a
+              href="#"
+              onClick={closeReport}
+              className="submitarrow"
+              style={{
+                width: "120px",
+                position: "absolute",
+                right: 0,
+                bottom: 0,
+                margin: "32px 0 0 0",
+                alignSelf: "flex-end",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px"
+              }}
+            >
+              <img src={SubmitArrow} alt="Submit" style={{ width: "80px", height: "40px" }} />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
       </div>
     </>
   );
