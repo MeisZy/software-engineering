@@ -62,7 +62,7 @@ function UserHome() {
         <img src={profilePic || Placeholder} alt="Profile" /> 
         <span className="usergreeting">Welcome, {userName}!</span>
         <a href="#">Message</a>
-        <a href="#" onClick={handleReportProblem}>Report a Problem</a>
+        <a href="#" onClick={handleReportProblem}>Report a Problem?</a>
         <a href="#" onClick={handleFAQs}>FAQs</a>
         <a className="logout" onClick={handleLogout}>Logout</a>
       </nav>
