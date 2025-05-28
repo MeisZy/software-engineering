@@ -2,7 +2,7 @@ import React from 'react';
 import './Questions.css'
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-
+//adding thisline bc auto commit in vsc doesn't reflect the changes via my profile lol
 function Questions() {
     const navigate = useNavigate();
 

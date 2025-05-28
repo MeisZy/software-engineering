@@ -45,7 +45,7 @@ function SetCriteria() {
           <a>Remove Job</a>
         </div>
         <div className='jobslists'>
-          {/*insert mapping for jobs. until database is built. codeblock below is the proper format */}
+          {/*insert mapping for jobs. until database is built. codeblock below is the proper format. add another*/}
           <div className='joblist'>
             <div className='jobtitle'>Job Title</div>
             <div className='jobdescription'>Job Description</div>
