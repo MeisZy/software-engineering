@@ -1,13 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Placeholder from '../components/images/pfp_placeholder.png';
+import SubmitArrow from '../components/assets/submitarrow.png';
 
 import './SetCriteria.css';
 
 function SetCriteria() {
   const [userName, setUserName] = useState('');
   const [profilePic, setProfilePic] = useState('');
-  const [showAddJob, setShowAddJob] = useState(false); // NEW STATE
+  const [showAddJob, setShowAddJob] = useState(false); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -91,6 +92,10 @@ function SetCriteria() {
                 </div>
             </div>
               <button onClick={() => setShowAddJob(false)} style={{marginTop: "24px"}}>Close</button>
+                <div className="criterianavigate">
+                  <ul><a onClick={handleReturn} className='left'></a></ul>
+                  <ul><a onClick={handleReturn} className='right'></a></ul>
+                </div>
           </div>
         </>
       )}

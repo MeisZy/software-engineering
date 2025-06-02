@@ -13,6 +13,10 @@
     margin:10px;
     padding:10px;
 }
+
+.criteria a:hover {
+    cursor: pointer;
+}
 .criteriascreen {
   position: fixed;
   top: 50%;
@@ -88,4 +92,39 @@
     height: 20px;
     font-size: 16px;
     padding: 8px 12px;
+}
+
+.criterianavigate ul {
+    margin: 10px;
+    display: inline-flex;           
+    justify-content: center;        
+    align-items: center;            
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: black;
+    padding: 0;
+}
+
+.criterianavigate a{
+    display: block;
+    width: 0;
+    height: 0;
+    margin: 0 auto;
+}
+
+.criterianavigate ul:hover .left,
+.criterianavigate ul:hover .right {
+    border-right-color: #13714C;
+    border-left-color: #13714C;
+}
+.criterianavigate .left{
+    border-top: 15px solid transparent;
+    border-right: 25px solid #A2E494;
+    border-bottom: 15px solid transparent;
+}
+.criterianavigate .right{
+	border-top: 15px solid transparent;
+	border-left: 25px solid #A2E494;
+	border-bottom: 15px solid transparent;
 }
