@@ -1,3 +1,5 @@
+
+
 .criteria {
     margin-top:10vh;
     margin-left:5vw;
@@ -12,6 +14,10 @@
     font-size:20px;
     margin:10px;
     padding:10px;
+}
+
+textarea{
+    resize:none;
 }
 
 .criteria a:hover {
@@ -29,26 +35,56 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 500px;
-  height: 500px;
+  width: 576px;
+  height: 576px;
   z-index: 3;
+  border:2px solid black;
 }
 
 .page1 {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* shortened vertical gap */
+    gap: 10px; 
     width: 100%;
 }   
 
-.page1entry {
+.page1 textarea{
+    height:150px;
+}
+
+.rowcomponent {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 20px;
     width: 100%;
 }
+.rowcomponent select{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    border-radius:none;
+}
+.rowcomponent,
+.rowcomponent select,
+.rowcomponent input,
+.rowcomponent textarea {
+    border-radius: 0 !important; 
+}
 
+.rowcomponent input,
+.rowcomponent textarea {
+    flex: unset;
+    width: 300px;
+    font-size: 16px;
+    padding: 8px 12px;
+    margin-right: 0;
+}
+
+.rowcomponent option:hover {
+    background: #13714C;
+    color: #fff;
+}
 .page1 label {
     font-size: 20px;
     font-weight: 600;
@@ -58,9 +94,9 @@
     display: flex;
     align-items: center;
 }
-.page1 input {
+.rowcomponent input {
     flex: 1;
-    height: 32px;
+    height: 20px;
     font-size: 16px;
     padding: 8px 12px;
     margin-right: 0;
@@ -70,14 +106,13 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 20px;
-    width: 576px;
+    width: 600px;
+    height:500px;
+
 }
 
 .criteriascreencontent label {
     width: 300px;
-    min-width: 300px;
-    max-width: 300px;
     font-size: 20px;
     font-weight: 600;
     color: white;
@@ -92,10 +127,16 @@
     height: 20px;
     font-size: 16px;
     padding: 8px 12px;
+    width:256px;
 }
 
+.criterianavigate{
+    position:sticky;
+}
 .criterianavigate ul {
-    margin: 10px;
+    padding:0;
+    margin-top:25px;
+    margin-left: 20px;
     display: inline-flex;           
     justify-content: center;        
     align-items: center;            
@@ -103,7 +144,6 @@
     height: 50px;
     border-radius: 50%;
     background-color: black;
-    padding: 0;
 }
 
 .criterianavigate a{
@@ -127,4 +167,16 @@
 	border-top: 15px solid transparent;
 	border-left: 25px solid #A2E494;
 	border-bottom: 15px solid transparent;
+}
+
+.page2 h1 {
+    position: sticky;
+    left: 0;     /* match .criteriascreen padding-left */
+    color: white;
+    margin: 0;
+    padding: 0;
+    z-index: 2;
+    font-size:36px;
+    font-weight:600;
+    top:20px;
 }
