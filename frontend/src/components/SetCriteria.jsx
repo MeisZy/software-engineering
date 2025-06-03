@@ -249,8 +249,8 @@ function SetCriteria() {
                             placeholder="Select Work Setup"
                           />
                         </div>
-                          <label>Description</label>
-                          <textarea />
+                        <label>Description</label>
+                        <textarea />
                       </div>
                     )}
                     {criteriaPage === 2 && (
@@ -258,15 +258,14 @@ function SetCriteria() {
                         <div className='page2header'>
                           <h1 style={{ color: 'white' }}>Key Responsibilities</h1>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                          {keyResponsibilities.map((resp, idx) => (
-                            <div className='keyresponsibilities' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
-                              <input
-                                value={resp}
-                                onChange={e => handleResponsibilityChange(idx, e.target.value)}
-                              />
-                            </div>
-                          ))}
+                        {keyResponsibilities.map((resp, idx) => (
+                          <div className='keyresponsibilities' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+                            <input
+                              value={resp}
+                              onChange={e => handleResponsibilityChange(idx, e.target.value)}
+                            />
+                          </div>
+                        ))}
                         <div className='addremovewrap'>
                           <div className='addbuttonwrap'>
                             <a onClick={handleAddResponsibility}>
@@ -274,13 +273,12 @@ function SetCriteria() {
                             </a>
                           </div>
                           {keyResponsibilities.length > 1 && (
-                            <div className='removebuttonwrap' style={{ marginTop: '10px' }}>
+                            <div className='removebuttonwrap'>
                               <a onClick={() => setKeyResponsibilities(prev => prev.slice(0, -1))}>
                                 -
                               </a>
                             </div>
                           )}
-                        </div>
                         </div>
                       </div>
                     )}
@@ -289,106 +287,112 @@ function SetCriteria() {
                         <div>
                           <h1>Qualifications</h1>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                          {qualifications.map((qual, idx) => (
-                            <div className='qualifications' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
-                              <input
-                                value={qual}
-                                onChange={e => setQualifications(prev => {
-                                  const updated = [...prev];
-                                  updated[idx] = e.target.value;
-                                  return updated;
-                                })}
-                              />
-                            </div>
-                          ))}
-                          <div className='addremovewrap'>
-                            <div className='addbuttonwrap'>
-                              <a onClick={() => handleAddQualifications(prev => ['', ...prev])}>
-                                +
+                        {qualifications.map((qual, idx) => (
+                          <div className='qualifications' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+                            <input
+                              value={qual}
+                              onChange={e => setQualifications(prev => {
+                                const updated = [...prev];
+                                updated[idx] = e.target.value;
+                                return updated;
+                              })}
+                            />
+                          </div>
+                        ))}
+                        <div className='addremovewrap'>
+                          <div className='addbuttonwrap'>
+                            <a onClick={() => handleAddQualifications(prev => ['', ...prev])}>
+                              +
+                            </a>
+                          </div>
+                          {qualifications.length > 1 && (
+                            <div className='removebuttonwrap'>
+                              <a onClick={() => setQualifications(prev => prev.slice(0, -1))}>
+                                -
                               </a>
                             </div>
-                            {qualifications.length > 1 && (
-                              <div className='removebuttonwrap'>
-                                <a onClick={() => setQualifications(prev => prev.slice(0, -1))}>
-                                  -
-                                </a>
-                              </div>
-                            )}
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    {criteriaPage === 4 && (
+                      <div className='page4'>
+                        <div>
+                          <h1>What we Offer:</h1>
+                        </div>
+                        {offers.map((offer, idx) => (
+                          <div className='offers' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+                            <input
+                              value={offer}
+                              onChange={e => setOffers(prev => {
+                                const updated = [...prev];
+                                updated[idx] = e.target.value;
+                                return updated;
+                              })}
+                            />
+                          </div>
+                        ))}
+                        <div className='addremovewrap'>
+                          <div className='addbuttonwrap'>
+                            <a onClick={handleAddOffer}>
+                              +
+                            </a>
+                          </div>
+                          {offers.length > 1 && (
+                            <div className='removebuttonwrap'>
+                              <a onClick={handleRemoveOffer}>
+                                -
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    {criteriaPage === 5 && (
+                      <div className='page5'>
+                        <div className="criteriajobcard">
+                          <h2 style={{ margin: "0 0 16px 0" }}>
+                            {document.querySelector('input[placeholder="Job Name"]')?.value || "Job Title"}
+                          </h2>
+                          <div className='tags' style={{ marginBottom: "16px" }}>
+                            <a>{document.querySelector('input[placeholder="Department"]')?.value || "Department"}</a>
+                            <a>{document.querySelector('.page1 .css-1uccc91-singleValue')?.innerText || "Employment Type"}</a>
+                            <a>{document.querySelector('.page1 .css-1uccc91-singleValue')?.innerText || "Work Schedule"}</a>
+                            <a>{document.querySelector('.page1 .css-1uccc91-singleValue')?.innerText || "Work Setup"}</a>
+                          </div>
+                          <div style={{ marginBottom: "16px" }}>
+                            <b>Description:</b>
+                            <div>
+                              {document.querySelector('.page1 textarea')?.value || "No description"}
+                            </div>
+                          </div>
+                          <div style={{ marginBottom: "16px" }}>
+                            <b>Key Responsibilities:</b>
+                            <ul>
+                              {keyResponsibilities.filter(Boolean).map((item, i) => (
+                                <li key={i}>{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div style={{ marginBottom: "16px" }}>
+                            <b>Qualifications:</b>
+                            <ul>
+                              {qualifications.filter(Boolean).map((item, i) => (
+                                <li key={i}>{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div>
+                            <b>What we Offer:</b>
+                            <ul>
+                              {offers.filter(Boolean).map((item, i) => (
+                                <li key={i}>{item}</li>
+                              ))}
+                            </ul>
                           </div>
                         </div>
                       </div>
                     )}
-                  {criteriaPage === 4 && (
-                    <div className='page4'>
-                      <div>
-                        <h1>What we Offer:</h1>
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {offers.map((offer, idx) => (
-                          <div className='offers' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
-                            <input
-                              value={offer}
-                              onChange={e => setOffers(prev => {
-                                const updated = [...prev];
-                                updated[idx] = e.target.value;
-                                return updated;
-                              })}
-                            />
-                          </div>
-                        ))}
-                        <div className='addremovewrap'>
-                          <div className='addbuttonwrap'>
-                            <a onClick={handleAddOffer}>
-                              +
-                            </a>
-                          </div>
-                          {offers.length > 1 && (
-                            <div className='removebuttonwrap'>
-                              <a onClick={handleRemoveOffer}>
-                                -
-                              </a>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {criteriaPage === 5 && (
-                    <div className='page5'>
-                      <div>
-                        <h1>(DEBUG) PREVIEW PAGE</h1>
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {offers.map((offer, idx) => (
-                          <div className='offers' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
-                            <input
-                              value={offer}
-                              onChange={e => setOffers(prev => {
-                                const updated = [...prev];
-                                updated[idx] = e.target.value;
-                                return updated;
-                              })}
-                            />
-                          </div>
-                        ))}
-                        <div className='addremovewrap'>
-                          <div className='addbuttonwrap'>
-                            <a onClick={handleAddOffer}>
-                              +
-                            </a>
-                          </div>
-                          {offers.length > 1 && (
-                            <div className='removebuttonwrap'>
-                              <a onClick={handleRemoveOffer}>
-                                -
-                              </a>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )}
                   </div>
                   <div className="criterianavigate">
                     <ul><a onClick={handlePrevPage} className='left'></a></ul>
