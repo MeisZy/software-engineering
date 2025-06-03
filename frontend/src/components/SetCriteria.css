@@ -77,7 +77,6 @@ textarea{
     flex: unset;
     width: 300px;
     font-size: 16px;
-    padding: 8px 12px;
     margin-right: 0;
 }
 
@@ -168,7 +167,8 @@ textarea{
 	border-left: 25px solid #A2E494;
 	border-bottom: 15px solid transparent;
 }
-
+.page5 h1,
+.page4 h1,
 .page3 h1,
 .page2 h1 {
     position: sticky;
@@ -205,7 +205,9 @@ textarea{
     font-size:20px;
 }
 
-.keyresponsibilities{
+.keyresponsibilities,
+.qualifications,
+.offers{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -214,11 +216,13 @@ textarea{
     margin-top:20px;
 
 }
-.keyresponsibilities input{
+.keyresponsibilities input,
+.qualifications input,
+.offers input{
     height:32px;
     font-size:16px;
     border: 2px solid black;
-    width:100%;
+    width:96%;
     resize:none;
 
 }
@@ -251,10 +255,13 @@ textarea{
     align-items: center;
     justify-content: flex-start;
 }
-
+.page1,
 .page2,
-.page3{
+.page3,
+.page4,
+.page5{
     padding: '20px'; 
-    width:576px;
+    width:600px;
     height:528px;
+    border:1px solid black;
 }

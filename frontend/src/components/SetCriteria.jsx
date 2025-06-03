@@ -37,13 +37,14 @@ function SetCriteria() {
     label: option.label
   }));
 
+  const navigate = useNavigate();
   const [userName, setUserName] = useState('');
   const [profilePic, setProfilePic] = useState('');
   const [showAddJob, setShowAddJob] = useState(false); 
   const [criteriaPage, setCriteriaPage] = useState(1);
-  const navigate = useNavigate();
   const [keyResponsibilities, setKeyResponsibilities] = useState(['']);
   const [qualifications, setQualifications] = useState(['']);
+  const [offers, setOffers] = useState(['']);
 
   const handleKeyDown = useCallback(
     (e) => {
@@ -78,7 +79,7 @@ function SetCriteria() {
   }
 
   const MIN_PAGE = 1;
-  const MAX_PAGE = 4;
+  const MAX_PAGE = 5;
 
     const handlePrevPage = () => {
       setCriteriaPage(prev => (prev - 1 < MIN_PAGE ? MAX_PAGE : prev - 1));
@@ -106,6 +107,14 @@ function SetCriteria() {
       updated[idx] = value;
       return updated;
     });
+    };
+
+    const handleAddOffer = () => {
+      setOffers(prev => ['', ...prev]);
+    };
+    
+    const handleRemoveOffer = () => {
+      setOffers(prev => prev.slice(0, -1));
     };
 
   // Custom styles for react-select to match .rowcomponent and input styles
@@ -282,7 +291,7 @@ function SetCriteria() {
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           {qualifications.map((qual, idx) => (
-                            <div className='keyresponsibilities' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+                            <div className='qualifications' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
                               <input
                                 value={qual}
                                 onChange={e => setQualifications(prev => {
@@ -295,7 +304,7 @@ function SetCriteria() {
                           ))}
                           <div className='addremovewrap'>
                             <div className='addbuttonwrap'>
-                              <a onClick={() => setQualifications(prev => ['', ...prev])}>
+                              <a onClick={() => handleAddQualifications(prev => ['', ...prev])}>
                                 +
                               </a>
                             </div>
@@ -310,18 +319,76 @@ function SetCriteria() {
                         </div>
                       </div>
                     )}
-                    {criteriaPage === 4 && (
-                      <div className='page4'>
-                        <div className="rowcomponent">
-                          <label>Page 4 Field 1</label>
-                          <input type="text" placeholder="Field 1" />
-                        </div>
-                        <div className="rowcomponent">
-                          <label>Page 3 Field 2</label>
-                          <input type="text" placeholder="Field 2" />
+                  {criteriaPage === 4 && (
+                    <div className='page4'>
+                      <div>
+                        <h1>What we Offer:</h1>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {offers.map((offer, idx) => (
+                          <div className='offers' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+                            <input
+                              value={offer}
+                              onChange={e => setOffers(prev => {
+                                const updated = [...prev];
+                                updated[idx] = e.target.value;
+                                return updated;
+                              })}
+                            />
+                          </div>
+                        ))}
+                        <div className='addremovewrap'>
+                          <div className='addbuttonwrap'>
+                            <a onClick={handleAddOffer}>
+                              +
+                            </a>
+                          </div>
+                          {offers.length > 1 && (
+                            <div className='removebuttonwrap'>
+                              <a onClick={handleRemoveOffer}>
+                                -
+                              </a>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    )}
+                    </div>
+                  )}
+                  {criteriaPage === 5 && (
+                    <div className='page5'>
+                      <div>
+                        <h1>(DEBUG) PREVIEW PAGE</h1>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {offers.map((offer, idx) => (
+                          <div className='offers' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+                            <input
+                              value={offer}
+                              onChange={e => setOffers(prev => {
+                                const updated = [...prev];
+                                updated[idx] = e.target.value;
+                                return updated;
+                              })}
+                            />
+                          </div>
+                        ))}
+                        <div className='addremovewrap'>
+                          <div className='addbuttonwrap'>
+                            <a onClick={handleAddOffer}>
+                              +
+                            </a>
+                          </div>
+                          {offers.length > 1 && (
+                            <div className='removebuttonwrap'>
+                              <a onClick={handleRemoveOffer}>
+                                -
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   </div>
                   <div className="criterianavigate">
                     <ul><a onClick={handlePrevPage} className='left'></a></ul>
