@@ -223,28 +223,37 @@ function SetCriteria() {
                           <textarea />
                       </div>
                     )}
-                    {criteriaPage === 2 && (
-                      <div className='page2'>
-                        <div className='page2header'><h1 style={{ color: 'white' }}>Key Responsibilities</h1></div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                          {keyResponsibilities.map((resp, idx) => (
-                            <div className='keyresponsibilities' key={idx} style={{ display: 'flex', alignItems: 'center', backgroundColor: 'white', border: '2px solid black', borderRadius: '5px', padding: '10px' }}>
-                              <textarea
-                                value={resp}
-                                onChange={e => handleResponsibilityChange(idx, e.target.value)}
-                                placeholder={`Responsibility ${idx + 1}`}
-                                style={{ width: '100%', border: 'none', resize: 'none', outline: 'none' }}
-                              />
-                            </div>
-                          ))}
-                          <div className='addbuttonwrap'>
-                            <a onClick={handleAddResponsibility}>
-                              +
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+{criteriaPage === 2 && (
+  <div className='page2'>
+    <div className='page2header'>
+      <h1 style={{ color: 'white' }}>Key Responsibilities</h1>
+    </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      {keyResponsibilities.map((resp, idx) => (
+        <div className='keyresponsibilities' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+          <input
+            value={resp}
+            onChange={e => handleResponsibilityChange(idx, e.target.value)}
+          />
+        </div>
+      ))}
+    <div className='addremovewrap'>
+      <div className='addbuttonwrap'>
+        <a onClick={handleAddResponsibility}>
+          +
+        </a>
+      </div>
+      {keyResponsibilities.length > 1 && (
+        <div className='removebuttonwrap' style={{ marginTop: '10px' }}>
+          <a onClick={() => setKeyResponsibilities(prev => prev.slice(0, -1))}>
+            -
+          </a>
+        </div>
+      )}
+    </div>
+    </div>
+  </div>
+)}
                     {criteriaPage === 3 && (
                       <div className='page3'>
                         <div className="rowcomponent">
