@@ -42,6 +42,7 @@ function SetCriteria() {
   const [showAddJob, setShowAddJob] = useState(false); 
   const [criteriaPage, setCriteriaPage] = useState(1);
   const navigate = useNavigate();
+  const [keyResponsibilities, setKeyResponsibilities] = useState(['']);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('userName');
@@ -61,7 +62,6 @@ function SetCriteria() {
   const MIN_PAGE = 1;
   const MAX_PAGE = 4;
 
-    // Looping navigation: always cycles between 1 and 4
     const handlePrevPage = () => {
       setCriteriaPage(prev => (prev - 1 < MIN_PAGE ? MAX_PAGE : prev - 1));
     };
@@ -70,10 +70,21 @@ function SetCriteria() {
       setCriteriaPage(prev => (prev + 1 > MAX_PAGE ? MIN_PAGE : prev + 1));
     };
 
-    // When closing, reset to page 1
-    const handleCloseAddJob = () => {
+  /*  const handleCloseAddJob = () => {
       setShowAddJob(false);
       setCriteriaPage(1);
+    };*/
+
+    const handleAddResponsibility = () => {
+      setKeyResponsibilities(prev => ['', ...prev]);
+    };
+
+    const handleResponsibilityChange = (idx, value) => {
+    setKeyResponsibilities(prev => {
+      const updated = [...prev];
+      updated[idx] = value;
+      return updated;
+    });
     };
 
   // Custom styles for react-select to match .rowcomponent and input styles
@@ -122,7 +133,7 @@ function SetCriteria() {
   }),
   singleValue: (provided) => ({
     ...provided,
-    fontSize: '30px',
+    fontSize: '16px',
   }),
   indicatorSeparator: () => ({
     display: 'none',
@@ -213,20 +224,26 @@ function SetCriteria() {
                       </div>
                     )}
                     {criteriaPage === 2 && (
-                        <div className='page2'>
-                          <h1>Key Responsibilities</h1>
-                          <div className="rowcomponent">
-                            <textarea />
-                          </div>
-                          <div className="rowcomponent">
-                            <label>Page 2 Field 2</label>
-                            <input type="text" placeholder="Field 2" />
-                          </div>
-                          <div className="rowcomponent">
-                            <label>Page 2 Field 2</label>
-                            <input type="text" placeholder="Field 2" />
+                      <div className='page2'>
+                        <div className='page2header'><h1 style={{ color: 'white' }}>Key Responsibilities</h1></div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          {keyResponsibilities.map((resp, idx) => (
+                            <div className='keyresponsibilities' key={idx} style={{ display: 'flex', alignItems: 'center', backgroundColor: 'white', border: '2px solid black', borderRadius: '5px', padding: '10px' }}>
+                              <textarea
+                                value={resp}
+                                onChange={e => handleResponsibilityChange(idx, e.target.value)}
+                                placeholder={`Responsibility ${idx + 1}`}
+                                style={{ width: '100%', border: 'none', resize: 'none', outline: 'none' }}
+                              />
+                            </div>
+                          ))}
+                          <div className='addbuttonwrap'>
+                            <a onClick={handleAddResponsibility}>
+                              +
+                            </a>
                           </div>
                         </div>
+                      </div>
                     )}
                     {criteriaPage === 3 && (
                       <div className='page3'>
