@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Placeholder from '../components/images/pfp_placeholder.png';
 import Select from 'react-select'
 
@@ -43,6 +43,24 @@ function SetCriteria() {
   const [criteriaPage, setCriteriaPage] = useState(1);
   const navigate = useNavigate();
   const [keyResponsibilities, setKeyResponsibilities] = useState(['']);
+  const [qualifications, setQualifications] = useState(['']);
+
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (!showAddJob) return;
+      if (e.key === 'ArrowLeft') {
+        handlePrevPage();
+      } else if (e.key === 'ArrowRight') {
+        handleNextPage();
+      }
+    },
+    [showAddJob]
+  );
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('userName');
@@ -78,6 +96,9 @@ function SetCriteria() {
     const handleAddResponsibility = () => {
       setKeyResponsibilities(prev => ['', ...prev]);
     };
+    const handleAddQualifications = () => {
+      setQualifications(prev => ['', ...prev]);
+    };
 
     const handleResponsibilityChange = (idx, value) => {
     setKeyResponsibilities(prev => {
@@ -89,55 +110,55 @@ function SetCriteria() {
 
   // Custom styles for react-select to match .rowcomponent and input styles
   const customSelectStyles = {
-  control: (provided) => ({
-    ...provided,
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',          // Ensures full width in rowcomponent
-    minWidth: '0',          // Prevents overflow
-    maxWidth: '400px',      // Set a max width for consistency
-    borderRadius: 0,
-    minHeight: '20px',
-    fontSize: '16px',
-    padding: '0',
-
-    boxShadow: 'none',
-    borderColor: '#ccc',
-  }),
-  valueContainer: (provided) => ({
-    ...provided,
-    padding: '0 8px',
-  }),
-  input: (provided) => ({
-    ...provided,
-    margin: 0,
-    padding: 0,
-    fontSize: '16px',
-  }),
-  option: (provided, state) => ({
-  ...provided,
-  backgroundColor: state.isFocused || state.isSelected ? '#A2E494' : undefined,
-  color: state.isFocused || state.isSelected ? 'black' : '#222',
-  borderRadius: 0,
-  fontSize: '16px',
-  border:"1px solid black",
-  textAlign:"center"
-  }),
-  menu: (provided) => ({
-    ...provided,
-    borderRadius: 0,
-    marginTop: 0,
-    zIndex: 10,
-    width: '216px', 
-  }),
-  singleValue: (provided) => ({
-    ...provided,
-    fontSize: '16px',
-  }),
-  indicatorSeparator: () => ({
-    display: 'none',
-  }),
+     control: (provided) => ({
+       ...provided,
+       display: 'flex',
+       flexDirection: 'row',
+       alignItems: 'center',
+       width: '100%',          
+       minWidth: '0',          // Prevents overflow
+       maxWidth: '400px',     
+       borderRadius: 0,
+       minHeight: '20px',
+       fontSize: '16px',
+       padding: '0',
+       border: '2px solid black',
+       boxShadow: 'none',
+       borderColor: '#ccc',
+     }),
+     valueContainer: (provided) => ({
+       ...provided,
+       padding: '0 8px',
+     }),
+     input: (provided) => ({
+       ...provided,
+       margin: 0,
+       padding: 0,
+       fontSize: '16px',
+     }),
+     option: (provided, state) => ({
+     ...provided,
+     backgroundColor: state.isFocused || state.isSelected ? '#A2E494' : undefined,
+     color: state.isFocused || state.isSelected ? 'black' : '#222',
+     borderRadius: 0,
+     fontSize: '16px',
+     border:"1px solid black",
+     textAlign:"center"
+     }),
+     menu: (provided) => ({
+       ...provided,
+       borderRadius: 0,
+       marginTop: 0,
+       zIndex: 10,
+       width: '216px', 
+     }),
+     singleValue: (provided) => ({
+       ...provided,
+       fontSize: '16px',
+     }),
+     indicatorSeparator: () => ({
+       display: 'none',
+     }),
 };
 
   return (
@@ -223,46 +244,69 @@ function SetCriteria() {
                           <textarea />
                       </div>
                     )}
-{criteriaPage === 2 && (
-  <div className='page2'>
-    <div className='page2header'>
-      <h1 style={{ color: 'white' }}>Key Responsibilities</h1>
-    </div>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      {keyResponsibilities.map((resp, idx) => (
-        <div className='keyresponsibilities' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
-          <input
-            value={resp}
-            onChange={e => handleResponsibilityChange(idx, e.target.value)}
-          />
-        </div>
-      ))}
-    <div className='addremovewrap'>
-      <div className='addbuttonwrap'>
-        <a onClick={handleAddResponsibility}>
-          +
-        </a>
-      </div>
-      {keyResponsibilities.length > 1 && (
-        <div className='removebuttonwrap' style={{ marginTop: '10px' }}>
-          <a onClick={() => setKeyResponsibilities(prev => prev.slice(0, -1))}>
-            -
-          </a>
-        </div>
-      )}
-    </div>
-    </div>
-  </div>
-)}
+                    {criteriaPage === 2 && (
+                      <div className='page2'>
+                        <div className='page2header'>
+                          <h1 style={{ color: 'white' }}>Key Responsibilities</h1>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          {keyResponsibilities.map((resp, idx) => (
+                            <div className='keyresponsibilities' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+                              <input
+                                value={resp}
+                                onChange={e => handleResponsibilityChange(idx, e.target.value)}
+                              />
+                            </div>
+                          ))}
+                        <div className='addremovewrap'>
+                          <div className='addbuttonwrap'>
+                            <a onClick={handleAddResponsibility}>
+                              +
+                            </a>
+                          </div>
+                          {keyResponsibilities.length > 1 && (
+                            <div className='removebuttonwrap' style={{ marginTop: '10px' }}>
+                              <a onClick={() => setKeyResponsibilities(prev => prev.slice(0, -1))}>
+                                -
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                        </div>
+                      </div>
+                    )}
                     {criteriaPage === 3 && (
                       <div className='page3'>
-                        <div className="rowcomponent">
-                          <label>Page 3 Field 1</label>
-                          <input type="text" placeholder="Field 1" />
+                        <div>
+                          <h1>Qualifications</h1>
                         </div>
-                        <div className="rowcomponent">
-                          <label>Page 3 Field 2</label>
-                          <input type="text" placeholder="Field 2" />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          {qualifications.map((qual, idx) => (
+                            <div className='keyresponsibilities' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+                              <input
+                                value={qual}
+                                onChange={e => setQualifications(prev => {
+                                  const updated = [...prev];
+                                  updated[idx] = e.target.value;
+                                  return updated;
+                                })}
+                              />
+                            </div>
+                          ))}
+                          <div className='addremovewrap'>
+                            <div className='addbuttonwrap'>
+                              <a onClick={() => setQualifications(prev => ['', ...prev])}>
+                                +
+                              </a>
+                            </div>
+                            {qualifications.length > 1 && (
+                              <div className='removebuttonwrap'>
+                                <a onClick={() => setQualifications(prev => prev.slice(0, -1))}>
+                                  -
+                                </a>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     )}

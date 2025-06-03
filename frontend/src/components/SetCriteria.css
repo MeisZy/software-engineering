@@ -169,13 +169,7 @@ textarea{
 	border-bottom: 15px solid transparent;
 }
 
-.page2{
-    background-color:#13714C; 
-    padding: '20px'; 
-    width:576px;
-    height:528px;
-}
-
+.page3 h1,
 .page2 h1 {
     position: sticky;
     left: 0;     /* match .criteriascreen padding-left */
@@ -256,4 +250,11 @@ textarea{
     gap: 10px;
     align-items: center;
     justify-content: flex-start;
+}
+
+.page2,
+.page3{
+    padding: '20px'; 
+    width:576px;
+    height:528px;
 }
