@@ -207,7 +207,24 @@
     align-items: center; /* Center vertically */
     padding: 0 -0px; /* Add some padding for aesthetics */
 }
-  
+.applicantdetailwrap {
+  padding: 24px;
+  background: white;
+  width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* space between each detail */
+  border-radius: 8px;
+  border: 1px solid #13714C;
+  margin-top: 12px;
+}
+
+.applicantdetailwrap span {
+  margin: 0;
+  font-size: 16px;
+  display: block;
+  color: #222;
+}
   .joboption a{
     color: white;
     text-decoration: none;
@@ -304,6 +321,7 @@
   line-height: 1.2;
   width: fit-content;
   overflow-wrap: break-word;
+  border-radius:16px;
 }
 
 .jobdetailsgrid {

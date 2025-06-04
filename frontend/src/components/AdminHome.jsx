@@ -11,8 +11,13 @@ function AdminHome() {
   const [openApplicantsIdx, setOpenApplicantsIdx] = useState(null);
   const [openApplicantDetailIdx, setOpenApplicantDetailIdx] = useState(null);
 
+  const [selectedWorkingSchedule, setSelectedWorkingSchedule] = useState([]);
+  const [selectedEmploymentType, setSelectedEmploymentType] = useState([]);
+  const [selectedWorkSetup, setSelectedWorkSetup] = useState([]);
+
   const handleLogout = () => navigate('/');
   const handleSetCriteria = () => navigate('/setcriteria');
+  const handleFAQs = () => navigate('/questions');
 
   function getAcronym(title) {
     return title
@@ -107,7 +112,6 @@ function AdminHome() {
 
   // Generate applicantId for each applicant in sampleApplicants
   const sampleApplicantsWithId = sampleApplicants.map(applicant => {
-    // Use applicant.dateApplied if available, otherwise fallback to birthdate for demo
     const dateApplied = applicant.dateApplied || applicant.birthdate || '20240604';
     return {
       ...applicant,
@@ -227,6 +231,44 @@ function AdminHome() {
     { label: 'Hybrid', id: 'hybrid' },
   ];
 
+  // Checkbox handlers
+  const handleCheckboxChange = (id, setState, state) => {
+    if (state.includes(id)) {
+      setState(state.filter(item => item !== id));
+    } else {
+      setState([...state, id]);
+    }
+  };
+
+  // Filtering logic for job cards (show all by default, filter if any filter is selected)
+  const anyFilterSelected =
+    selectedWorkingSchedule.length > 0 ||
+    selectedEmploymentType.length > 0 ||
+    selectedWorkSetup.length > 0;
+
+  // "OR" logic: show job if it matches ANY selected filter in ANY category
+// Replace your filteredJobOpenings logic with this improved version:
+const filteredJobOpenings = sampleJobOpenings.filter(job => {
+  if (!anyFilterSelected) return true; // Show all if no filters
+
+  // Normalize for easier matching
+  const ws = job.workSchedule.toLowerCase().replace(/[^a-z]/g, '');
+  const et = job.employmentType.toLowerCase().replace(/[^a-z]/g, '');
+  const wsup = job.workSetup.toLowerCase().replace(/[^a-z]/g, '');
+
+  // Check if any selected filter matches the job's tags
+  const wsMatch = selectedWorkingSchedule.some(id => ws.includes(id.replace(/[^a-z]/g, '')));
+  const etMatch = selectedEmploymentType.some(id => et.includes(id.replace(/[^a-z]/g, '')));
+  const wsupMatch = selectedWorkSetup.some(id => wsup.includes(id.replace(/[^a-z]/g, '')));
+
+  // If a filter group has selections, require a match in that group
+  if (selectedWorkingSchedule.length && !wsMatch) return false;
+  if (selectedEmploymentType.length && !etMatch) return false;
+  if (selectedWorkSetup.length && !wsupMatch) return false;
+
+  return true;
+});
+
   return (
     <>
       <nav>
@@ -238,7 +280,7 @@ function AdminHome() {
         </div>
         <div>
           <a>Interviews</a>
-          <a>FAQs</a>
+          <a onClick={handleFAQs}>FAQs</a>
           <a>Messages</a>
           <a onClick={handleSetCriteria}>Manage Jobs</a>
           <a onClick={handleLogout}>Logout</a>
@@ -256,7 +298,12 @@ function AdminHome() {
               <h4 style={{fontSize:"14px",fontWeight:"600"}}>Working Schedule</h4>
             {workingSchedule.map(option => (
               <label className="custom-checkbox" key={option.id}>
-                <input type="checkbox" id={option.id} />
+                <input
+                  type="checkbox"
+                  id={option.id}
+                  checked={selectedWorkingSchedule.includes(option.id)}
+                  onChange={() => handleCheckboxChange(option.id, setSelectedWorkingSchedule, selectedWorkingSchedule)}
+                />
                 <span className="checkmark"></span>
                 <p>{option.label}</p>
               </label>
@@ -266,7 +313,12 @@ function AdminHome() {
             <h4 style={{fontSize:"14px",fontWeight:"600"}}>Employment Type</h4>
             {employmentType.map(option => (
               <label className="custom-checkbox" key={option.id}>
-                <input type="checkbox" id={option.id} />
+                <input
+                  type="checkbox"
+                  id={option.id}
+                  checked={selectedEmploymentType.includes(option.id)}
+                  onChange={() => handleCheckboxChange(option.id, setSelectedEmploymentType, selectedEmploymentType)}
+                />
                 <span className="checkmark"></span>
                 <p>{option.label}</p>
               </label>
@@ -276,7 +328,12 @@ function AdminHome() {
             <h4 style={{fontSize:"14px",fontWeight:"600"}}>Work Setup</h4>
             {workSetup.map(option => (
               <label className="custom-checkbox" key={option.id}>
-                <input type="checkbox" id={option.id} />
+                <input
+                  type="checkbox"
+                  id={option.id}
+                  checked={selectedWorkSetup.includes(option.id)}
+                  onChange={() => handleCheckboxChange(option.id, setSelectedWorkSetup, selectedWorkSetup)}
+                />
                 <span className="checkmark"></span>
                 <p>{option.label}</p>
               </label>
@@ -285,38 +342,30 @@ function AdminHome() {
         </div>
       <div className='adminrightcomp'>
         <div className='jobscontainer'>
-          {sampleJobOpenings.map((job, idx) => (
-            <div className='jobscardwrapper' key={idx}>
-              <div className="jobcard">
-                <h2>{job.title}</h2>
-                <div className='tags'>
-                  <a>{job.workSchedule}</a>
-                  <a>{job.employmentType}</a>
-                  <a>{job.workSetup}</a>
-                </div>
-                <div className='joboption'>
-                  <a
-                    href="#"
-                    onClick={e => {
-                      e.preventDefault();
-                      setOpenApplicantsIdx(idx);
-                    }}
-                  >
-                    View Applicants
-                  </a>
-                  <a
-                    href="#"
-                    onClick={e => {
-                      e.preventDefault();
-                      setOpenDetailIdx(idx);
-                    }}
-                  >
-                    Details
-                  </a>
+          {filteredJobOpenings.map((job, idx) => {
+            // Find the index in the original sampleJobOpenings for modal logic
+            const originalIdx = sampleJobOpenings.findIndex(j => j.title === job.title);
+            return (
+              <div className='jobscardwrapper' key={job.title}>
+                <div className="jobcard">
+                  <h2>{job.title}</h2>
+                  <div className='tags'>
+                    <a>{job.workSchedule}</a>
+                    <a>{job.employmentType}</a>
+                    <a>{job.workSetup}</a>
+                  </div>
+                  <div className='joboption'>
+                    <a  href="#"  onClick={e => { e.preventDefault(); setOpenApplicantsIdx(originalIdx);}}>
+                      View Applicants
+                    </a>
+                    <a href="#" onClick={e => {   e.preventDefault();   setOpenDetailIdx(originalIdx); }}>
+                      Details
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         {openApplicantsIdx !== null && (
           <div className="applicantslistcontainer" onClick={() => setOpenApplicantsIdx(null)}>
@@ -357,25 +406,18 @@ function AdminHome() {
                             View Details
                           </button>
                           {openApplicantDetailIdx === idx && (
-                            <div style={{
-                              marginTop: "8px",
-                              padding: "12px",
-                              border: "1px solid #13714C",
-                              borderRadius: "8px",
-                              background: "#F6FFF8",
-                              maxWidth: "400px"
-                            }}>
-                              <span>Applicant ID: {applicant.applicantId}</span><br />
-                              <span>Email: {applicant.email}</span><br />
-                              <span>Mobile: {applicant.mobileNumber}</span><br />
-                              <span>Position: {applicant.positionAppliedFor}</span><br />
-                              <span>Birthdate: {applicant.birthdate}</span><br />
-                              <span>Gender: {applicant.gender}</span><br />
-                              <span>City: {applicant.city}</span><br />
-                              <span>State/Province: {applicant.stateProvince}</span><br />
-                              <span>Status: {applicant.status}</span><br />
-                              <span>Stage: {applicant.applicationStage}</span><br />
-                              <span>Skills: {applicant.resume.join(', ')}</span><br />
+                            <div className='applicantdetailwrap'>
+                              <span>Applicant ID: {applicant.applicantId}</span>
+                              <span>Email: {applicant.email}</span>
+                              <span>Mobile: {applicant.mobileNumber}</span>
+                              <span>Position: {applicant.positionAppliedFor}</span>
+                              <span>Birthdate: {applicant.birthdate}</span>
+                              <span>Gender: {applicant.gender}</span>
+                              <span>City: {applicant.city}</span>
+                              <span>State/Province: {applicant.stateProvince}</span>
+                              <span>Status: {applicant.status}</span>
+                              <span>Stage: {applicant.applicationStage}</span>
+                              <span>Skills: {applicant.resume.join(', ')}</span>
                               <button
                                 style={{ marginTop: "8px", fontSize: "12px" }}
                                 onClick={() => setOpenApplicantDetailIdx(null)}
@@ -393,7 +435,7 @@ function AdminHome() {
             </div>
           </div>
         )}
-          {openDetailIdx !== null && (
+        {openDetailIdx !== null && (
           <div className="jobdetails" onClick={() => setOpenDetailIdx(null)}>
             <div className="jobdetailsdarkgreen">
               <div className="jobdetailslightgreen"></div>
