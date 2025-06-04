@@ -242,7 +242,19 @@
     cursor:pointer;
     border-radius:  25px;
   }
+.viewdetails{
+  margin-left:12px;
+  padding: 2px 8px;
+  font-size:12px;
+  z-index:1;
+  background-color: #A2E494;
+  border:2px solid black;
+  cursor:pointer;
+}
 
+.viewdetails a:active{
+  background-color: #13714C;  
+}
   .joboption a:hover{
     background-color: #A2E494;
     color: black;

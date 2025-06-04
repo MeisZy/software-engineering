@@ -18,6 +18,7 @@ function AdminHome() {
   const handleLogout = () => navigate('/');
   const handleSetCriteria = () => navigate('/setcriteria');
   const handleFAQs = () => navigate('/questions');
+  const handleMaintainance = () => navigate('/adminmaintainance');
 
   function getAcronym(title) {
     return title
@@ -279,7 +280,7 @@ const filteredJobOpenings = sampleJobOpenings.filter(job => {
           <a href="javascript:;">Admin</a>
         </div>
         <div>
-          <a>Interviews</a>
+          <a onClick={handleMaintainance}>Settings</a>
           <a onClick={handleFAQs}>FAQs</a>
           <a>Messages</a>
           <a onClick={handleSetCriteria}>Manage Jobs</a>
@@ -398,13 +399,9 @@ const filteredJobOpenings = sampleJobOpenings.filter(job => {
                       .map((applicant, idx) => (
                         <li key={applicant.applicantId} style={{ marginBottom: "16px", listStyle: "none" }}>
                           <b>{applicant.firstName} {applicant.middleName} {applicant.lastName}</b>
-                          <button
-                            style={{ marginLeft: "12px", padding: "2px 8px", fontSize: "12px",zIndex: 1 }}
-                            onClick={() => setOpenApplicantDetailIdx(idx)}
-                            type="button"
-                          >
+                          <a className="viewdetails" onClick={() => setOpenApplicantDetailIdx(idx)}>
                             View Details
-                          </button>
+                          </a>
                           {openApplicantDetailIdx === idx && (
                             <div className='applicantdetailwrap'>
                               <span>Applicant ID: {applicant.applicantId}</span>

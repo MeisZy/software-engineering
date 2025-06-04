@@ -8,3 +8,51 @@ nav{
     box-sizing: border-box;
     z-index: 2;
 }
+
+.maintianancecomponents{
+    width: 100%;
+    display: flex;
+    min-height: 100%;
+    box-sizing: border-box;
+}
+
+.maintainanceleftcomp{
+    display: flex;
+    position:fixed;
+    min-width: 320px; 
+    max-width: 640px;
+    flex: 0 0 200px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #A2E494;
+    padding-top: 50px;
+    height: 100%;      
+    border:1px solid black;
+}
+
+.maintainanceleftcomp ul{
+    margin-top:40px;
+    font-size:18px;
+    color:#13714C;
+    font-weight:600;
+}
+.maintainanceleftcomp ul:hover{
+    text-decoration:underline;
+    text-decoration-thickness: 4px;
+    text-decoration-color: #13714C;
+    text-underline-offset: 8px;
+}
+.maintainancerightcomp{
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+      margin-top: 50px;
+      margin-left: 320px; /* Add this line */
+}
