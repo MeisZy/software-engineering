@@ -9,311 +9,206 @@ function AdminHome() {
   const fileInputRef = useRef(null);
   const [openDetailIdx, setOpenDetailIdx] = useState(null);
   const [openApplicantsIdx, setOpenApplicantsIdx] = useState(null);
-  
+  const [openApplicantDetailIdx, setOpenApplicantDetailIdx] = useState(null);
+
   const handleLogout = () => navigate('/');
   const handleSetCriteria = () => navigate('/setcriteria');
 
-const sampleJobOpenings = [
-  {
-    title: 'Business Process Analyst',
-    department: 'Marketing',
-    workSchedule: 'Part-time',
-    workSetup: 'Hybrid',
-    employmentType: 'Rotational',
-    description: 'We are seeking a creative and talented Graphic Designer to join our dynamic team.',
-    keyResponsibilities: [
-      'Create visual concepts and designs for marketing materials',
-      'Collaborate with the marketing team',
-      'Maintain brand consistency across all designs'
-    ],
-    qualifications: [
-      'Bachelor’s degree in Graphic Design or related field',
-      'Proficiency in Adobe Creative Suite',
-      'Strong portfolio of design projects'
-    ],
-    whatWeOffer: [
-      'Flexible working hours',
-      'Opportunities for growth',
-      'Supportive team environment'
-    ]
-  },
-  {
-    title: 'Recruiter',
-    department: 'Human Resources',
-    workSchedule: 'Full-time',
-    workSetup: 'On-site',
-    employmentType: 'Full Day',
-    description: 'We are looking for a skilled Recruiter to help us find the best talent for our company.',
-    keyResponsibilities: [
-      'Source and attract candidates',
-      'Conduct interviews and assessments',
-      'Coordinate with department managers'
-    ],
-    qualifications: [
-      'Bachelor’s degree in Human Resources or related field',
-      'Experience in recruitment',
-      'Excellent communication skills'
-    ],
-    whatWeOffer: [
-      'Competitive salary',
-      'Health benefits',
-      'Professional development'
-    ]
-  },
-  {
-    title: 'Software Engineer',
-    department: 'IT',
-    workSchedule: 'Internship / On-the-Job Training',
-    workSetup: 'Work From Home',
-    employmentType: 'Internship',
-    description: 'Join our team as a Software Engineer and work on exciting projects.',
-    keyResponsibilities: [
-      'Assist in software development projects',
-      'Write clean and efficient code',
-      'Participate in code reviews'
-    ],
-    qualifications: [
-      'Currently pursuing a degree in Computer Science or related field',
-      'Familiarity with JavaScript and React',
-      'Eagerness to learn'
-    ],
-    whatWeOffer: [
-      'Mentorship from senior engineers',
-      'Remote work setup',
-      'Hands-on experience'
-    ]
-  },
-  {
-    title: 'Software Engineer5',
-    department: 'IT',
-    workSchedule: 'Internship / On-the-Job Training',
-    workSetup: 'Work From Home',
-    employmentType: 'Internship',
-    description: 'Join our team as a Software Engineer and work on exciting projects.',
-    keyResponsibilities: [
-      'Assist in software development projects',
-      'Write clean and efficient code',
-      'Participate in code reviews'
-    ],
-    qualifications: [
-      'Currently pursuing a degree in Computer Science or related field',
-      'Familiarity with JavaScript and React',
-      'Eagerness to learn'
-    ],
-    whatWeOffer: [
-      'Mentorship from senior engineers',
-      'Remote work setup',
-      'Hands-on experience'
-    ]
-  },
-  {
-    title: 'Software Engineer5',
-    department: 'IT',
-    workSchedule: 'Internship / On-the-Job Training',
-    workSetup: 'Work From Home',
-    employmentType: 'Internship',
-    description: 'Join our team as a Software Engineer and work on exciting projects.',
-    keyResponsibilities: [
-      'Assist in software development projects',
-      'Write clean and efficient code',
-      'Participate in code reviews'
-    ],
-    qualifications: [
-      'Currently pursuing a degree in Computer Science or related field',
-      'Familiarity with JavaScript and React',
-      'Eagerness to learn'
-    ],
-    whatWeOffer: [
-      'Mentorship from senior engineers',
-      'Remote work setup',
-      'Hands-on experience'
-    ]
-  },
-  {
-    title: 'Software Engineer5',
-    department: 'IT',
-    workSchedule: 'Internship / On-the-Job Training',
-    workSetup: 'Work From Home',
-    employmentType: 'Internship',
-    description: 'Join our team as a Software Engineer and work on exciting projects.',
-    keyResponsibilities: [
-      'Assist in software development projects',
-      'Write clean and efficient code',
-      'Participate in code reviews'
-    ],
-    qualifications: [
-      'Currently pursuing a degree in Computer Science or related field',
-      'Familiarity with JavaScript and React',
-      'Eagerness to learn'
-    ],
-    whatWeOffer: [
-      'Mentorship from senior engineers',
-      'Remote work setup',
-      'Hands-on experience'
-    ]
-  },
-  {
-    title: 'Software Engineer5',
-    department: 'IT',
-    workSchedule: 'Internship / On-the-Job Training',
-    workSetup: 'Work From Home',
-    employmentType: 'Internship',
-    description: 'Join our team as a Software Engineer and work on exciting projects.',
-    keyResponsibilities: [
-      'Assist in software development projects',
-      'Write clean and efficient code',
-      'Participate in code reviews'
-    ],
-    qualifications: [
-      'Currently pursuing a degree in Computer Science or related field',
-      'Familiarity with JavaScript and React',
-      'Eagerness to learn'
-    ],
-    whatWeOffer: [
-      'Mentorship from senior engineers',
-      'Remote work setup',
-      'Hands-on experience'
-    ]
-  },
-  {
-    title: 'Software Engineer5',
-    department: 'IT',
-    workSchedule: 'Internship / On-the-Job Training',
-    workSetup: 'Work From Home',
-    employmentType: 'Internship',
-    description: 'Join our team as a Software Engineer and work on exciting projects.',
-    keyResponsibilities: [
-      'Assist in software development projects',
-      'Write clean and efficient code',
-      'Participate in code reviews'
-    ],
-    qualifications: [
-      'Currently pursuing a degree in Computer Science or related field',
-      'Familiarity with JavaScript and React',
-      'Eagerness to learn'
-    ],
-    whatWeOffer: [
-      'Mentorship from senior engineers',
-      'Remote work setup',
-      'Hands-on experience'
-    ]
-  },
-  {
-    title: 'Software Engineer5',
-    department: 'IT',
-    workSchedule: 'Internship / On-the-Job Training',
-    workSetup: 'Work From Home',
-    employmentType: 'Internship',
-    description: 'Join our team as a Software Engineer and work on exciting projects.',
-    keyResponsibilities: [
-      'Assist in software development projects',
-      'Write clean and efficient code',
-      'Participate in code reviews'
-    ],
-    qualifications: [
-      'Currently pursuing a degree in Computer Science or related field',
-      'Familiarity with JavaScript and React',
-      'Eagerness to learn'
-    ],
-    whatWeOffer: [
-      'Mentorship from senior engineers',
-      'Remote work setup',
-      'Hands-on experience'
-    ]
-  },
-  {
-    title: 'Software Engineer5',
-    department: 'IT',
-    workSchedule: 'Internship / On-the-Job Training',
-    workSetup: 'Work From Home',
-    employmentType: 'Internship',
-    description: 'Join our team as a Software Engineer and work on exciting projects.',
-    keyResponsibilities: [
-      'Assist in software development projects',
-      'Write clean and efficient code',
-      'Participate in code reviews'
-    ],
-    qualifications: [
-      'Currently pursuing a degree in Computer Science or related field',
-      'Familiarity with JavaScript and React',
-      'Eagerness to learn'
-    ],
-    whatWeOffer: [
-      'Mentorship from senior engineers',
-      'Remote work setup',
-      'Hands-on experience'
-    ]
-  },
-  {
-    title: 'Software Engineer5',
-    department: 'IT',
-    workSchedule: 'Internship / On-the-Job Training',
-    workSetup: 'Work From Home',
-    employmentType: 'Internship',
-    description: 'Join our team as a Software Engineer and work on exciting projects.',
-    keyResponsibilities: [
-      'Assist in software development projects',
-      'Write clean and efficient code',
-      'Participate in code reviews'
-    ],
-    qualifications: [
-      'Currently pursuing a degree in Computer Science or related field',
-      'Familiarity with JavaScript and React',
-      'Eagerness to learn'
-    ],
-    whatWeOffer: [
-      'Mentorship from senior engineers',
-      'Remote work setup',
-      'Hands-on experience'
-    ]
-  },
-  {
-    title: 'Software Engineer9',
-    department: 'IT',
-    workSchedule: 'Internship / On-the-Job Training',
-    workSetup: 'Work From Home',
-    employmentType: 'Internship',
-    description: 'Join our team as a Software Engineer and work on exciting projects.',
-    keyResponsibilities: [
-      'Assist in software development projects',
-      'Write clean and efficient code',
-      'Participate in code reviews'
-    ],
-    qualifications: [
-      'Currently pursuing a degree in Computer Science or related field',
-      'Familiarity with JavaScript and React',
-      'Eagerness to learn'
-    ],
-    whatWeOffer: [
-      'Mentorship from senior engineers',
-      'Remote work setup',
-      'Hands-on experience'
-    ]
-  },
-  {
-    title: 'Software Engineer',
-    department: 'IT',
-    workSchedule: 'Internship / On-the-Job Training',
-    workSetup: 'Work From Home',
-    employmentType: 'Internship',
-    description: 'Join our team as a Software Engineer and work on exciting projects.',
-    keyResponsibilities: [
-      'Assist in software development projects',
-      'Write clean and efficient code',
-      'Participate in code reviews'
-    ],
-    qualifications: [
-      'Currently pursuing a degree in Computer Science or related field',
-      'Familiarity with JavaScript and React',
-      'Eagerness to learn'
-    ],
-    whatWeOffer: [
-      'Mentorship from senior engineers',
-      'Remote work setup',
-      'Hands-on experience'
-    ]
+  function getAcronym(title) {
+    return title
+      .split(' ')
+      .map(word => word[0].toUpperCase())
+      .join('');
   }
-];
+
+  function getInitials(firstName, middleName, lastName) {
+    return (
+      (firstName[0] || '').toUpperCase() +
+      (middleName ? middleName[0].toUpperCase() : '') +
+      (lastName[0] || '').toUpperCase()
+    );
+  }
+
+  function formatDate(dateStr) {
+    // Accepts 'YYYY-MM-DD' or 'YYYY/MM/DD' and returns 'YYYYMMDD'
+    return dateStr.replace(/[-/]/g, '');
+  }
+
+  const sampleApplicants = [
+    {
+      applicantId: 'A001',
+      firstName: 'John',
+      middleName: 'Michael',
+      lastName: 'Doe',
+      email: 'john.doe@email.com',
+      mobileNumber: '09171234567',
+      positionAppliedFor: 'Software Engineer',
+      birthdate: '1998-05-12',
+      gender: 'M',
+      city: 'Quezon City',
+      stateProvince: 'Metro Manila',
+      status: 'Ongoing',
+      applicationStage: '1st',
+      resume: ['JavaScript', 'React', 'Node.js'],
+      dateApplied: '2024-06-01'
+    },
+    {
+      applicantId: 'A002',
+      firstName: 'Jane',
+      middleName: 'Ann',
+      lastName: 'Smith',
+      email: 'jane.smith@email.com',
+      mobileNumber: '09181234567',
+      positionAppliedFor: 'Recruiter',
+      birthdate: '1997-11-23',
+      gender: 'F',
+      city: 'Makati',
+      stateProvince: 'Metro Manila',
+      status: 'Rejected',
+      applicationStage: 'None',
+      resume: ['Recruitment', 'HRIS', 'Interviewing'],
+      dateApplied: '2024-05-15'
+    },
+    {
+      applicantId: 'A003',
+      firstName: 'Carlos',
+      middleName: 'Reyes',
+      lastName: 'Santos',
+      email: 'carlos.santos@email.com',
+      mobileNumber: '09191234567',
+      positionAppliedFor: 'Business Process Analyst',
+      birthdate: '1995-03-30',
+      gender: 'M',
+      city: 'Cebu City',
+      stateProvince: 'Cebu',
+      status: 'Ongoing',
+      applicationStage: '2nd',
+      resume: ['Process Mapping', 'Excel', 'Data Analysis'],
+      dateApplied: '2025-04-23'
+    },
+    {
+      applicantId: 'A004',
+      firstName: 'Maria',
+      middleName: 'Luisa',
+      lastName: 'Garcia',
+      email: 'maria.garcia@email.com',
+      mobileNumber: '09201234567',
+      positionAppliedFor: 'Graphic Designer',
+      birthdate: '1999-07-15',
+      gender: 'F',
+      city: 'Davao City',
+      stateProvince: 'Davao del Sur',
+      status: 'Ongoing',
+      applicationStage: 'Final',
+      resume: ['Photoshop', 'Illustrator', 'Branding'],
+      dateApplied: '2024-06-02'
+    }
+  ];
+
+  // Generate applicantId for each applicant in sampleApplicants
+  const sampleApplicantsWithId = sampleApplicants.map(applicant => {
+    // Use applicant.dateApplied if available, otherwise fallback to birthdate for demo
+    const dateApplied = applicant.dateApplied || applicant.birthdate || '20240604';
+    return {
+      ...applicant,
+      applicantId: `${getAcronym(applicant.positionAppliedFor)}-${formatDate(dateApplied)}${getInitials(applicant.firstName, applicant.middleName, applicant.lastName)}`
+    };
+  });
+
+  const sampleJobOpenings = [
+    {
+      title: 'Business Process Analyst',
+      department: 'Marketing',
+      workSchedule: 'Part-time',
+      workSetup: 'Hybrid',
+      employmentType: 'Rotational',
+      description: 'We are seeking a creative and talented Graphic Designer to join our dynamic team.',
+      keyResponsibilities: [
+        'Create visual concepts and designs for marketing materials',
+        'Collaborate with the marketing team',
+        'Maintain brand consistency across all designs'
+      ],
+      qualifications: [
+        'Bachelor’s degree in Graphic Design or related field',
+        'Proficiency in Adobe Creative Suite',
+        'Strong portfolio of design projects'
+      ],
+      whatWeOffer: [
+        'Flexible working hours',
+        'Opportunities for growth',
+        'Supportive team environment'
+      ]
+    },
+    {
+      title: 'Recruiter',
+      department: 'Human Resources',
+      workSchedule: 'Full-time',
+      workSetup: 'On-site',
+      employmentType: 'Full Day',
+      description: 'We are looking for a skilled Recruiter to help us find the best talent for our company.',
+      keyResponsibilities: [
+        'Source and attract candidates',
+        'Conduct interviews and assessments',
+        'Coordinate with department managers'
+      ],
+      qualifications: [
+        'Bachelor’s degree in Human Resources or related field',
+        'Experience in recruitment',
+        'Excellent communication skills'
+      ],
+      whatWeOffer: [
+        'Competitive salary',
+        'Health benefits',
+        'Professional development'
+      ]
+    },
+    {
+      title: 'Software Engineer',
+      department: 'IT',
+      workSchedule: 'Internship / On-the-Job Training',
+      workSetup: 'Work From Home',
+      employmentType: 'Internship',
+      description: 'Join our team as a Software Engineer and work on exciting projects.',
+      keyResponsibilities: [
+        'Assist in software development projects',
+        'Write clean and efficient code',
+        'Participate in code reviews'
+      ],
+      qualifications: [
+        'Currently pursuing a degree in Computer Science or related field',
+        'Familiarity with JavaScript and React',
+        'Eagerness to learn'
+      ],
+      whatWeOffer: [
+        'Mentorship from senior engineers',
+        'Remote work setup',
+        'Hands-on experience'
+      ]
+    },
+    {
+      title: 'Graphic Designer',
+      department: 'Marketing',
+      workSchedule: 'Full-time',
+      workSetup: 'Hybrid',
+      employmentType: 'Full Day',
+      description: 'We are seeking a creative and talented Graphic Designer to join our dynamic team.',
+      keyResponsibilities: [
+        'Design marketing materials',
+        'Work with the creative team',
+        'Ensure brand consistency'
+      ],
+      qualifications: [
+        'Bachelor’s degree in Graphic Design or related field',
+        'Proficiency in Adobe Creative Suite',
+        'Strong portfolio of design projects'
+      ],
+      whatWeOffer: [
+        'Creative environment',
+        'Career growth',
+        'Flexible schedule'
+      ]
+    }
+  ];
 
   const workingSchedule = [
     { label: 'Full Time', id: 'fulltime' },
@@ -331,73 +226,6 @@ const sampleJobOpenings = [
     { label: 'On - Site', id: 'onsite' },
     { label: 'Hybrid', id: 'hybrid' },
   ];
-
-  const sampleApplicants = [
-  {
-    applicantId: 'A001',
-    firstName: 'John',
-    middleName: 'Michael',
-    lastName: 'Doe',
-    email: 'john.doe@email.com',
-    mobileNumber: '09171234567',
-    positionAppliedFor: 'Software Engineer',
-    birthdate: '1998-05-12',
-    gender: 'M',
-    city: 'Quezon City',
-    stateProvince: 'Metro Manila',
-    status: 'Ongoing',
-    applicationStage: '1st',
-    resume: ['JavaScript', 'React', 'Node.js']
-  },
-  {
-    applicantId: 'A002',
-    firstName: 'Jane',
-    middleName: 'Ann',
-    lastName: 'Smith',
-    email: 'jane.smith@email.com',
-    mobileNumber: '09181234567',
-    positionAppliedFor: 'Recruiter',
-    birthdate: '1997-11-23',
-    gender: 'F',
-    city: 'Makati',
-    stateProvince: 'Metro Manila',
-    status: 'Rejected',
-    applicationStage: 'None',
-    resume: ['Recruitment', 'HRIS', 'Interviewing']
-  },
-  {
-    applicantId: 'A003',
-    firstName: 'Carlos',
-    middleName: 'Reyes',
-    lastName: 'Santos',
-    email: 'carlos.santos@email.com',
-    mobileNumber: '09191234567',
-    positionAppliedFor: 'Business Process Analyst',
-    birthdate: '1995-03-30',
-    gender: 'M',
-    city: 'Cebu City',
-    stateProvince: 'Cebu',
-    status: 'Ongoing',
-    applicationStage: '2nd',
-    resume: ['Process Mapping', 'Excel', 'Data Analysis']
-  },
-  {
-    applicantId: 'A004',
-    firstName: 'Maria',
-    middleName: 'Luisa',
-    lastName: 'Garcia',
-    email: 'maria.garcia@email.com',
-    mobileNumber: '09201234567',
-    positionAppliedFor: 'Graphic Designer',
-    birthdate: '1999-07-15',
-    gender: 'F',
-    city: 'Davao City',
-    stateProvince: 'Davao del Sur',
-    status: 'Ongoing',
-    applicationStage: 'Final',
-    resume: ['Photoshop', 'Illustrator', 'Branding']
-  }
-];
 
   return (
     <>
@@ -490,9 +318,17 @@ const sampleJobOpenings = [
             </div>
           ))}
         </div>
-          {openApplicantsIdx !== null && (
-          <div className="applicantslistcontainer"  onClick={() => setOpenApplicantsIdx(null)}>
-            <div className="jobdetailsblock" onClick={e => e.stopPropagation()} style={{   backgroundImage: `url(${Details})`,   backgroundSize: 'cover',   backgroundPosition: 'center' }}>
+        {openApplicantsIdx !== null && (
+          <div className="applicantslistcontainer" onClick={() => setOpenApplicantsIdx(null)}>
+            <div
+              className="jobdetailsblock"
+              onClick={e => e.stopPropagation()}
+              style={{
+                backgroundImage: `url(${Details})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gridColumn: '1 / span 2' }}>
                 <h3 style={{ marginBottom: 0 }}>
                   {sampleJobOpenings[openApplicantsIdx].title}
@@ -505,27 +341,54 @@ const sampleJobOpenings = [
                   ×
                 </button>
               </div>
-                <div className="applicantsgrid">
-                  <div className='applicantinstance'>                  
-                    <ul>
-                      {sampleApplicants.map(applicant => (
-                        <li key={applicant.applicantId} style={{marginBottom: "16px"}}>
-                          <b>{applicant.firstName} {applicant.middleName} {applicant.lastName}</b><br />
-                          <span>ID: {applicant.applicantId}</span><br />
-                          <span>Email: {applicant.email}</span><br />
-                          <span>Mobile: {applicant.mobileNumber}</span><br />
-                          <span>Position: {applicant.positionAppliedFor}</span><br />
-                          <span>Birthdate: {applicant.birthdate}</span><br />
-                          <span>Gender: {applicant.gender}</span><br />
-                          <span>City: {applicant.city}</span><br />
-                          <span>State/Province: {applicant.stateProvince}</span><br />
-                          <span>Status  : {applicant.status}</span><br />
-                          <span>Stage: {applicant.applicationStage}</span><br />
-                          <span>Skills: {applicant.resume.join(', ')}</span>
+              <div className="applicantsgrid">
+                <div className='applicantinstance'>
+                  <ul>
+                    {sampleApplicantsWithId
+                      .filter(applicant => applicant.positionAppliedFor === sampleJobOpenings[openApplicantsIdx].title)
+                      .map((applicant, idx) => (
+                        <li key={applicant.applicantId} style={{ marginBottom: "16px", listStyle: "none" }}>
+                          <b>{applicant.firstName} {applicant.middleName} {applicant.lastName}</b>
+                          <button
+                            style={{ marginLeft: "12px", padding: "2px 8px", fontSize: "12px",zIndex: 1 }}
+                            onClick={() => setOpenApplicantDetailIdx(idx)}
+                            type="button"
+                          >
+                            View Details
+                          </button>
+                          {openApplicantDetailIdx === idx && (
+                            <div style={{
+                              marginTop: "8px",
+                              padding: "12px",
+                              border: "1px solid #13714C",
+                              borderRadius: "8px",
+                              background: "#F6FFF8",
+                              maxWidth: "400px"
+                            }}>
+                              <span>Applicant ID: {applicant.applicantId}</span><br />
+                              <span>Email: {applicant.email}</span><br />
+                              <span>Mobile: {applicant.mobileNumber}</span><br />
+                              <span>Position: {applicant.positionAppliedFor}</span><br />
+                              <span>Birthdate: {applicant.birthdate}</span><br />
+                              <span>Gender: {applicant.gender}</span><br />
+                              <span>City: {applicant.city}</span><br />
+                              <span>State/Province: {applicant.stateProvince}</span><br />
+                              <span>Status: {applicant.status}</span><br />
+                              <span>Stage: {applicant.applicationStage}</span><br />
+                              <span>Skills: {applicant.resume.join(', ')}</span><br />
+                              <button
+                                style={{ marginTop: "8px", fontSize: "12px" }}
+                                onClick={() => setOpenApplicantDetailIdx(null)}
+                                type="button"
+                              >
+                                Close
+                              </button>
+                            </div>
+                          )}
                         </li>
                       ))}
-                    </ul>
-                  </div>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
@@ -597,36 +460,3 @@ const sampleJobOpenings = [
 }
 
 export default AdminHome;
-
-/*
-              <p><b>Department:</b> {job.department}</p>
-              <p><b>Work Schedule:</b> {job.workSchedule}</p>
-              <p><b>Work Setup:</b> {job.workSetup}</p>
-              <p><b>Employment Type:</b> {job.employmentType}</p>
-              <p><b>Description:</b> {job.description}</p>
-              <div>
-                <b>Key Responsibilities:</b>
-                <ul>
-                  {job.keyResponsibilities.map((item, i) => (
-                    <li key={i}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <b>Qualifications:</b>
-                <ul>
-                  {job.qualifications.map((item, i) => (
-                    <li key={i}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <b>What we Offer:</b>
-                <ul>
-                  {job.whatWeOffer.map((item, i) => (
-                    <li key={i}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-
-*/
