@@ -351,7 +351,7 @@ function SetCriteria() {
                     {criteriaPage === 5 && (
                       <div className='page5'>
                         <div className="criteriajobcard">
-                          <h2 style={{ margin: "0 0 16px 0" }}>
+                          <h2 style={{ margin: "20px 20px 16px 20px" }}>
                             {document.querySelector('input[placeholder="Job Name"]')?.value || "Job Title"}
                           </h2>
                           <div className='tags' style={{ marginBottom: "16px" }}>

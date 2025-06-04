@@ -130,6 +130,7 @@ textarea{
 }
 
 .criterianavigate{
+    z-index:2;
     position:sticky;
 }
 .criterianavigate ul {
@@ -258,25 +259,45 @@ textarea{
 .page1,
 .page2,
 .page3,
-.page4,
-.page5{
+.page4
+{
     padding: '20px'; 
-    width:600px;
+    width:800px;
     height:528px;
-    border:1px solid black;
     margin:0;
     left:0;
 }
 
+.page5{
+    padding: 20px; 
+    width: 400px;
+    height: 528px;
+
+    margin: 0;
+    left: 0;
+}
+
 
 .criteriajobcard {
-    width: 576px;
-    height: 582px;
+    width: 672px;
+    height: 632px;
     border: 1px solid black;
-    margin: 25px;
+    margin: 0 0 25px 0;         /* Remove left margin, keep bottom margin for spacing */
     font-size: 16px;
     background-color: #A2E494;
     overflow: hidden;
     border-radius: 25px; 
-    z-index: 1; 
-  }
+    z-index: 2; 
+    position: absolute;         /* Move to absolute for upper left positioning */
+    top: 0;
+    left: 0;
+}
+
+.criteriajobcard h2{
+    background-color: #13714C;
+    width:250px;
+    color:white;
+    padding:20px;
+    top:0;
+    left:0;
+}

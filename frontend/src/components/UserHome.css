@@ -251,6 +251,27 @@ nav a:hover {
     align-items: center;
     padding: 0;
 }
+.userjobdetails{
+  position:fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: "rgba(0,0,0,0.4)";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.userjobdetailsblock{
+  background: #13714C;
+  color: white;
+  border-radius: 12px;
+  padding: 32px;
+  width: 350px;
+  height: 600px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+
+}
 .joboption a {
     color: white;
     text-decoration: none;

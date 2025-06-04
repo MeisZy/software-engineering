@@ -280,35 +280,8 @@ function UserHome() {
                   </div>
                 </div>
                 {openDetailIdx === idx && (
-                  <div
-                    className="userjobdetails"
-                    style={{
-                      position: "fixed",
-                      top: 0,
-                      left: 0,
-                      width: "100vw",
-                      height: "100vh",
-                      background: "rgba(0,0,0,0.4)",
-                      zIndex: 1000,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center"
-                    }}
-                    onClick={() => setOpenDetailIdx(null)}
-                  >
-                    <div
-                      className="userjobdetailsblock"
-                      onClick={e => e.stopPropagation()}
-                      style={{
-                        background: "#13714C",
-                        color: "white",
-                        borderRadius: "12px",
-                        padding: "32px",
-                        minWidth: "350px",
-                        maxWidth: "600px",
-                        boxShadow: "0 8px 32px rgba(0,0,0,0.18)"
-                      }}
-                    >
+                  <div className="userjobdetails" onClick={() => setOpenDetailIdx(null)}>
+                    <div className="userjobdetailsblock" onClick={e => e.stopPropagation()}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <h3 style={{ marginBottom: 0 }}>
                           {job.title}
