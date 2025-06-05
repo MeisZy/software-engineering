@@ -20,7 +20,7 @@ function AdminMaintainance() {
               <ul className='maintainanceinstance'>
                 <label>Applicant</label>
                 <a>download</a>
-              </ul>
+              </ul> 
           </div>  
         </div>
       </div>

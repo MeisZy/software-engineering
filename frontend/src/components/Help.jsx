@@ -3,8 +3,6 @@ import Navbar from "./Navbar"
 import Sidebar from "./Sidebar"
 import "./Sidebar.css"
 
-
-
 function Help({sections}) {
 
     const [selectedSection, setSelectedSection] = useState('section1');

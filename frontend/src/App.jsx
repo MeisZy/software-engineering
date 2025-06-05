@@ -10,6 +10,7 @@
   import Authenticator from './components/Authenticator.jsx';
   import SetCriteria from './components/SetCriteria.jsx';
   import AdminMaintainance from './components/AdminMaintainance.jsx';
+  import Help from './components/Help.jsx';
   
   import './App.css';
 
@@ -26,6 +27,7 @@
             <Route path="/authenticator" element={<Authenticator />} />
             <Route path="/setcriteria" element={<SetCriteria />} />
             <Route path="/adminmaintainance" element={<AdminMaintainance />} />
+            <Route path="/help" element={<Help />} />
 
           </Routes>
       </>
