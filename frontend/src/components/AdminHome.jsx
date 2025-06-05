@@ -284,8 +284,7 @@ const filteredJobOpenings = sampleJobOpenings.filter(job => {
           <a onClick={handleFAQs}>FAQs</a>
           <a>Messages</a>
           <a onClick={handleSetCriteria}>Manage Jobs</a>
-          <a onClick={handleLogout}>Logout</a>
-          <a style={{color:"grey"}}>(FOR DEBUGGING ONLY)Import Applicants</a>
+          <a onClick={handleLogout}>Logout</a>  
         </div>
       </nav>
       <div className='components'>

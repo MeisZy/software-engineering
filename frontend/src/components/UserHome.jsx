@@ -389,11 +389,11 @@ function UserHome() {
                     </div>
                     <label htmlFor="reporttext">Describe your issue:</label>
                     <textarea id="reporttext" placeholder="Please describe the problem you encountered..." />
-                    <a href="#" onClick={closeReport} className="submitarrow" style={{ width: "120px", position: "absolute", right: 0, bottom: 0, margin: "32px 0 0 0", alignSelf: "flex-end", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
-                      <img src={SubmitArrow} alt="Submit" style={{ width: "80px", height: "40px" }} />
-                    </a>
                   </div>
                 </div>
+                    <a href="#" onClick={closeReport} className="submitarrow" >
+                      <img src={SubmitArrow} alt="Submit" style={{ width: "80px", height: "40px" }} />
+                    </a>
               </div>
             </div>
           </div>

@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
+
+
 body {
     font-family: "Montserrat", sans-serif;
 }
@@ -161,12 +163,19 @@ nav a:hover {
 }
 
 .reportsdetails{
-
-
+  margin-left:60px;
+  margin-top:60px;
+  width:864px;
+  border:2px solid black;
 }
 .reportsdetailsblock {
-
-  
+  background: white;
+  background-image: none;
+  background-size: cover;
+  background-position: center;
+  padding: 32px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  position: relative;
 }
 
 .reportsdetailsblock p{
@@ -180,11 +189,9 @@ nav a:hover {
 .reportsdetailsgrid {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 0 32px 32px 32px;
-  width: 100%;
-  background-color: #A2E494;
+  gap: 18px;
   position: relative;
+  width:100%;
 }
 
 .reportsdetailsgrid a{
@@ -310,3 +317,18 @@ nav a:hover {
     position: relative; 
     z-index: 1; 
   }
+
+  .submitarrow{
+    width: 120px;
+    position: "absolute"; 
+    right: 0; 
+    bottom: 0; 
+    margin: 32px 0 0 0; 
+    align-self: flex-end;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 8px;
+  }
+
+  
