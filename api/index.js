@@ -1,62 +1,94 @@
+require('dotenv').config(); 
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const Applicants = require('./models/Applicants');
 
 const app = express();
-const port = 5173;
+const port = process.env.PORT || 5000;
 
-app.use(cors());
+// Middleware
+app.use(cors({
+  origin: 'http://localhost:5173',
+  optionsSuccessStatus: 200 
+}));
 app.use(express.json());
 
+// MongoDB connection
 const mongoURI = process.env.CONNECTION_STRING;
+
+if (!mongoURI) {
+  console.error('MongoDB connection string is undefined. Please check your .env file.');
+  process.exit(1); // Exit if connection string is not defined
+}
 
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
   .then(() => console.log('Connected to MongoDB Atlas'))
-  .catch((error) => console.error('Error connecting to MongoDB Atlas:', error));
+  .catch((error) => {
+    console.error('Error connecting to MongoDB Atlas:', error.message);
+    process.exit(1); // Exit if unable to connect
+  });
 
-app.use(cors({
-  origin: 'http://localhost:5173', 
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
-}));
+// Registration endpoint
+app.post('/add', async (req, res) => {
+  const {
+    firstName,
+    middleName,
+    lastName,
+    birthdate,
+    gender,
+    streetAddress,
+    city,
+    stateProvince,
+    postalCode,
+    email,
+    mobileNumber,
+    password,
+    confirmPassword
+  } = req.body;
 
-app.use((req, res, next) => {
-  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin'); // Enforcing same-origin for window communication
-  res.setHeader('Cross-Origin-Resource-Policy', 'same-origin'); // Ensure resources are loaded from same origin
-  next();
-});
+  // Basic validation
+  if (
+    !firstName || !lastName || !birthdate || !gender || 
+    !streetAddress || !city || !stateProvince || 
+    !postalCode || !email || !mobileNumber || 
+    !password || !confirmPassword
+  ) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+  
+  if (password !== confirmPassword) {
+    return res.status(400).json({ message: 'Passwords do not match' });
+  }
 
-
-
-app.delete('/clear', async (req, res) => {
   try {
-    await Applicants.deleteMany({});
-    res.status(200).json({ message: 'All applicants deleted' });
+    const applicant = new Applicants({
+      firstName,
+      middleName,
+      lastName,
+      birthdate,
+      gender,
+      streetAddress,
+      city,
+      stateProvince,
+      postalCode,
+      email,
+      mobileNumber,
+      password // Note: In production, hash the password!
+    });
+
+    await applicant.save();
+    res.status(201).json(applicant);
   } catch (err) {
-    console.error('Error clearing applicants:', err);
-    res.status(500).json({ message: err.message });
+    console.error('Error saving applicant:', err);
+    res.status(500).json({ message: 'Error saving applicant', error: err.message });
   }
 });
 
-app.get('/checkName/:name', async (req, res) => {
-  const { name } = req.params;
-  try {
-    const existingApplicant = await Applicants.findOne({ 'instance.name': name });
-    if (existingApplicant) {
-      res.json({ exists: true });
-    } else {
-      res.json({ exists: false });
-    }
-  } catch (err) {
-    console.error('Error checking applicant name:', err);
-    res.status(500).json({ message: err.message });
-  }
-});
-
+// Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

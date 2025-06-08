@@ -415,7 +415,7 @@ const filteredJobOpenings = sampleJobOpenings.filter(job => {
                               <span>Stage: {applicant.applicationStage}</span>
                               <span>Skills: {applicant.resume.join(', ')}</span>
                               <button
-                                style={{ marginTop: "8px", fontSize: "12px" }}
+                                style={{ marginTop: "8px", fontSize: "12px", width:"100px" }}
                                 onClick={() => setOpenApplicantDetailIdx(null)}
                                 type="button"
                               >
