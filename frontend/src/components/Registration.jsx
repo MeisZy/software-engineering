@@ -15,6 +15,8 @@ function Registration() {
     postalCode: '',
     email: '',
     mobileNumber: '',
+    password: '',
+    confirmPassword: '',
   });
   const [message, setMessage] = useState('');
   const [debugInputs, setDebugInputs] = useState(null);
@@ -54,6 +56,8 @@ function Registration() {
         postalCode: formData.postalCode,
         email: formData.email,
         mobileNumber: formData.mobileNumber,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
       };
       await axios.post('http://localhost:5000/add', payload);
       setMessage('Registration successful!');
@@ -69,6 +73,8 @@ function Registration() {
         postalCode: '',
         email: '',
         mobileNumber: '',
+        password: '',
+        confirmPassword: '',
       });
     } catch (error) {
       setMessage(error.response?.data?.message || 'Registration failed');
@@ -117,6 +123,10 @@ function Registration() {
         <div className="formrow">
           <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" />
           <input type="text" name="mobileNumber" value={formData.mobileNumber} onChange={handleChange} placeholder="Phone Number" />
+        </div>
+        <div className="formrow">
+          <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Password" />
+          <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="Confirm Password" />
         </div>
         <button type="submit" className="btn">Register</button>
         {message && <p>{message}</p>}

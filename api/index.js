@@ -19,7 +19,7 @@ const mongoURI = process.env.CONNECTION_STRING;
 
 if (!mongoURI) {
   console.error('MongoDB connection string is undefined. Please check your .env file.');
-  process.exit(1); // Exit if connection string is not defined
+  process.exit(1);
 }
 
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
