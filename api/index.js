@@ -1,3 +1,4 @@
+require('dotenv').config(); 
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -21,49 +22,42 @@ if (!mongoURI) {
   process.exit(1); // Exit if connection string is not defined
 }
 
-mongoose.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB Atlas'))
-  .catch((error) => {
-    console.error('Error connecting to MongoDB Atlas:', error.message);
-    process.exit(1); // Exit if unable to connect
-  });
+  .catch((error) => console.error('Error connecting to MongoDB Atlas:', error));
+
+// Status endpoint
+app.get('/status', (req, res) => {
+  res.json({ status: 'ok' });
+});
 
 // Registration endpoint
 app.post('/add', async (req, res) => {
-  const {
-    firstName,
-    middleName,
-    lastName,
-    birthdate,
-    gender,
-    streetAddress,
-    city,
-    stateProvince,
-    postalCode,
-    email,
-    mobileNumber,
-    password,
-    confirmPassword
-  } = req.body;
-
-  // Basic validation
-  if (
-    !firstName || !lastName || !birthdate || !gender || 
-    !streetAddress || !city || !stateProvince || 
-    !postalCode || !email || !mobileNumber || 
-    !password || !confirmPassword
-  ) {
-    return res.status(400).json({ message: 'Missing required fields' });
-  }
-  
-  if (password !== confirmPassword) {
-    return res.status(400).json({ message: 'Passwords do not match' });
-  }
-
   try {
+    const {
+      firstName,
+      middleName,
+      lastName,
+      birthdate,
+      gender,
+      streetAddress,
+      city,
+      stateProvince,
+      postalCode,
+      email,
+      mobileNumber,
+      password,
+      confirmPassword
+    } = req.body;
+
+    // Basic validation
+    if (!firstName || !lastName || !birthdate || !gender || !streetAddress || !city || !stateProvince || !postalCode || !email || !mobileNumber || !password || !confirmPassword) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: 'Passwords do not match' });
+    }
+
     const applicant = new Applicants({
       firstName,
       middleName,
@@ -83,7 +77,7 @@ app.post('/add', async (req, res) => {
     res.status(201).json(applicant);
   } catch (err) {
     console.error('Error saving applicant:', err);
-    res.status(500).json({ message: 'Error saving applicant', error: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 

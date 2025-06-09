@@ -22,13 +22,16 @@ function Registration() {
 
   // Check MongoDB server status on mount
   useEffect(() => {
-    axios.get('http://localhost:5000/status')
-      .then(res => {
+    const checkStatus = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/status');
         setMongoStatus(res.data.status === 'ok' ? '🟢 Server is Online' : '🔴 MongoDB Disconnected');
-      })
-      .catch(() => {
+      } catch {
         setMongoStatus('🔴 MongoDB Disconnected');
-      });
+      }
+    };
+
+    checkStatus();
   }, []);
 
   const handleChange = (e) => {
@@ -101,7 +104,6 @@ function Registration() {
             <option value="F">Female</option>
             <option value="Other">Other</option>
           </select>
-          <div className="select-wrapper"></div>
         </div>
         <p>Address</p>
         <div className="formrow">
