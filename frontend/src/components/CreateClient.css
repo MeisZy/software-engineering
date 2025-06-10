@@ -1,0 +1,215 @@
+  .nav {
+    display: flex;
+    align-items: center; 
+    padding: 10px;
+    background-color: #13714C;
+    color: rgb(0, 0, 0);
+    width: 100%; 
+    box-sizing: border-box;
+    z-index: 2;
+  }
+.navlinks {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 30px; 
+}
+.navlinks input {
+  display: none;
+  border: 1px solid black;
+}
+.navlinks a {
+  padding: 10px;
+  color: #def2f1;
+  text-decoration: none;
+  cursor: pointer;
+ /* transition: opacity 0.25s, background-color 0.25s;*/
+}
+.navlinks a:hover {
+  opacity: 1;
+  background-color:#f8f7f5;
+  color: rgb(0, 0, 0);
+}
+
+  .sorter {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+  }
+
+  .sorter a{
+    color: #def2f1;
+  }
+
+  .sorter img {
+    width: 50px;
+    height: 50px;
+    padding: 5px;
+    padding-right: 10px;
+    border-radius: 50%;
+  }
+
+
+  .applicant {
+    border: 1px solid #f8f7f5;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    background-color: #f8f7f5;
+  }
+
+  .applicant-number {
+    font-weight: bold;
+  }
+
+  .position {
+    color: #333;
+  }
+
+  .skillset {
+    font-style: italic;
+  }
+
+  .dropdown {
+    position: relative;
+    display: inline-block;
+    width: auto;
+    z-index: 4;
+  }
+
+  .dropdown-menu {
+    display: block;
+    position: absolute;
+    background-color: rgb(174, 174, 174);
+    border: 1px solid #ccc;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 150%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .dropdown-item {
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: opacity 0.25s;
+  }
+
+  .dropdown-item:hover {
+    opacity: 0.5;
+    background-color:#f8f7f5;
+    color: black;
+  }
+
+  .appendform {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 3;
+    padding-top: 15vh;
+  }
+
+  .addapplicantform {
+    display: flex;
+    flex-direction: column;
+    background-color: #2B7A78;
+    color: white;
+    border: 1px solid #000000;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .formgroup {
+    margin: 10px;
+    color: black;
+  }
+
+  .formgroup label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  .formgroup input,
+  .formgroup select {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+
+    border-radius: 4px;
+  }
+
+  .add-applicant-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: 3aaFA9;
+  
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+
+  .add-applicant-button:hover {
+    background-color:#f8f7f5;
+    color: rgb(174, 174, 174);
+  }
+
+  .close-form-link {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    padding: 10px;
+    margin-left: 20px;
+    height: 5px;
+    width: 5px;
+  }
+
+  .close-form-link:hover {
+    background-color:#f8f7f5;
+    color: black;
+  }
+
+  .filter-form {
+    position: fixed;
+    top: 20vh; 
+
+    background-color: #63c27c;
+    border: 1px solid #000000;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 4; /* Ensure it's above other content */
+  }
+
+  .apply-filter {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    transition: background-color 0.25s;
+    padding: 10px;
+  }
+
+  .apply-filter:hover {
+    background-color:#f8f7f5;
+    text-decoration: none;
+    color: black;
+  }
+
+  /* Add vertical padding to each dropdown option */
+  .language-priorities-index {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .filter-button{
+    text-decoration: none;
+    color:black;
+    transition: background-color 0.25s 
+  }
+  .filter-button:hover{
+    text-decoration: none;
+    color:rgb(255, 255, 255);
+  }

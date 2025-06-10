@@ -1,0 +1,21 @@
+[/]   1. part of the main program -- randomizing applicants for demonstrating accuracy of the program
+[/]   2. Priority dropdown button that re-sorts the applicant's prioritization 
+        based on the new top indemand skillset/job occupation
+[/]   3. scoring system that compares the Applicant's aspiring position to their 
+        presented skillset
+[/]   4. Changing the data structure of applicant variables to hashmaps with key and integers as the values.
+[/]   5. Implement updates within the UI.
+
+suggested :
+
+[/] resume(.json) readers in place of the randomized contents. 
+[] notify in emails when applicant is rejected
+[] login system for admins
+[/] dedicated filtering feature.
+[] an undo feature (key bindings)
+
+suggestions:
+
+
+
+

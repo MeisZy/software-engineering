@@ -1,0 +1,26 @@
+{
+  "name": "software-engineering",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MeisZy/software-engineering.git"
+  },
+  "author": "MeisZy <zyrusnw@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "mongoose": "^8.15.1",
+    "vercel": "^34.3.1"
+  },
+  "description": "Research program in Partial Fulfillment of Requirements for Software Engineering 1 and 2 (soon).",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/MeisZy/software-engineering/issues"
+  },
+  "homepage": "https://github.com/MeisZy/software-engineering#readme"
+}

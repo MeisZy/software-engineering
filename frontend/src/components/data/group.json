@@ -1,0 +1,74 @@
+[
+    {
+        "name": "Gabriel Abelardo",
+        "position": "Cybersecurity Scrum Master",
+        "skillset": "Cybersecurity",
+        "languages": [
+          "PostgreSQL",
+          "Python",
+          "C"
+        ],
+        "score": 13,
+        "email": "qagaabelardo@tip.edu.ph"
+      },
+      {
+        "name": "Regiel Garrido",
+        "position": "Cybersecurity Scrum Master",
+        "skillset": "Database Management",
+        "languages": [
+          "MongoDB",
+          "JavaScript",
+          "C/C++"
+        ],
+        "score": 8,
+        "email":"qrzcgarrido@tip.edu.ph"
+      },
+      {
+        "name": "Christian Gelera",
+        "position": "Network Engineer",
+        "skillset": "Programming",
+        "languages": [
+          "JavaScript",
+          "C",
+          "Java"
+        ],
+        "score": 8,
+        "email": "qcpgelera@gmail.com"
+      },
+      {
+        "name": "Trixia Gregorio",
+        "position": "Database Administrator",
+        "skillset": "Cybersecurity",
+        "languages": [
+          "C/C++",
+          "PostgreSQL",
+          "JavaScript"
+        ],
+        "score": 7,
+        "email":"qtdagregorio@tip.edu.ph"
+      },
+      {
+        "name": "Charles Patrick",
+        "position": "Database Administrator",
+        "skillset": "Cybersecurity",
+        "languages": [
+          "C/C++",
+          "PostgreSQL",
+          "JavaScript"
+        ],
+        "score": 7,
+        "email": "qcpvasquez@tip.edu.ph"
+      },
+      {
+        "name": "Ashleigh Milana",
+        "position": "Cybersecurity Scrum Master",
+        "skillset": "Cybersecurity",
+        "languages": [
+          "PostgreSQL",
+          "C",
+          "JavaScript"
+        ],
+        "score": 9,
+        "email":"qanlmilana@tip.edu.ph"
+      }    
+]
