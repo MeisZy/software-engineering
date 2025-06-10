@@ -1,8 +1,9 @@
 import './HomePage.css';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
-import {jwtDecode} from 'jwt-decode'; 
+import { jwtDecode } from 'jwt-decode'; 
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function HomePage() {
   const [userName, setUserName] = useState('');
@@ -18,8 +19,6 @@ function HomePage() {
   const handleLoginSuccess = (credentialResponse) => {
     try {
       const decoded = jwtDecode(credentialResponse?.credential);
-      console.log('Decoded token:', decoded);
-
       const name = decoded.given_name || decoded.name.split(' ')[0];
       const profilePic = decoded.picture;
 
@@ -41,15 +40,16 @@ function HomePage() {
     }
   };
 
-  const handleManualLogin = () => {
-    console.log('Email:', email); // Debugging
-    console.log('Password:', password); // Debugging
-
-    if (email === 'admin' && password === '2116302') {
-      console.log('Redirecting to /adminhome'); // Debugging
-      navigate('/adminhome');
-    } else {
-      alert('Invalid credentials');
+  const handleManualLogin = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/login', { email, password });
+      if (response.status === 200) {
+        const { applicant } = response.data; // Get the applicant data if needed
+        localStorage.setItem('userName', applicant.firstName); // Store the user name
+        navigate('/userhome');
+      }
+    } catch (error) {
+      alert(error.response?.data?.message || 'Invalid credentials');
     }
   };
 
