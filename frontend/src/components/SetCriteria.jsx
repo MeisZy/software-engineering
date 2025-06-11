@@ -53,6 +53,31 @@ function SetCriteria() {
     description: '',
   });
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [jobs, setJobs] = useState([]);
+  const [jobsError, setJobsError] = useState('');
+
+  const fetchJobs = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/jobs');
+      setJobs(response.data);
+    } catch (err) {
+      console.error('Error fetching jobs:', err);
+      setJobsError('Failed to load jobs.');
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+    const storedUser = localStorage.getItem('userName');
+    const storedPic = localStorage.getItem('profilePic');
+    if (storedUser) {
+      setUserName(storedUser);
+      setProfilePic(storedPic);
+    } else {
+      navigate('/');
+    }
+  }, [navigate]);
 
   const handleKeyDown = useCallback(
     (e) => {
@@ -70,17 +95,6 @@ function SetCriteria() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('userName');
-    const storedPic = localStorage.getItem('profilePic');
-    if (storedUser) {
-      setUserName(storedUser);
-      setProfilePic(storedPic);
-    } else {
-      navigate('/');
-    }
-  }, [navigate]);
 
   const handleReturn = () => {
     navigate('/adminhome');
@@ -158,9 +172,14 @@ function SetCriteria() {
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    setError('');
+
     const validationError = validateJobData();
     if (validationError) {
       setError(validationError);
+      setIsSubmitting(false);
       return;
     }
 
@@ -192,9 +211,24 @@ function SetCriteria() {
       setQualifications(['']);
       setOffers(['']);
       setError('');
+      fetchJobs(); // Refresh job list
     } catch (error) {
       console.error('Error creating job:', error);
-      setError(error.response?.data?.message || 'Failed to create job');
+      setError(error.response?.data?.message || 'Failed to create job. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleRemoveJob = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this job?')) return;
+    try {
+      await axios.delete(`http://localhost:5000/jobs/${id}`);
+      alert('Job deleted successfully!');
+      fetchJobs(); // Refresh job list
+    } catch (error) {
+      console.error('Error deleting job:', error);
+      setJobsError(error.response?.data?.message || 'Failed to delete job.');
     }
   };
 
@@ -261,14 +295,14 @@ function SetCriteria() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <img src={profilePic || Placeholder} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
-          <a>Set Criteria</a>
+          <a>Manage Jobs</a>
         </div>
         <a onClick={handleReturn} style={{ cursor: 'pointer' }}>Back</a>
       </nav>
       <div>
         <div className="criteria">
           <a onClick={() => setShowAddJob(true)}>Add Job</a>
-          <a>Remove Job</a>
+          <a style={{ cursor: jobs.length ? 'pointer' : 'not-allowed' }} onClick={() => jobs.length && alert('Select a job to remove from the list below.')}>Remove Job</a>
         </div>
         <div className='jobslists'>
           <div className='joblist'>
@@ -277,6 +311,21 @@ function SetCriteria() {
             <div className='jobrequirements'>Employment Type</div>
             <div className='jobactions'>Actions</div>
           </div>
+          {jobsError && <div style={{ color: 'red', padding: '16px' }}>{jobsError}</div>}
+          {jobs.length === 0 ? (
+            <div style={{ padding: '16px', color: '#888' }}>No jobs available.</div>
+          ) : (
+            jobs.map(job => (
+              <div className='joblist' key={job._id}>
+                <div className='jobtitle'>{job.title}</div>
+                <div className='jobdescription'>{job.department}</div>
+                <div className='jobrequirements'>{job.employmentType}</div>
+                <div className='jobactions'>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleRemoveJob(job._id); }}>Delete</a>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
       {showAddJob && (
@@ -459,8 +508,12 @@ function SetCriteria() {
                         ))}
                       </ul>
                     </div>
-                    <button onClick={handleSubmit} style={{ marginTop: '16px' }}>
-                      Submit Job
+                    <button
+                      onClick={handleSubmit}
+                      style={{ marginTop: '16px' }}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'Submitting...' : 'Submit Job'}
                     </button>
                   </div>
                 </div>

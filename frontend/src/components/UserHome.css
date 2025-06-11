@@ -258,26 +258,30 @@ nav a:hover {
     align-items: center;
     padding: 0;
 }
-.userjobdetails{
-  position:fixed;
+.userjobdetails {
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: "rgba(0,0,0,0.4)";
+  background: rgba(0, 0, 0, 0.4); /* Semi-transparent overlay */
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 10; /* High z-index to appear above all content */
 }
-.userjobdetailsblock{
+
+.userjobdetailsblock {
   background: #13714C;
   color: white;
   border-radius: 12px;
-  padding: 32px;
-  width: 350px;
-  height: 600px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-
+  padding: 24px;
+  width: 600px; /* Wider for better content display */
+  max-height: 80vh; /* Limit height to 80% of viewport */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  z-index: 11; /* Above .userjobdetails */
+  overflow-y: auto; /* Scrollable if content overflows */
+  position: relative;
 }
 .joboption a {
     color: white;
@@ -330,5 +334,17 @@ nav a:hover {
     justify-content: center; 
     gap: 8px;
   }
+
+.userjobdetailexit,.userjobdetailapply{
+  margin-top: 24px;
+   background: white;
+   color: #13714C;
+   border: none;
+   border-radius: 6px;
+   padding: 8px 24px;
+   font-weight: 600;
+   cursor: "pointer";
+   margin:20px;
+}
 
   

@@ -185,6 +185,24 @@ app.post('/jobs', async (req, res) => {
   }
 });
 
+// Delete job endpoint
+app.delete('/jobs/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid job ID' });
+    }
+    const job = await Jobs.findByIdAndDelete(id);
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+    res.status(200).json({ message: 'Job deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting job:', error);
+    res.status(500).json({ message: 'Server error while deleting job' });
+  }
+});
+
 // Start server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
