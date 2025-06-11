@@ -1,7 +1,7 @@
 import './HomePage.css';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode'; 
+import { jwtDecode } from 'jwt-decode';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -9,6 +9,7 @@ function HomePage() {
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,27 +17,42 @@ function HomePage() {
     if (storedUser) setUserName(storedUser);
   }, []);
 
-  const handleLoginSuccess = (credentialResponse) => {
+  const handleLoginSuccess = async (credentialResponse) => {
     try {
       const decoded = jwtDecode(credentialResponse?.credential);
       const name = decoded.given_name || decoded.name.split(' ')[0];
+      const userEmail = decoded.email;
       const profilePic = decoded.picture;
 
-      if (name && profilePic) {
-        setUserName(name);
-        localStorage.setItem('userName', name);
-        localStorage.setItem('profilePic', profilePic);
+      if (name && userEmail) {
+        // Send to backend for authentication/registration
+        const response = await axios.post('http://localhost:5000/google-login', {
+          email: userEmail,
+          firstName: name,
+          picture: profilePic,
+        });
 
-        if (decoded.name === "Collectius HR Admin") {
+        const { applicant } = response.data;
+        setUserName(applicant.firstName);
+        setError('');
+
+        // Store user data in localStorage
+        localStorage.setItem('userName', applicant.firstName);
+        localStorage.setItem('userEmail', applicant.email);
+        localStorage.setItem('profilePic', applicant.profilePic);
+
+        // Redirect based on user
+        if (decoded.name === 'Collectius HR Admin') {
           navigate('/adminhome');
         } else {
           navigate('/userhome');
         }
       } else {
-        console.warn('Missing name or profile picture in decoded token');
+        setError('Missing required user information from Google');
       }
     } catch (err) {
-      console.error('Login decode error:', err);
+      console.error('Google login error:', err);
+      setError(err.response?.data?.message || 'Google login failed. Please try again.');
     }
   };
 
@@ -44,12 +60,14 @@ function HomePage() {
     try {
       const response = await axios.post('http://localhost:5000/login', { email, password });
       if (response.status === 200) {
-        const { applicant } = response.data; // Get the applicant data if needed
-        localStorage.setItem('userName', applicant.firstName); // Store the user name
+        const { applicant } = response.data;
+        localStorage.setItem('userName', applicant.firstName);
+        localStorage.setItem('userEmail', applicant.email);
+        setError('');
         navigate('/userhome');
       }
     } catch (error) {
-      alert(error.response?.data?.message || 'Invalid credentials');
+      setError(error.response?.data?.message || 'Invalid credentials');
     }
   };
 
@@ -75,6 +93,7 @@ function HomePage() {
         <div className="rightcomp">
           <form onSubmit={(e) => e.preventDefault()}>
             <p style={{ fontSize: '14px', textAlign: 'left', width: '100%' }}>Login</p>
+            {error && <p style={{ color: 'red', fontSize: '12px' }}>{error}</p>}
             <input
               type="text"
               placeholder="Email"
@@ -90,7 +109,7 @@ function HomePage() {
             <div className="googlecontainer">
               <GoogleLogin
                 onSuccess={handleLoginSuccess}
-                onError={() => console.log('Login Failed')}
+                onError={() => setError('Google login failed')}
               />
             </div>
             <a className="forgotlink" onClick={redirectForgotPassword}>

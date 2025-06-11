@@ -31,6 +31,8 @@ function UserHome() {
   const [userName, setUserName] = useState('');
   const [profilePic, setProfilePic] = useState('');
   const [openDetailIdx, setOpenDetailIdx] = useState(null);
+  const [userEmail, setUserEmail] = useState('');
+  const [applicationMessage, setApplicationMessage] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,9 +51,11 @@ function UserHome() {
 
     const storedUser = localStorage.getItem('userName');
     const storedPic = localStorage.getItem('profilePic');
-    if (storedUser) {
+    const storedEmail = localStorage.getItem('userEmail');
+    if (storedUser && storedEmail) {
       setUserName(storedUser);
-      setProfilePic(storedPic);
+      setProfilePic(storedPic || '');
+      setUserEmail(storedEmail);
     } else {
       navigate('/');
     }
@@ -60,6 +64,7 @@ function UserHome() {
   const handleLogout = () => {
     localStorage.removeItem('userName');
     localStorage.removeItem('profilePic');
+    localStorage.removeItem('userEmail');
     navigate('/');
   };
 
@@ -72,6 +77,22 @@ function UserHome() {
       setState(state.filter(item => item !== id));
     } else {
       setState([...state, id]);
+    }
+  };
+
+  const handleApply = async (jobTitle) => {
+    try {
+      const response = await axios.post('http://localhost:5000/apply', {
+        email: userEmail,
+        jobTitle,
+      });
+      setApplicationMessage(response.data.message);
+      setTimeout(() => setApplicationMessage(''), 3000); // Clear message after 3 seconds
+      setOpenDetailIdx(null);
+    } catch (error) {
+      console.error('Error applying for job:', error);
+      setApplicationMessage(error.response?.data?.message || 'Failed to apply. Please try again.');
+      setTimeout(() => setApplicationMessage(''), 3000);
     }
   };
 
@@ -162,6 +183,11 @@ function UserHome() {
         </div>
         <div className='userrightcomp'>
           {error && <div style={{ color: 'red', padding: '16px' }}>{error}</div>}
+          {applicationMessage && (
+            <div style={{ color: applicationMessage.includes('successfully') ? 'green' : 'red', padding: '16px' }}>
+              {applicationMessage}
+            </div>
+          )}
           {loading ? (
             <div style={{ padding: '32px', color: '#888' }}>Loading jobs...</div>
           ) : (
@@ -237,10 +263,37 @@ function UserHome() {
                                 <li key={i}>{item}</li>
                               ))}
                             </ul>
-                            <button className='userjobdetailexit' onClick={() => setOpenDetailIdx(null)}>
+                            <button
+                              className='userjobdetailexit'
+                              onClick={() => setOpenDetailIdx(null)}
+                              style={{
+                                marginTop: "24px",
+                                background: "white",
+                                color: "#13714C",
+                                border: "none",
+                                borderRadius: "6px",
+                                padding: "8px 24px",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                marginRight: "8px"
+                              }}
+                            >
                               Close
                             </button>
-                            <button className='userjobdetailapply' onClick={() => setOpenDetailIdx(null)}>
+                            <button
+                              className='userjobdetailapply'
+                              onClick={() => handleApply(job.title)}
+                              style={{
+                                marginTop: "24px",
+                                background: "#A2E494",
+                                color: "#13714C",
+                                border: "none",
+                                borderRadius: "6px",
+                                padding: "8px 24px",
+                                fontWeight: 600,
+                                cursor: "pointer"
+                              }}
+                            >
                               Apply
                             </button>
                           </div>
