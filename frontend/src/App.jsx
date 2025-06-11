@@ -11,7 +11,7 @@
   import SetCriteria from './components/SetCriteria.jsx';
   import AdminMaintainance from './components/AdminMaintainance.jsx';
   import Help from './components/Help.jsx';
-  
+  import NewPass from './components/NewPass.jsx';
   import './App.css';
 
   function App() {
@@ -28,6 +28,7 @@
             <Route path="/setcriteria" element={<SetCriteria />} />
             <Route path="/adminmaintainance" element={<AdminMaintainance />} />
             <Route path="/help" element={<Help />} />
+            <Route path="/newpass" element={<NewPass />} />
 
           </Routes>
       </>
