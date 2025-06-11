@@ -164,17 +164,17 @@ nav a:hover {
 
 .reportsdetails{
   margin-left:60px;
-  margin-top:60px;
+  margin-top:36px;
   width:864px;
   border:2px solid black;
+    background: white;
 }
 .reportsdetailsblock {
-  background: white;
+
   background-image: none;
   background-size: cover;
   background-position: center;
   padding: 32px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
   position: relative;
 }
 
@@ -235,7 +235,7 @@ nav a:hover {
     position: absolute;
     right: 0;
     bottom:0;
-    margin: 32px 0 0 0;
+    margin: 16px 16px 16px 16px;
     align-self: flex-end;
     display: flex;
     align-items: center;

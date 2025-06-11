@@ -382,7 +382,7 @@ function UserHome() {
                     backgroundPosition: 'center'
                   }}
                 >
-                  <div className="rseportsdetailsgrid">
+                  <div className="reportsdetailsgrid">
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                       <label htmlFor="reportfrom" style={{ marginBottom: 0 }}>From:</label>
                       <input id="reportfrom" type="text" placeholder="Your email or name" style={{ marginBottom: 0 }} />

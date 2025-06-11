@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const Applicants = require('./models/Applicants');
-const Jobs = require('./models/Jobs'); // Import Job model
+const Jobs = require('./models/Jobs');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -75,7 +75,7 @@ app.post('/add', async (req, res) => {
       postalCode,
       email,
       mobileNumber,
-      password: hashedPassword // Store the hashed password
+      password: hashedPassword
     });
 
     await applicant.save();
@@ -111,8 +111,19 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Job creation endpoint
-app.post('/add-job', async (req, res) => {
+// Fetch jobs endpoint
+app.get('/jobs', async (req, res) => {
+  try {
+    const jobs = await Jobs.find();
+    res.status(200).json(jobs);
+  } catch (err) {
+    console.error('Error fetching jobs:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Create job endpoint
+app.post('/jobs', async (req, res) => {
   try {
     const {
       title,
@@ -123,10 +134,34 @@ app.post('/add-job', async (req, res) => {
       description,
       keyResponsibilities,
       qualifications,
-      whatWeOffer
+      whatWeOffer,
     } = req.body;
 
-    const job = new Job({
+    // Validate required fields
+    if (
+      !title ||
+      !department ||
+      !workSchedule ||
+      !workSetup ||
+      !employmentType ||
+      !description ||
+      !Array.isArray(description) ||
+      description.length === 0 ||
+      !keyResponsibilities ||
+      !Array.isArray(keyResponsibilities) ||
+      keyResponsibilities.length === 0 ||
+      !qualifications ||
+      !Array.isArray(qualifications) ||
+      qualifications.length === 0 ||
+      !whatWeOffer ||
+      !Array.isArray(whatWeOffer) ||
+      whatWeOffer.length === 0
+    ) {
+      return res.status(400).json({ message: 'All fields are required and must be valid arrays where applicable' });
+    }
+
+    // Create new job
+    const newJob = new Jobs({
       title,
       department,
       workSchedule,
@@ -135,29 +170,22 @@ app.post('/add-job', async (req, res) => {
       description,
       keyResponsibilities,
       qualifications,
-      whatWeOffer
+      whatWeOffer,
     });
 
-    await job.save();
-    res.status(201).json(job);
-  } catch (err) {
-    console.error('Error saving job:', err);
-    res.status(500).json({ message: err.message });
+    // Save to MongoDB
+    await newJob.save();
+    res.status(201).json({ message: 'Job created successfully', job: newJob });
+  } catch (error) {
+    console.error('Error creating job:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: 'Validation error: ' + error.message });
+    }
+    res.status(500).json({ message: 'Server error while creating job' });
   }
 });
 
-// Fetch jobs endpoint
-app.get('/jobs', async (req, res) => {
-  try {
-    const jobs = await Job.find();
-    res.status(200).json(jobs);
-  } catch (err) {
-    console.error('Error fetching jobs:', err);
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// Start the server
+// Start server
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server running on port ${port}`);
 });

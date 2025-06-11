@@ -41,7 +41,7 @@ function Authenticator() {
         <div className='container' style={{borderRadius:"0",border:"none"}}>
           <p className="forgottext">Verify OTP</p> 
           <div className='fpassproper'>
-            <p>Enter your Email Address</p>
+            <p>Enter OTP</p>
             <input type="text" placeholder="Email" />
             <a onClick={verifyOtp}>Send</a>
             <div style={{
