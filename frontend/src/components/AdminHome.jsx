@@ -17,6 +17,9 @@ function AdminHome() {
   const [selectedWorkingSchedule, setSelectedWorkingSchedule] = useState([]);
   const [selectedEmploymentType, setSelectedEmploymentType] = useState([]);
   const [selectedWorkSetup, setSelectedWorkSetup] = useState([]);
+  const [showUserLogs, setShowUserLogs] = useState(false);
+  const [userLogs, setUserLogs] = useState([]);
+  const [logsError, setLogsError] = useState('');
 
   const workingSchedule = [
     { label: 'Full Time', id: 'fulltime' },
@@ -53,6 +56,22 @@ function AdminHome() {
     };
     fetchData();
   }, []);
+
+  const fetchUserLogs = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/userlogs');
+      setUserLogs(response.data);
+      setLogsError('');
+    } catch (err) {
+      console.error('Error fetching user logs:', err);
+      setLogsError('Failed to load user logs. Please try again.');
+    }
+  };
+
+  const handleShowUserLogs = () => {
+    setShowUserLogs(true);
+    fetchUserLogs();
+  };
 
   const handleLogout = () => navigate('/');
   const handleSetCriteria = () => navigate('/setcriteria');
@@ -104,6 +123,7 @@ function AdminHome() {
           <a onClick={handleFAQs}>FAQs</a>
           <a>Messages</a>
           <a onClick={handleSetCriteria}>Manage Jobs</a>
+          <a onClick={handleShowUserLogs}>User Logs</a>
           <a onClick={handleLogout}>Logout</a>
         </div>
       </nav>
@@ -219,7 +239,7 @@ function AdminHome() {
                         .filter(applicant => applicant.positionAppliedFor.includes(filteredJobOpenings[openApplicantsIdx].title))
                         .map((applicant, idx) => (
                           <li key={applicant.email} style={{ marginBottom: "16px", listStyle: "none" }}>
-                            <b>{applicant.firstName} {applicant.middleName} {applicant.lastName}</b>
+                            <b>{applicant.fullName}</b>
                             <a className="viewdetails" onClick={() => setOpenApplicantDetailIdx(idx)}>
                               View Details
                             </a>
@@ -309,6 +329,86 @@ function AdminHome() {
                     </button>
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
+          {showUserLogs && (
+            <div
+              className="userlogs-container"
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                background: 'rgba(0,0,0,0.4)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 10,
+              }}
+              onClick={() => setShowUserLogs(false)}
+            >
+              <div
+                className="userlogs-content"
+                style={{
+                  background: 'white',
+                  padding: '24px',
+                  borderRadius: '8px',
+                  maxWidth: '800px',
+                  width: '90%',
+                  maxHeight: '80vh',
+                  overflowY: 'auto',
+                }}
+                onClick={e => e.stopPropagation()}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <h2>User Logs</h2>
+                  <button
+                    onClick={() => setShowUserLogs(false)}
+                    style={{
+                      fontSize: '1.5rem',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                      border: 'none',
+                      background: 'none',
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+                {logsError && <div style={{ color: 'red', marginBottom: '16px' }}>{logsError}</div>}
+                {userLogs.length === 0 ? (
+                  <div style={{ padding: '16px', color: '#888' }}>No user logs available.</div>
+                ) : (
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ background: '#f4f4f4' }}>
+                        <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Date</th>
+                        <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Full Name</th>
+                        <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Activity</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {userLogs.map(log => (
+                        <tr key={log._id}>
+                          <td style={{ padding: '8px', border: '1px solid #ddd' }}>
+                            {new Date(log.date).toLocaleString('en-US', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit',
+                            })}
+                          </td>
+                          <td style={{ padding: '8px', border: '1px solid #ddd' }}>{log.fullName}</td>
+                          <td style={{ padding: '8px', border: '1px solid #ddd' }}>{log.activity}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </div>
           )}

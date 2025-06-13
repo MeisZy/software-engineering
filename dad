@@ -1,0 +1,265 @@
+[33mcommit 2de4de9a30afce1a1c57f89b7470acdc02a068bd[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Wed Jun 11 16:54:17 2025 +0800
+
+    update: userhome
+
+[33mcommit a66772efc4a879024ce9d64cd0222089a07986e2[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Wed Jun 11 16:20:54 2025 +0800
+
+    update: applicants can now apply on job openings.
+
+[33mcommit d7d36c50c52f8362246dfd6f4095194ce7fb0d0f[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Wed Jun 11 15:33:28 2025 +0800
+
+    update: job listing addition and removal is fundamentally complete. next task is fixing the sorting of applicants for every job opening
+
+[33mcommit 4bcf9c816ce1262f46d741349e4e22ea2e8fdf67[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Wed Jun 11 13:08:35 2025 +0800
+
+    update: Jobs add worked successfully
+
+[33mcommit 3ea67b37079d551015e5ac99e38f4bd6e8f62fc1[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Tue Jun 10 14:07:10 2025 +0800
+
+    update: fixed userHome
+
+[33mcommit 8a3c6610d45da9422382230b943a2b234614332e[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Tue Jun 10 11:52:56 2025 +0800
+
+    update: userhome, homepage, adminhome, index.js, Jobs.js
+
+[33mcommit 6dad892c243c407980e4e8be5d83462887aea2fb[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Tue Jun 10 07:40:33 2025 +0800
+
+    update: Registration.jsx functionality successfully appended to atlas
+
+[33mcommit 07594881fe569f0bc25997cf7fa26cd3dd404570[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Tue Jun 10 07:25:49 2025 +0800
+
+    update: connected Registration.jsx, index.js to atlas, queries are yet to render in the atlas portal.
+
+[33mcommit f093c436093be6c25769a28a7f232f4898202e1f[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Sun Jun 8 13:07:54 2025 +0800
+
+    update: Registration functionality in progress
+
+[33mcommit afaa1c48f732a67d66317846ea726304b67ec3c0[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Sun Jun 8 13:06:39 2025 +0800
+
+    update: Registration functionality in progress
+
+[33mcommit 46113fb4b02d6da1e9919089d36745288d230ba5[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Thu Jun 5 14:15:55 2025 +0800
+
+    update: Questions.jsx connected to navbar.jsx, userprofile.css, help.jsx
+
+[33mcommit e479137beb073ebd00ca1a8a3c8df845d921cf91[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Thu Jun 5 13:40:06 2025 +0800
+
+    update: adminmaintainance savepoint
+
+[33mcommit 825ff89a26759143b4ee075260e3ff9391f52b65[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Wed Jun 4 22:56:34 2025 +0800
+
+    update: adminmaintainance
+
+[33mcommit 0d248e6516afb10c14786a88bd2f2a763d450c7d[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Wed Jun 4 16:32:45 2025 +0800
+
+    update: in progress criteria
+
+[33mcommit 322e77465d18173f65b351d6153775617dd1ec85[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Wed Jun 4 12:34:41 2025 +0800
+
+    update: UserHome and AdminHome filters. will finish UserHome job details paguwi ko
+
+[33mcommit a78aceac6737780544c8dc66b39fda2606ae4d3e[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Wed Jun 4 10:12:58 2025 +0800
+
+    update: adminhome applicant specifics
+
+[33mcommit 298b0ce690c3188bce28d35ba9466e2e993f87ac[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Tue Jun 3 15:25:12 2025 +0800
+
+    update: page 5 setCriteria
+
+[33mcommit 091f5b9edd1c9fbf4693e9cf16d2f2f4f661bfdb[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Tue Jun 3 14:28:37 2025 +0800
+
+    update: what we offer SetCriteria
+
+[33mcommit 3f894019051ddcd412dbad4ca79173064bb85447[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Tue Jun 3 14:03:04 2025 +0800
+
+    update: added qualifications criteriaPage SetCriteria
+
+[33mcommit f60200ac01c5001cb8249a70faf6aa37dc54b2cb[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Tue Jun 3 13:04:48 2025 +0800
+
+    update: added addremovewrap SetCriteria
+
+[33mcommit 295a5478d634386138e9408b8a69699856ac7afa[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Tue Jun 3 12:14:23 2025 +0800
+
+    update: setCriteria page 2 savepoint
+
+[33mcommit 06da5ba6addc8f03a26104b9916571ad017628e3[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Mon Jun 2 23:26:48 2025 +0800
+
+    update: continue setcriteria tomorrow. inaantok na ko
+
+[33mcommit 241f08ac54b784a9fca4d351187f07bd772360bd[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Mon Jun 2 20:53:18 2025 +0800
+
+    update: styling criterianavigate
+
+[33mcommit d48442a209401692eeb32d7f10b5c579320d8772[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Thu May 29 23:09:01 2025 +0800
+
+    update: setcriteria on progress. ill do this tomo
+
+[33mcommit 796856fda0427c6c1f018af0b91eefbbc2494206[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Thu May 29 00:32:05 2025 +0800
+
+    update: please see report a problem. added arrow image for the submit link
+
+[33mcommit 2f3cf239ccec068e6fb7b662b534b6b1dfc6088a[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Thu May 29 00:30:10 2025 +0800
+
+    update: added implementation in FAQs/Help, UserHome, SetCriteria
+
+[33mcommit 1fd742f515f207e2cc763a3de90c534e76d9a7c0[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Thu May 29 00:28:10 2025 +0800
+
+    added elements in FAQ, SetCriteria
+
+[33mcommit be043e25fb0e9d1fa8b4d0c7b84568b6f2dc64b0[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Tue May 27 22:43:30 2025 +0800
+
+    added Report a Bug UI
+
+[33mcommit c47b2ff1282d56e9b2de68014e82646c881559a7[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Tue May 27 00:26:44 2025 +0800
+
+    UserHome left for dev
+
+[33mcommit 3c626fa10c15a8ee679268c66371c1ee98fd483d[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Sun May 25 22:48:59 2025 +0800
+
+    ongoing with admin and userhome
+
+[33mcommit 9dabebbf4a6d9a1ae8c0155d87848cbfb369c72a[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Thu May 22 22:46:53 2025 +0800
+
+    in progress UserHome, AdminHome. both should be implemented by May22
+
+[33mcommit 140e092f1c3c8dfcf059b0baf0ad7aa004c89c76[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Thu May 22 13:49:39 2025 +0800
+
+    adminhome in progress. work on jobcard component
+
+[33mcommit 9302ea77ba2babb93371f2d91e6d407f66c8602b[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Wed May 21 16:48:36 2025 +0800
+
+    implementation of "AdminHome"
+
+[33mcommit 7c483d938465ce9edbd7cffb38224d8b53b3889a[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Wed May 21 14:11:19 2025 +0800
+
+    update: deleted createclient
+
+[33mcommit 955566b2fbb75f52e9111453ca54eac3fc1f70d4[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Wed May 7 11:23:19 2025 +0800
+
+    update: minor changes. affected userhome, forgotpass.css, cc.jsx, authenticator
+
+[33mcommit e49b570aee7c6d8996b3332832aeff90b918f03e[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Fri Apr 18 12:43:00 2025 +0800
+
+    update: revised HomePage for login testing
+
+[33mcommit 1b496a76b74666b78db40573f1f00998528b0e5c[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Wed Apr 16 16:52:00 2025 +0800
+
+    savepoint
+
+[33mcommit 87095b57955f6a8089a7896254b05226abe69bcc[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Wed Apr 16 16:17:36 2025 +0800
+
+    changed import.meta from process.env in main.jsx
+
+[33mcommit f7ef4bff0400252b4b24a7e13d86d6fb3b17c2f4[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Thu Apr 10 17:37:47 2025 +0800
+
+    update: deleted Applicants and Schema.js in api directory. resetting the entire api/server-side should start by finals
+
+[33mcommit 656cab40982989d3b490c60aa2fe198080a2db91[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Thu Apr 10 17:33:29 2025 +0800
+
+    update: added interface_url to frontend .env
+
+[33mcommit d7bbf24a11e9b0276338a9132c4c553810da483b[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Thu Apr 10 17:29:17 2025 +0800
+
+    modified .env for frontend_url
+
+[33mcommit bfa2fd4dcdabe9e058cfd10dc34418ddc0f1028e[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Thu Apr 10 17:28:13 2025 +0800
+
+    try 5 - added frontend_url in env
+
+[33mcommit 1029f04365d91f9b766b621554b7db625ed370fc[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Thu Apr 10 17:22:05 2025 +0800
+
+    try 4
+
+[33mcommit 5c0dd840ff52a47e07e1fea4594429dacba14ef3[m
+Author: MeisZy <zyrusnw@gmail.com>
+Date:   Thu Apr 10 17:06:21 2025 +0800
+
+    try 4, deleted yarn.lock from .gitignore
+
+[33mcommit 2d5b83203e6392e50014b439ca28a638c4e4a7dc

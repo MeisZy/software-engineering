@@ -61,11 +61,24 @@ function UserHome() {
     }
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('userName');
-    localStorage.removeItem('profilePic');
-    localStorage.removeItem('userEmail');
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      // Send logout request to log activity
+      await axios.post('http://localhost:5000/logout', {
+        email: userEmail,
+        fullName: userName,
+        firstName: '', // Google OAuth users may not have firstName
+        middleName: '',
+      });
+    } catch (err) {
+      console.error('Error logging logout:', err);
+    } finally {
+      // Clear localStorage and navigate
+      localStorage.removeItem('userName');
+      localStorage.removeItem('profilePic');
+      localStorage.removeItem('userEmail');
+      navigate('/');
+    }
   };
 
   const handleFAQs = () => {

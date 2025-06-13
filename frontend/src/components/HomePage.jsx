@@ -20,24 +20,24 @@ function HomePage() {
   const handleLoginSuccess = async (credentialResponse) => {
     try {
       const decoded = jwtDecode(credentialResponse?.credential);
-      const name = decoded.given_name || decoded.name.split(' ')[0];
+      const fullName = decoded.name; // Use full name from Google
       const userEmail = decoded.email;
       const profilePic = decoded.picture;
 
-      if (name && userEmail) {
+      if (fullName && userEmail) {
         // Send to backend for authentication/registration
         const response = await axios.post('http://localhost:5000/google-login', {
           email: userEmail,
-          firstName: name,
+          fullName: fullName,
           picture: profilePic,
         });
 
         const { applicant } = response.data;
-        setUserName(applicant.firstName);
+        setUserName(applicant.fullName);
         setError('');
 
         // Store user data in localStorage
-        localStorage.setItem('userName', applicant.firstName);
+        localStorage.setItem('userName', applicant.fullName);
         localStorage.setItem('userEmail', applicant.email);
         localStorage.setItem('profilePic', applicant.profilePic);
 
@@ -61,7 +61,7 @@ function HomePage() {
       const response = await axios.post('http://localhost:5000/login', { email, password });
       if (response.status === 200) {
         const { applicant } = response.data;
-        localStorage.setItem('userName', applicant.firstName);
+        localStorage.setItem('userName', applicant.fullName); // Use fullName
         localStorage.setItem('userEmail', applicant.email);
         setError('');
         navigate('/userhome');

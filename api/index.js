@@ -3,12 +3,18 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
 const Applicants = require('./models/Applicants');
 const Jobs = require('./models/Jobs');
 const JobApplicants = require('./models/JobApplicants');
+const UserLogs = require('./models/UserLogs');
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+// In-memory store for OTPs and reset tokens (use database in production)
+const otpStore = new Map();
+const resetTokenStore = new Map();
 
 // Middleware
 app.use(cors({
@@ -28,6 +34,15 @@ if (!mongoURI) {
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch((error) => console.error('Error connecting to MongoDB Atlas:', error));
+
+// Nodemailer setup
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
 
 // Status endpoint
 app.get('/status', (req, res) => {
@@ -65,6 +80,7 @@ app.post('/add', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const applicant = new Applicants({
+      fullName: `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`.trim(),
       firstName,
       middleName,
       lastName,
@@ -104,6 +120,16 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
+    // Log login activity
+    const userLog = new UserLogs({
+      date: new Date(),
+      firstName: applicant.firstName || '',
+      middleName: applicant.middleName || '',
+      fullName: applicant.fullName || 'Unknown User',
+      activity: 'Logged in',
+    });
+    await userLog.save();
+
     // Successful login
     res.status(200).json({ message: 'Login successful', applicant });
   } catch (err) {
@@ -115,37 +141,59 @@ app.post('/login', async (req, res) => {
 // Google login endpoint
 app.post('/google-login', async (req, res) => {
   try {
-    const { email, firstName, picture } = req.body;
+    const { email, fullName, picture } = req.body;
 
-    if (!email || !firstName) {
-      return res.status(400).json({ message: 'Email and first name are required' });
+    console.log('Google login request:', { email, fullName, picture });
+
+    if (!email || !fullName) {
+      return res.status(400).json({ message: 'Email and full name are required' });
     }
+
+    // Normalize fullName
+    const normalizedFullName = fullName.trim() || 'Unknown Google User';
 
     // Check if user exists
     let applicant = await Applicants.findOne({ email });
     if (!applicant) {
       // Create new applicant with default values
       applicant = new Applicants({
-        firstName,
+        fullName: normalizedFullName,
+        firstName: '',
         middleName: '',
-        lastName: 'Google User',
+        lastName: '',
         email,
-        birthdate: new Date('1970-01-01'), // Default date
-        gender: 'F', // Default
+        birthdate: new Date('1970-01-01'),
+        gender: 'F',
         streetAddress: 'Unknown',
         city: 'Unknown',
         stateProvince: 'Unknown',
         postalCode: '0000',
-        mobileNumber: '0000000000', // Default 10-digit number
-        password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10), // Random password
+        mobileNumber: '0000000000',
+        password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
       });
       await applicant.save();
     }
 
+    // Ensure applicant.fullName is set
+    if (!applicant.fullName) {
+      applicant.fullName = normalizedFullName;
+      await applicant.save();
+    }
+
+    // Log login activity
+    const userLog = new UserLogs({
+      date: new Date(),
+      firstName: applicant.firstName || '',
+      middleName: applicant.middleName || '',
+      fullName: applicant.fullName,
+      activity: 'Logged in',
+    });
+    await userLog.save();
+
     res.status(200).json({
       message: 'Google login successful',
       applicant: {
-        firstName: applicant.firstName,
+        fullName: applicant.fullName,
         email: applicant.email,
         profilePic: picture || '',
       },
@@ -153,6 +201,141 @@ app.post('/google-login', async (req, res) => {
   } catch (err) {
     console.error('Error during Google login:', err);
     res.status(500).json({ message: 'Server error during Google login' });
+  }
+});
+
+// Logout endpoint
+app.post('/logout', async (req, res) => {
+  try {
+    const { email, fullName, firstName, middleName } = req.body;
+
+    if (!email || !fullName) {
+      return res.status(400).json({ message: 'Email and full name are required' });
+    }
+
+    // Log logout activity
+    const userLog = new UserLogs({
+      date: new Date(),
+      firstName: firstName || '',
+      middleName: middleName || '',
+      fullName: fullName || 'Unknown User',
+      activity: 'Logged out',
+    });
+    await userLog.save();
+
+    res.status(200).json({ message: 'Logout logged successfully' });
+  } catch (err) {
+    console.error('Error during logout logging:', err);
+    res.status(500).json({ message: 'Server error during logout' });
+  }
+});
+
+// Forgot password endpoint
+app.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const applicant = await Applicants.findOne({ email });
+    if (!applicant) {
+      return res.status(404).json({ message: 'Email not found' });
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    otpStore.set(email, { otp, expires: Date.now() + 10 * 60 * 1000 }); // 10 minutes expiry
+
+    // Send OTP via email
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Password Reset OTP',
+      text: `Your OTP for password reset is: ${otp}. It is valid for 10 minutes.`
+    });
+
+    res.status(200).json({ message: 'OTP sent to your email' });
+  } catch (err) {
+    console.error('Error sending OTP:', err);
+    res.status(500).json({ message: 'Failed to send OTP' });
+  }
+});
+
+// Verify OTP endpoint
+app.post('/verify-otp', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ message: 'Email and OTP are required' });
+    }
+
+    const stored = otpStore.get(email);
+    if (!stored || stored.expires < Date.now()) {
+      otpStore.delete(email);
+      return res.status(400).json({ message: 'OTP expired or invalid' });
+    }
+
+    if (stored.otp !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    // Generate reset token
+    const resetToken = Math.random().toString(36).slice(-8);
+    resetTokenStore.set(email, { token: resetToken, expires: Date.now() + 10 * 60 * 1000 });
+
+    otpStore.delete(email); // Clear OTP
+
+    res.status(200).json({ message: 'OTP verified', resetToken });
+  } catch (err) {
+    console.error('Error verifying OTP:', err);
+    res.status(500).json({ message: 'Failed to verify OTP' });
+  }
+});
+
+// Reset password endpoint
+app.post('/reset-password', async (req, res) => {
+  try {
+    const { email, password, resetToken } = req.body;
+
+    if (!email || !password || !resetToken) {
+      return res.status(400).json({ message: 'Email, password, and reset token are required' });
+    }
+
+    const stored = resetTokenStore.get(email);
+    if (!stored || stored.expires < Date.now() || stored.token !== resetToken) {
+      resetTokenStore.delete(email);
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    const applicant = await Applicants.findOne({ email });
+    if (!applicant) {
+      return res.status(404).json({ message: 'Email not found' });
+    }
+
+    // Hash new password
+    applicant.password = await bcrypt.hash(password, 10);
+    await applicant.save();
+
+    resetTokenStore.delete(email); // Clear token
+
+    res.status(200).json({ message: 'Password reset successfully' });
+  } catch (err) {
+    console.error('Error resetting password:', err);
+    res.status(500).json({ message: 'Failed to reset password' });
+  }
+});
+
+// Fetch user logs endpoint
+app.get('/userlogs', async (req, res) => {
+  try {
+    const logs = await UserLogs.find().sort({ date: -1 });
+    res.status(200).json(logs);
+  } catch (err) {
+    console.error('Error fetching user logs:', err);
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -282,11 +465,12 @@ app.post('/apply', async (req, res) => {
     } else {
       // Create new job applicant entry
       jobApplicant = new JobApplicants({
-        firstName: applicant.firstName,
+        fullName: applicant.fullName,
+        firstName: applicant.firstName || '',
         middleName: applicant.middleName || '',
-        lastName: applicant.lastName,
+        lastName: applicant.lastName || '',
         email: applicant.email,
-        mobileNumber: applicant.mobileNumber.replace(/[^\d]/g, '').slice(-10), // Normalize to 10 digits
+        mobileNumber: applicant.mobileNumber.replace(/[^\d]/g, '').slice(-10),
         positionAppliedFor: [jobTitle],
         birthdate: applicant.birthdate,
         gender: applicant.gender,
@@ -294,7 +478,7 @@ app.post('/apply', async (req, res) => {
         stateProvince: applicant.stateProvince,
         status: 'Ongoing',
         applicationStage: 'None',
-        resume: ['Default Skill'], // Placeholder skills, as Applicants schema doesn't include resume
+        resume: ['Default Skill'],
       });
       await jobApplicant.save();
     }
@@ -302,7 +486,7 @@ app.post('/apply', async (req, res) => {
     res.status(201).json({ message: 'Application submitted successfully' });
   } catch (error) {
     console.error('Error applying for job:', error);
-    if (error.code === 11000) { // Duplicate email
+    if (error.code === 11000) {
       return res.status(400).json({ message: 'Email already exists in job applicants' });
     }
     res.status(500).json({ message: 'Server error while applying for job' });
