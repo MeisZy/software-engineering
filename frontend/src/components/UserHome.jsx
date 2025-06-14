@@ -33,6 +33,9 @@ function UserHome() {
   const [openDetailIdx, setOpenDetailIdx] = useState(null);
   const [userEmail, setUserEmail] = useState('');
   const [applicationMessage, setApplicationMessage] = useState('');
+  const [showReportForm, setShowReportForm] = useState(false);
+  const [reportSubject, setReportSubject] = useState('');
+  const [reportMessage, setReportMessage] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,17 +66,15 @@ function UserHome() {
 
   const handleLogout = async () => {
     try {
-      // Send logout request to log activity
       await axios.post('http://localhost:5000/logout', {
         email: userEmail,
         fullName: userName,
-        firstName: '', // Google OAuth users may not have firstName
+        firstName: '',
         middleName: '',
       });
     } catch (err) {
       console.error('Error logging logout:', err);
     } finally {
-      // Clear localStorage and navigate
       localStorage.removeItem('userName');
       localStorage.removeItem('profilePic');
       localStorage.removeItem('userEmail');
@@ -93,6 +94,10 @@ function UserHome() {
     }
   };
 
+  const sendMail = () => {
+    
+  }
+
   const handleApply = async (jobTitle) => {
     try {
       const response = await axios.post('http://localhost:5000/apply', {
@@ -100,11 +105,36 @@ function UserHome() {
         jobTitle,
       });
       setApplicationMessage(response.data.message);
-      setTimeout(() => setApplicationMessage(''), 3000); // Clear message after 3 seconds
+      setTimeout(() => setApplicationMessage(''), 3000);
       setOpenDetailIdx(null);
     } catch (error) {
       console.error('Error applying for job:', error);
       setApplicationMessage(error.response?.data?.message || 'Failed to apply. Please try again.');
+      setTimeout(() => setApplicationMessage(''), 3000);
+    }
+  };
+
+  const handleReportSubmit = async (e) => {
+    e.preventDefault();
+    if (!reportSubject || !reportMessage) {
+      setApplicationMessage('Please fill in both subject and message.');
+      setTimeout(() => setApplicationMessage(''), 3000);
+      return;
+    }
+    try {
+      const response = await axios.post('http://localhost:5000/report-problem', {
+        sender: userEmail,
+        subject: reportSubject,
+        body: reportMessage,
+      });
+      setApplicationMessage(response.data.message);
+      setShowReportForm(false);
+      setReportSubject('');
+      setReportMessage('');
+    } catch (error) {
+      console.error('Error submitting report:', error);
+      setApplicationMessage(error.response?.data?.message || 'Failed to submit report. Please try again.');
+    } finally {
       setTimeout(() => setApplicationMessage(''), 3000);
     }
   };
@@ -137,7 +167,7 @@ function UserHome() {
       <nav>
         <img src={profilePic || Placeholder} alt="Profile" />
         <span className="usergreeting">Welcome, {userName}!</span>
-        <a href="#">Message</a>
+        <a href="#" onClick={(e) => { e.preventDefault(); setShowReportForm(true); }}>Report a Problem</a>
         <a href="#" onClick={handleFAQs}>FAQs</a>
         <a className="logout" onClick={handleLogout}>Logout</a>
       </nav>
@@ -320,6 +350,79 @@ function UserHome() {
           )}
         </div>
       </div>
+      {showReportForm && (
+        <div
+          className="reportsdetailsdarkgreen"
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '600px',
+            height: '400px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <div className="reportsdetailslightgreen" style={{ width: '588px', height: '388px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+              <h3 style={{ padding: '16px 24px', margin: 0 }}>Report a Problem</h3>
+              <a
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: 'bold',
+                  color: 'black',
+                  textDecoration: 'none',
+                  cursor: 'pointer',
+                  marginRight: '24px',
+                }}
+                onClick={() => setShowReportForm(false)}
+                aria-label="Close"
+              >
+                ×
+              </a>
+            </div>
+            <form className="reportsdetailsgrid" onSubmit={handleReportSubmit} style={{ padding: '0 24px' }}>
+              <label>Subject</label>
+              <input
+                type="text"
+                value={reportSubject}
+                onChange={(e) => setReportSubject(e.target.value)}
+                placeholder="Enter subject"
+              />
+              <label>Message</label>
+              <textarea
+                value={reportMessage}
+                onChange={(e) => setReportMessage(e.target.value)}
+                placeholder="Describe the problem"
+              />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                <button
+                  type="button"
+                  className="userjobdetailexit"
+                  onClick={() => setShowReportForm(false)}
+                  style={{
+                    marginRight: '8px',
+                  }}
+                >
+                  Close
+                </button>
+                <button
+                  type="submit"
+                  className="userjobdetailapply"
+                  style={{
+                    background: '#A2E494',
+                    color: '#13714C',
+                  }}
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -12,6 +12,7 @@
   import AdminMaintainance from './components/AdminMaintainance.jsx';
   import Help from './components/Help.jsx';
   import NewPass from './components/NewPass.jsx';
+  import About from './components/About/About.jsx';
   import './App.css';
 
   function App() {
@@ -29,6 +30,7 @@
             <Route path="/adminmaintainance" element={<AdminMaintainance />} />
             <Route path="/help" element={<Help />} />
             <Route path="/newpass" element={<NewPass />} />
+            <Route path="/about" element={<About />} />
 
           </Routes>
       </>
