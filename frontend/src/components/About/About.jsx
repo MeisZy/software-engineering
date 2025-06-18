@@ -1,40 +1,36 @@
-import React, { useRef } from "react";
-import { useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import "./About.css";
-import Navbar from "../Navbar";
+import Navbar from "./Navbar.jsx";
 import "./MultiContainerSlider.css";
 
 // Importing images for the carousel Board Members
-import boehm from '../assets/images/boehm.png';
-import christina from '../assets/images/Christina.jpg';
-import erikson from '../assets/images/erikson.png';
-import ivarb from '../assets/images/ivarb.png';
-import kent from '../assets/images/kent.jpg';
-import sardal from '../assets/images/sardal.png';
-import veres from '../assets/images/veres.png';
+import boehm from '../images/boehm.png';
+import christina from '../images/Christina.jpg';
+import erikson from '../images/erikson.png';
+import ivarb from '../images/ivarb.png';
+import kent from '../images/kent.jpg';
+import sardal from '../images/sardal.png';
+import veres from '../images/veres.png';
 
 // C-level team
+import eriskon_light from '../images/erikson_light.png';
+import kian from '../images/Kian.jpg';
+import ivarb_light from '../images/ivar_light.png';
+import ashley from '../images/ashley.png';
+import dason from '../images/Dason.jpg';
+import denys from '../images/Denys.jpg';
+import carrie from '../images/Carrie.jpg';
+import pham from '../images/Pham.jpg';
+import ayu from '../images/ayu.jpg';
+import maxime from '../images/Maxime.jpg';
 
-import eriskon_light from '../assets/images/erikson_light.png';
-import kian from '../assets/images/Kian.jpg';
-import ivarb_light from '../assets/images/ivar_light.png';
-import ashley from '../assets/images/ashley.png';
-import dason from '../assets/images/Dason.jpg';
-import denys from '../assets/images/Denys.jpg';
-import carrie from '../assets/images/Carrie.jpg';
-import pham from '../assets/images/Pham.jpg';
-import ayu from '../assets/images/ayu.jpg';
-import maxime from '../assets/images/Maxime.jpg';
-
-// managing directors
-
-import sangar from '../assets/images/sangar.png';
-import meng from '../assets/images/meng.png';
-import alexise from '../assets/images/Alexise.jpg';
-import prasanth from '../assets/images/prasanth.png';
-import lieu from '../assets/images/lieu.png';
-import adriany from '../assets/images/adriany.png';
-
+// Managing directors
+import sangar from '../images/sangar.png';
+import meng from '../images/meng.png';
+import alexise from '../images/Alexise.jpg';
+import prasanth from '../images/prasanth.png';
+import lieu from '../images/lieu.png';
+import adriany from '../images/adriany.png';
 
 const journey = [
   {
@@ -299,7 +295,7 @@ useEffect(() => {
       </header>
 <div className="center-wrapper">
       <div className="body-content">
-              <h1 style={{ textAlign: "center" }} >About Collectius Philippines</h1>
+              <h1 >About Collectius Philippines</h1>
               <p>A trusted restructuring and servicing partner to financial institutions 
                 and commercial companies in Asia</p>
 
@@ -317,9 +313,10 @@ useEffect(() => {
                 Our infrastructure and compliance protocols go above and beyond industry requirements. With sound 
                 collection and compliance practices, our clients and their customers can trust that we will deliver results
                 </p>   
+                
+                <br></br> <br></br>
 
-
-              <h1 style={{ textAlign: "center" }} >Our Vission</h1>
+              <h1>Our Vission</h1>
 
               <p>We want to create a world where every person, 
                 regardless of background, has the financial know-how to grow with the economy.</p>
@@ -327,7 +324,8 @@ useEffect(() => {
 </div>
 
       {/* Journey Section */}
-      <h1 style={{ textAlign: 'center' }}>OUR JOURNEY</h1>
+      <div className="journey-section">
+      <h1 style={{ textAlign: 'center' }}>Our Journey</h1>
       <div className="static-carousel">
         {journey.map((item, index) => (
           <div className="static-carousel-wrapper" key={index}>
@@ -338,10 +336,11 @@ useEffect(() => {
           </div>
         ))}
       </div>
-
+      </div>
+      
       {/* First Carousel */}
       <div className="carousel-wrapper">
-        <h1 style={{ textAlign: 'center' }}>Board Member</h1>
+        <h1 style={{ textAlign: 'center' , color: 'black' }}>Board Member</h1>
         <button className="nav-button left" onClick={() => scroll(carouselRef1, "left")}>❮</button>
         <div className="carousel-track" ref={carouselRef1}>
           {carouselItems.map((item, index) => (
@@ -357,7 +356,7 @@ useEffect(() => {
 
       {/* C-Level Carousel */}
       <div className="carousel-wrapper">
-        <h1 style={{ textAlign: 'center' }}>C-Level Team</h1>
+        <h1 style={{ textAlign: 'center', color: 'black' }}>C-Level Team</h1>
         <button className="nav-button left" onClick={() => scroll(carouselRef2, "left")}>❮</button>
         <div className="carousel-track" ref={carouselRef2}>
           {CLevelTeam.map((item, index) => (

@@ -1,5 +1,4 @@
 
-
 .content-wrapper {
   max-width: 900px;
   margin: 0 auto;
@@ -65,12 +64,29 @@
   text-align-last: left;     /* Ensures last line aligns left */
     }
 
+.body-content h1{
+  text-align: "center" ;
+   color: black;
+  font-weight: bold;
+}    
+
 .center-wrapper {
   display: flex;
   justify-content: center; /* center horizontally */
   align-items: center;     /* center vertically */
+  padding-top: 100px;
 }
 
+
+.journey-section{
+  padding-top: 50px;
+}
+
+.journey-section h1{
+color: black;
+font-weight: bold;
+ font-size: 35px ;
+}
 
 .static-carousel-wrapper{
 width: 310px;
@@ -96,6 +112,7 @@ border-radius: 12px;
   overflow: hidden;
   transition: transform 0.3s;
   text-align: center;
+  font-size: 15px;   /* font for our journey */
 }
 
 .carousel-card1 img {
@@ -110,7 +127,7 @@ border-radius: 12px;
 
 .carousel-card1 p {
   padding: 0 1rem 1rem;
-  font-size: 0.95rem;
+  font-size: 0.80rem;
 }
 
 .site-footer {
@@ -120,6 +137,12 @@ border-radius: 12px;
   padding-bottom: 50px;
   color: white;
   text-align: center;
+}
+
+
+.wave-footer-text h2{
+  padding-top: 50px;
+ font-size: 30px;
 }
 
 .footer-content {
@@ -137,11 +160,19 @@ border-radius: 12px;
 
 .footer-section h4 {
   margin-bottom: 0.5rem;
+  font-size: 20px;
+  padding-top: 20px;
+}
+
+.footer-section h3  {
+  font-size: 20px;
+  padding-top: 50px;
 }
 
 .footer-section ul {
   list-style: none;
   padding: 0;
+  font-size: 20px;
 }
 
 .footer-section ul li {
