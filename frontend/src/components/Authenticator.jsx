@@ -20,51 +20,29 @@ function Authenticator() {
     }
   }, [navigate]);
 
-  const sendOtp = async (e) => {
+  const verifyOtp = async (e) => {
     e.preventDefault();
     setError('');
     setMessage('');
     setIsLoading(true);
 
-    if (!email || !/\S+@\S+\.\S+/.test(email)) {
-      setError('Valid email is required');
+    if (!otp || !/^\d{6}$/.test(otp)) {
+      setError('Please enter a valid 6-digit OTP');
       setIsLoading(false);
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/forgot-password', { email });
-      setMessage('OTP sent to your email');
+      const response = await axios.post('http://localhost:5000/verify-otp', { email, otp });
+      localStorage.setItem('resetToken', response.data.resetToken);
+      setMessage('OTP verified successfully');
+      setTimeout(() => navigate('/newpass'), 2000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error sending OTP');
+      setError(err.response?.data?.message || 'Invalid OTP');
     } finally {
       setIsLoading(false);
     }
   };
-
-const verifyOtp = async (e) => {
-  e.preventDefault();
-  setError('');
-  setMessage('');
-  setIsLoading(true);
-
-  if (!otp || !/^\d{6}$/.test(otp)) {
-    setError('Please enter a valid 6-digit OTP');
-    setIsLoading(false);
-    return;
-  }
-
-  try {
-    const response = await axios.post('http://localhost:5000/verify-otp', { email, otp });
-    localStorage.setItem('resetToken', response.data.resetToken);
-    setMessage('OTP verified successfully');
-    setTimeout(() => navigate('/newpass'), 2000);
-  } catch (err) {
-    setError(err.response?.data?.message || 'Invalid OTP');
-  } finally {
-    setIsLoading(false);
-  }
-};
 
   const redirectHomePage = () => {
     localStorage.removeItem('resetEmail');
@@ -78,11 +56,10 @@ const verifyOtp = async (e) => {
       </nav>
       <div className='proper'>
         <div className='container' style={{ borderRadius: '0', border: 'none' }}>
-          <p className="forgottext">Verify OTP</p>
+          <p className="verifytext">Verify OTP</p>
           <div className='fpassproper'>
             {error && <p style={{ color: 'red', fontSize: '12px' }}>{error}</p>}
             {message && <p style={{ color: 'green', fontSize: '12px' }}>{message}</p>}
-            <p>Enter your Email Address</p>
             <input
               type="email"
               placeholder="Email"
@@ -90,10 +67,6 @@ const verifyOtp = async (e) => {
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
             />
-            <button onClick={sendOtp} disabled={isLoading}>
-              {isLoading ? 'Sending...' : 'Send OTP'}
-            </button>
-            <p>Enter OTP</p>
             <input
               type="text"
               placeholder="Enter 6-Digit OTP"

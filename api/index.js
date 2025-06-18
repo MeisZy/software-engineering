@@ -364,6 +364,39 @@ app.post('/reset-password', async (req, res) => {
   }
 });
 
+// Reset password endpoint
+app.post('/reset-password', async (req, res) => {
+  try {
+    const { email, password, resetToken } = req.body;
+
+    if (!email || !password || !resetToken) {
+      return res.status(400).json({ message: 'Email, password, and reset token are required' });
+    }
+
+    const stored = resetTokenStore.get(email);
+    if (!stored || stored.expires < Date.now() || stored.token !== resetToken) {
+      resetTokenStore.delete(email);
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    const applicant = await Applicants.findOne({ email });
+    if (!applicant) {
+      return res.status(404).json({ message: 'Email not found' });
+    }
+
+    // Hash new password
+    applicant.password = await bcrypt.hash(password, 10);
+    await applicant.save();
+
+    resetTokenStore.delete(email); // Clear token
+
+    res.status(200).json({ message: 'Password reset successfully' });
+  } catch (err) {
+    console.error('Error resetting password:', err);
+    res.status(500).json({ message: 'Failed to reset password' });
+  }
+});
+
 // Fetch user logs endpoint
 app.get('/userlogs', async (req, res) => {
   try {

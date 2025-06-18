@@ -28,11 +28,8 @@ function ForgotPassword() {
     }
 
     try {
-      // Generate a 6-digit OTP
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-      // Send the OTP to the backend
-      const response = await axios.post('http://localhost:5000/forgot-password', { email, otp });
+      // Send the email to backend
+      const response = await axios.post('http://localhost:5000/forgot-password', { email });
       setMessage(response.data.message);
       localStorage.setItem('resetEmail', email);
       setTimeout(() => navigate('/authenticator'), 2000);
