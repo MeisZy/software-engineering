@@ -8,6 +8,7 @@ function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const redirectHomePage = () => {
@@ -18,19 +19,27 @@ function ForgotPassword() {
     e.preventDefault();
     setError('');
     setMessage('');
+    setIsLoading(true);
 
-    if (!email) {
-      setError('Email is required');
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      setError('Valid email is required');
+      setIsLoading(false);
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/forgot-password', { email });
+      // Generate a 6-digit OTP
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+      // Send the OTP to the backend
+      const response = await axios.post('http://localhost:5000/forgot-password', { email, otp });
       setMessage(response.data.message);
-      localStorage.setItem('resetEmail', email); // Store email for Authenticator
-      setTimeout(() => navigate('/authenticator'), 2000); // Redirect after 2 seconds
+      localStorage.setItem('resetEmail', email);
+      setTimeout(() => navigate('/authenticator'), 2000);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to send OTP. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -52,8 +61,11 @@ function ForgotPassword() {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
             />
-            <a onClick={handleSubmit}>Send</a>
+            <button onClick={handleSubmit} disabled={isLoading}>
+              {isLoading ? 'Sending...' : 'Send'}
+            </button>
             <div style={{
               display: 'flex',
               justifyContent: 'flex-end',

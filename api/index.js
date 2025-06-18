@@ -12,6 +12,21 @@ const UserLogs = require('./models/UserLogs');
 const app = express();
 const port = process.env.PORT || 5000;
 
+// Validate environment variables
+console.log('Environment variables:', {
+  emailUser: process.env.NODEMAILER_ADMIN,
+  emailPassLength: process.env.NODEMAILER_PASSWORD?.length,
+  mongoUri: process.env.CONNECTION_STRING ? '[REDACTED]' : undefined,
+});
+if (!process.env.NODEMAILER_ADMIN || !process.env.NODEMAILER_PASSWORD) {
+  console.error('Missing NODEMAILER_ADMIN or NODEMAILER_PASSWORD environment variables');
+  process.exit(1);
+}
+if (!process.env.CONNECTION_STRING) {
+  console.error('MongoDB connection string is undefined. Please check your .env file.');
+  process.exit(1);
+}
+
 // In-memory store for OTPs and reset tokens (use database in production)
 const otpStore = new Map();
 const resetTokenStore = new Map();
@@ -26,21 +41,29 @@ app.use(express.json());
 // MongoDB connection
 const mongoURI = process.env.CONNECTION_STRING;
 
-if (!mongoURI) {
-  console.error('MongoDB connection string is undefined. Please check your .env file.');
-  process.exit(1);
-}
-
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch((error) => console.error('Error connecting to MongoDB Atlas:', error));
 
 // Nodemailer setup
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
+    user: process.env.NODEMAILER_ADMIN,
+    pass: process.env.NODEMAILER_PASSWORD,
+  },
+  logger: true,
+  debug: process.env.NODE_ENV !== 'production',
+});
+
+// Test Nodemailer configuration
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('Nodemailer configuration error:', error);
+  } else {
+    console.log('Nodemailer is ready to send emails');
   }
 });
 
@@ -231,12 +254,13 @@ app.post('/logout', async (req, res) => {
 });
 
 // Forgot password endpoint
+// Forgot password endpoint
 app.post('/forgot-password', async (req, res) => {
   try {
     const { email } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      return res.status(400).json({ message: 'Valid email is required' });
     }
 
     const applicant = await Applicants.findOne({ email });
@@ -244,16 +268,27 @@ app.post('/forgot-password', async (req, res) => {
       return res.status(404).json({ message: 'Email not found' });
     }
 
-    // Generate 6-digit OTP
+    // Generate a 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    otpStore.set(email, { otp, expires: Date.now() + 10 * 60 * 1000 }); // 10 minutes expiry
+    
+    // Store the OTP with an expiration time (e.g., 10 minutes)
+    otpStore.set(email, { otp, expires: Date.now() + 10 * 60 * 1000 });
 
     // Send OTP via email
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from: process.env.NODEMAILER_ADMIN,
       to: email,
-      subject: 'Password Reset OTP',
-      text: `Your OTP for password reset is: ${otp}. It is valid for 10 minutes.`
+      subject: 'Your Password Reset OTP',
+      html: `
+        <h3>Password Reset Request</h3>
+        <p>You have requested to reset your password for your Collectius account.</p>
+        <hr />
+        <h4>Your Verification OTP</h4>
+        <p><strong>Your 6-digit OTP: ${otp}</strong></p>
+        <p>Please use this OTP to verify your identity. It is valid for 10 minutes.</p>
+        <p>Best Regards,</p>
+        <p>Collectius Team</p>
+      `,
     });
 
     res.status(200).json({ message: 'OTP sent to your email' });
@@ -263,6 +298,7 @@ app.post('/forgot-password', async (req, res) => {
   }
 });
 
+// Verify OTP endpoint
 // Verify OTP endpoint
 app.post('/verify-otp', async (req, res) => {
   try {
@@ -274,7 +310,7 @@ app.post('/verify-otp', async (req, res) => {
 
     const stored = otpStore.get(email);
     if (!stored || stored.expires < Date.now()) {
-      otpStore.delete(email);
+      otpStore.delete(email); // Clear expired OTP
       return res.status(400).json({ message: 'OTP expired or invalid' });
     }
 
@@ -497,7 +533,7 @@ app.post('/apply', async (req, res) => {
 app.get('/applicants', async (req, res) => {
   try {
     const applicants = await JobApplicants.find();
-    res.status(200).json(applicants);
+    res.status(200).json(applicants);W
   } catch (err) {
     console.error('Error fetching applicants:', err);
     res.status(500).json({ message: err.message });

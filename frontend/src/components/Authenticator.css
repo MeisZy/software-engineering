@@ -1,6 +1,3 @@
-
-/****/
-
 nav {
     display: flex;
     align-items: center; 
@@ -19,15 +16,15 @@ h1 {
 
 .container {
     display: flex;
-    align-self:center;
+    align-self: center;
     justify-content: flex-start; 
     background-color: #A2E494;
     max-width: 1000px;
-    height:384px;
-    margin:120px;
-    padding:15px;
+    height: 384px;
+    margin: 120px;
+    padding: 15px;
 }   
-.proper{
+.proper {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -39,14 +36,12 @@ h1 {
     color: black; 
 }
 
-
 .container img {
     width: 160px;
     height: 160px;
     border-radius: 0;
     margin-top: 40px; 
-    padding:40px;
-
+    padding: 40px;
 }
 
 .fpassproper {
@@ -55,11 +50,9 @@ h1 {
     align-items: center;
     margin-top: 20px;    
     text-align: center;
-    display: flex;
-    flex-direction: column;
 }
 
-.fpassproper a {
+.fpassproper button, .fpassproper a {
     cursor: pointer;
     margin: 10px;
     background: #13714C;
@@ -73,7 +66,7 @@ h1 {
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    font-weight:700;
+    font-weight: 700;
 }
 
 .fpassproper input {
@@ -85,6 +78,5 @@ h1 {
     border: none;
     font-family: 'Montserrat', sans-serif; 
     font-size: 24px; 
-    font-weight:400;
+    font-weight: 400;
 }
-

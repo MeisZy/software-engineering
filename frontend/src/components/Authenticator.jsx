@@ -26,32 +26,45 @@ function Authenticator() {
     setMessage('');
     setIsLoading(true);
 
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      setError('Valid email is required');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const response = await axios.post('http://localhost:5000/forgot-password', { email });
       setMessage('OTP sent to your email');
-      setIsLoading(false);
     } catch (err) {
       setError(err.response?.data?.message || 'Error sending OTP');
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const verifyOtp = async (e) => {
-    e.preventDefault();
-    setError('');
-    setMessage('');
-    setIsLoading(true);
+const verifyOtp = async (e) => {
+  e.preventDefault();
+  setError('');
+  setMessage('');
+  setIsLoading(true);
 
-    try {
-      const response = await axios.post('http://localhost:5000/verify-otp', { email, otp });
-      localStorage.setItem('resetToken', response.data.resetToken);
-      setMessage('OTP verified successfully');
-      setTimeout(() => navigate('/newpass'), 2000);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Invalid OTP');
-      setIsLoading(false);
-    }
-  };
+  if (!otp || !/^\d{6}$/.test(otp)) {
+    setError('Please enter a valid 6-digit OTP');
+    setIsLoading(false);
+    return;
+  }
+
+  try {
+    const response = await axios.post('http://localhost:5000/verify-otp', { email, otp });
+    localStorage.setItem('resetToken', response.data.resetToken);
+    setMessage('OTP verified successfully');
+    setTimeout(() => navigate('/newpass'), 2000);
+  } catch (err) {
+    setError(err.response?.data?.message || 'Invalid OTP');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const redirectHomePage = () => {
     localStorage.removeItem('resetEmail');
@@ -77,20 +90,21 @@ function Authenticator() {
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
             />
-            <a onClick={sendOtp} disabled={isLoading}>
+            <button onClick={sendOtp} disabled={isLoading}>
               {isLoading ? 'Sending...' : 'Send OTP'}
-            </a>
+            </button>
             <p>Enter OTP</p>
             <input
               type="text"
-              placeholder="OTP"
+              placeholder="Enter 6-Digit OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
+              maxLength={6}
               disabled={isLoading}
             />
-            <a onClick={verifyOtp} disabled={isLoading}>
+            <button onClick={verifyOtp} disabled={isLoading}>
               {isLoading ? 'Verifying...' : 'Verify OTP'}
-            </a>
+            </button>
             <div style={{
               display: 'flex',
               justifyContent: 'flex-end',
