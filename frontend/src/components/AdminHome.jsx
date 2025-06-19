@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Logo from './images/logo.png';
 import Details from './assets/jobdetailsimg.png';
@@ -20,6 +20,10 @@ function AdminHome() {
   const [showUserLogs, setShowUserLogs] = useState(false);
   const [userLogs, setUserLogs] = useState([]);
   const [logsError, setLogsError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const suggestionsRef = useRef(null);
 
   const workingSchedule = [
     { label: 'Full Time', id: 'fulltime' },
@@ -37,6 +41,11 @@ function AdminHome() {
     { label: 'On - Site', id: 'onsite' },
     { label: 'Hybrid', id: 'hybrid' },
   ];
+
+  const suggestions = jobs
+    .filter(job => job.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    .map(job => job.title)
+    .slice(0, 5);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,17 +95,54 @@ function AdminHome() {
     }
   };
 
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    setShowSuggestions(value.length > 0);
+    setHighlightedIndex(-1);
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setSearchQuery(suggestion);
+    setShowSuggestions(false);
+    setHighlightedIndex(-1);
+  };
+
+  const handleKeyDown = (e) => {
+    if (!showSuggestions) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setHighlightedIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : prev));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setHighlightedIndex(prev => (prev > 0 ? prev - 1 : prev));
+    } else if (e.key === 'Enter' && highlightedIndex >= 0) {
+      e.preventDefault();
+      handleSuggestionClick(suggestions[highlightedIndex]);
+    }
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => setShowSuggestions(false), 100);
+  };
+
   const anyFilterSelected =
     selectedWorkingSchedule.length > 0 ||
     selectedEmploymentType.length > 0 ||
     selectedWorkSetup.length > 0;
 
   const filteredJobOpenings = jobs.filter(job => {
-    if (!anyFilterSelected) return true;
-
     const ws = job.workSchedule.toLowerCase().replace(/[^a-z]/g, '');
     const et = job.employmentType.toLowerCase().replace(/[^a-z]/g, '');
     const wsup = job.workSetup.toLowerCase().replace(/[^a-z]/g, '');
+    const title = job.title.toLowerCase();
+
+    if (searchQuery && !title.includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+
+    if (!anyFilterSelected) return true;
 
     const wsMatch = selectedWorkingSchedule.some(id => ws.includes(id.replace(/[^a-z]/g, '')));
     const etMatch = selectedEmploymentType.some(id => et.includes(id.replace(/[^a-z]/g, '')));
@@ -129,6 +175,32 @@ function AdminHome() {
       </nav>
       <div className='components'>
         <div className='adminleftcomp'>
+          <div className='adminsearch'>
+            <input 
+              type="text" 
+              placeholder="Search jobs..." 
+              name="search"
+              value={searchQuery}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              onBlur={handleBlur}
+              onFocus={() => searchQuery.length > 0 && setShowSuggestions(true)}
+            />
+            {showSuggestions && suggestions.length > 0 && (
+              <ul className="suggestionsdropdown" ref={suggestionsRef}>
+                {suggestions.map((suggestion, index) => (
+                  <li
+                    key={suggestion}
+                    className={`suggestion-item ${index === highlightedIndex ? 'highlighted' : ''}`}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    onMouseEnter={() => setHighlightedIndex(index)}
+                  >
+                    {suggestion}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <div className="verticalfilter">
             <h2 style={{ paddingBottom: "24px", paddingTop: "25px", fontSize: "24px" }}>Filters</h2>
             <h4 style={{ fontSize: "14px", fontWeight: "600" }}>Working Schedule</h4>
@@ -183,7 +255,7 @@ function AdminHome() {
           ) : (
             <div className='jobscontainer'>
               {filteredJobOpenings.length === 0 ? (
-                <div style={{ padding: '32px', color: '#888' }}>No jobs available.</div>
+                <div style={{ padding: '32px', color: '#888' }}>No jobs match your search or filters.</div>
               ) : (
                 filteredJobOpenings.map((job, idx) => (
                   <div className='jobscardwrapper' key={job._id}>
@@ -247,7 +319,7 @@ function AdminHome() {
                               <div className='applicantdetailwrap'>
                                 <span>Email: {applicant.email}</span>
                                 <span>Mobile: {applicant.mobileNumber}</span>
-                                <span>Position: {applicant.positionAppliedFor.join(', ')}</span>
+                                <span>Jobs Applied For: {applicant.positionAppliedFor.join(', ')}</span>
                                 <span>Birthdate: {new Date(applicant.birthdate).toISOString().split('T')[0]}</span>
                                 <span>Gender: {applicant.gender}</span>
                                 <span>City: {applicant.city}</span>

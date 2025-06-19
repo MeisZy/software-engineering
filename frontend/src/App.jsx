@@ -13,6 +13,7 @@
   import Help from './components/Help.jsx';
   import NewPass from './components/NewPass.jsx';
   import About from './components/About/About.jsx';
+  import GoogleRegistration from './components/GoogleRegistration.jsx';
   import './App.css';
 
   function App() {
@@ -31,7 +32,7 @@
             <Route path="/help" element={<Help />} />
             <Route path="/newpass" element={<NewPass />} />
             <Route path="/about" element={<About />} />
-
+            <Route path="/googleregistration" element={<GoogleRegistration />} />
           </Routes>
       </>
     );

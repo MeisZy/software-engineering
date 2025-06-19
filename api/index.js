@@ -280,7 +280,7 @@ app.post('/forgot-password', async (req, res) => {
 
     // Send OTP via email
     await transporter.sendMail({
-      from: process.env.SUPPORT_EMAIL,
+      from: process.env.NODEMAILER_ADMIN,
       to: email,
       subject: 'Your Password Reset OTP',
       html: `
@@ -387,7 +387,7 @@ app.post('/report-problem', async (req, res) => {
 
     // Send report email
     await transporter.sendMail({
-      from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,  
+      from: `"Collectius Support" <${process.env.SUPPORT_EMAIL}>`,
       to: 'collectiushrad@gmail.com',
       replyTo: sender,
       subject: `Concern: ${subject}`,
@@ -532,7 +532,7 @@ app.post('/apply', async (req, res) => {
     }
 
     // Find job in Jobs collection
-    const job = await Jobs.findOne({ title: 'Software Engineer' });
+    const job = await Jobs.findOne({ title: jobTitle });
     if (!job) {
       return res.status(404).json({ message: 'Job not found' });
     }

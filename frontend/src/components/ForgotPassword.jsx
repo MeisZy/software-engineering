@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './ForgotPassword.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import IconLock from '../components/images/fpass_lock.png';
+import IconLock from './images/fpass_lock.png';
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Placeholder from '../components/images/pfp_placeholder.png';
@@ -36,7 +36,16 @@ function UserHome() {
   const [showReportForm, setShowReportForm] = useState(false);
   const [reportSubject, setReportSubject] = useState('');
   const [reportMessage, setReportMessage] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const suggestionsRef = useRef(null);
   const navigate = useNavigate();
+
+  const suggestions = jobs
+    .filter(job => job.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    .map(job => job.title)
+    .slice(0, 5);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -94,10 +103,6 @@ function UserHome() {
     }
   };
 
-  const sendMail = () => {
-    
-  }
-
   const handleApply = async (jobTitle) => {
     try {
       const response = await axios.post('http://localhost:5000/apply', {
@@ -139,17 +144,54 @@ function UserHome() {
     }
   };
 
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    setShowSuggestions(value.length > 0);
+    setHighlightedIndex(-1);
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setSearchQuery(suggestion);
+    setShowSuggestions(false);
+    setHighlightedIndex(-1);
+  };
+
+  const handleKeyDown = (e) => {
+    if (!showSuggestions) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setHighlightedIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : prev));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setHighlightedIndex(prev => (prev > 0 ? prev - 1 : prev));
+    } else if (e.key === 'Enter' && highlightedIndex >= 0) {
+      e.preventDefault();
+      handleSuggestionClick(suggestions[highlightedIndex]);
+    }
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => setShowSuggestions(false), 100);
+  };
+
   const anyFilterSelected =
     selectedWorkingSchedule.length > 0 ||
     selectedEmploymentType.length > 0 ||
     selectedWorkSetup.length > 0;
 
   const filteredJobOpenings = jobs.filter(job => {
-    if (!anyFilterSelected) return true;
-
     const ws = job.workSchedule.toLowerCase().replace(/[^a-z]/g, '');
     const et = job.employmentType.toLowerCase().replace(/[^a-z]/g, '');
     const wsup = job.workSetup.toLowerCase().replace(/[^a-z]/g, '');
+    const title = job.title.toLowerCase();
+
+    if (searchQuery && !title.includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+
+    if (!anyFilterSelected) return true;
 
     const wsMatch = selectedWorkingSchedule.some(id => ws.includes(id.replace(/[^a-z]/g, '')));
     const etMatch = selectedEmploymentType.some(id => et.includes(id.replace(/[^a-z]/g, '')));
@@ -173,6 +215,32 @@ function UserHome() {
       </nav>
       <div className='usercontainer'>
         <div className='userleftcomp'>
+          <div className='usersearch'>
+            <input 
+              type="text" 
+              placeholder="Search jobs..." 
+              name="search"
+              value={searchQuery}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              onBlur={handleBlur}
+              onFocus={() => searchQuery.length > 0 && setShowSuggestions(true)}
+            />
+            {showSuggestions && suggestions.length > 0 && (
+              <ul className="suggestionsdropdown" ref={suggestionsRef}>
+                {suggestions.map((suggestion, index) => (
+                  <li
+                    key={suggestion}
+                    className={`suggestion-item ${index === highlightedIndex ? 'highlighted' : ''}`}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    onMouseEnter={() => setHighlightedIndex(index)}
+                  >
+                    {suggestion}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <div className="userverticalfilter">
             <h2 style={{
               paddingBottom: "24px",
@@ -236,7 +304,7 @@ function UserHome() {
           ) : (
             <div className='jobscontainer'>
               {filteredJobOpenings.length === 0 ? (
-                <p style={{ padding: "32px", color: "#888" }}>No job openings match your filters.</p>
+                <p style={{ padding: "32px", color: "#888" }}>No job openings match your search or filters.</p>
               ) : (
                 filteredJobOpenings.map((job, idx) => (
                   <div className='jobscardwrapper' key={job._id}>
