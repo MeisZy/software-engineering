@@ -41,11 +41,11 @@ app.use(express.json());
 // MongoDB connection
 const mongoURI = process.env.CONNECTION_STRING;
 
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(mongoURI)
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch((error) => console.error('Error connecting to MongoDB Atlas:', error));
 
-// Nodemailer setup
+// Nodemailer setup for all emails
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 465,
@@ -61,7 +61,12 @@ const transporter = nodemailer.createTransport({
 // Test Nodemailer configuration
 transporter.verify((error, success) => {
   if (error) {
-    console.error('Nodemailer configuration error:', error);
+    console.error('Nodemailer configuration error:', {
+      message: error.message,
+      code: error.code,
+      response: error.response,
+      stack: error.stack,
+    });
   } else {
     console.log('Nodemailer is ready to send emails');
   }
@@ -254,7 +259,6 @@ app.post('/logout', async (req, res) => {
 });
 
 // Forgot password endpoint
-// Forgot password endpoint
 app.post('/forgot-password', async (req, res) => {
   try {
     const { email } = req.body;
@@ -286,19 +290,21 @@ app.post('/forgot-password', async (req, res) => {
         <h4>Your Verification OTP</h4>
         <p><strong>Your 6-digit OTP: ${otp}</strong></p>
         <p>Please use this OTP to verify your identity. It is valid for 10 minutes.</p>
-        <p>Best Regards,</p>
-        <p>Collectius Team</p>
       `,
     });
 
     res.status(200).json({ message: 'OTP sent to your email' });
   } catch (err) {
-    console.error('Error sending OTP:', err);
+    console.error('Error sending OTP:', {
+      message: err.message,
+      code: err.code,
+      response: err.response,
+      stack: err.stack,
+    });
     res.status(500).json({ message: 'Failed to send OTP' });
   }
 });
 
-// Verify OTP endpoint
 // Verify OTP endpoint
 app.post('/verify-otp', async (req, res) => {
   try {
@@ -364,36 +370,45 @@ app.post('/reset-password', async (req, res) => {
   }
 });
 
-// Reset password endpoint
-app.post('/reset-password', async (req, res) => {
+// Report problem endpoint
+app.post('/report-problem', async (req, res) => {
   try {
-    const { email, password, resetToken } = req.body;
+    const { sender, subject, body } = req.body;
 
-    if (!email || !password || !resetToken) {
-      return res.status(400).json({ message: 'Email, password, and reset token are required' });
+    // Validate input
+    if (!sender || !subject || !body) {
+      return res.status(400).json({ message: 'Sender, subject, and body are required' });
     }
 
-    const stored = resetTokenStore.get(email);
-    if (!stored || stored.expires < Date.now() || stored.token !== resetToken) {
-      resetTokenStore.delete(email);
-      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    // Validate email format
+    if (!/\S+@\S+\.\S+/.test(sender)) {
+      return res.status(400).json({ message: 'Invalid email format' });
     }
 
-    const applicant = await Applicants.findOne({ email });
-    if (!applicant) {
-      return res.status(404).json({ message: 'Email not found' });
-    }
+    // Send report email
+    await transporter.sendMail({
+      from: `"Collectius Support" <${process.env.SUPPORT_EMAIL}>`,
+      to: 'collectiushrad@gmail.com',
+      replyTo: sender,
+      subject: `Concern: ${subject}`,
+      html: `
+        <p><strong>From:</strong> ${sender}</p>
+        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Message:</strong></p>
+        <p>${body.replace(/\n/g, '<br>')}</p>
+        <hr />
+      `,
+    });
 
-    // Hash new password
-    applicant.password = await bcrypt.hash(password, 10);
-    await applicant.save();
-
-    resetTokenStore.delete(email); // Clear token
-
-    res.status(200).json({ message: 'Password reset successfully' });
+    res.status(200).json({ message: 'Report submitted successfully' });
   } catch (err) {
-    console.error('Error resetting password:', err);
-    res.status(500).json({ message: 'Failed to reset password' });
+    console.error('Error sending report email:', {
+      message: err.message,
+      code: err.code,
+      response: err.response,
+      stack: err.stack,
+    });
+    res.status(500).json({ message: 'Failed to submit report' });
   }
 });
 
@@ -517,7 +532,7 @@ app.post('/apply', async (req, res) => {
     }
 
     // Find job in Jobs collection
-    const job = await Jobs.findOne({ title: jobTitle });
+    const job = await Jobs.findOne({ title: 'Software Engineer' });
     if (!job) {
       return res.status(404).json({ message: 'Job not found' });
     }
@@ -566,7 +581,7 @@ app.post('/apply', async (req, res) => {
 app.get('/applicants', async (req, res) => {
   try {
     const applicants = await JobApplicants.find();
-    res.status(200).json(applicants);W
+    res.status(200).json(applicants);
   } catch (err) {
     console.error('Error fetching applicants:', err);
     res.status(500).json({ message: err.message });
