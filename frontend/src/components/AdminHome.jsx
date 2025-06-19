@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Logo from './images/logo.png';
 import Details from './assets/jobdetailsimg.png';
+import SearchIcon from './images/search.png';
 import './AdminHome.css';
 
 function AdminHome() {
@@ -42,9 +43,26 @@ function AdminHome() {
     { label: 'Hybrid', id: 'hybrid' },
   ];
 
-  const suggestions = jobs
-    .filter(job => job.title.toLowerCase().includes(searchQuery.toLowerCase()))
-    .map(job => job.title)
+  // Generate suggestions from both jobs and applicants
+  const suggestions = [
+    ...jobs.map(job => ({
+      type: 'job',
+      value: job.title,
+      id: job._id,
+    })),
+    ...applicants.flatMap(applicant =>
+      applicant.positionAppliedFor
+        .filter(jobTitle => jobs.some(job => job.title.toLowerCase() === jobTitle.toLowerCase())) // Ensure job exists
+        .map(jobTitle => ({
+          type: 'applicant',
+          value: `${applicant.fullName} (Applicant for ${jobTitle})`,
+          id: applicant._id,
+          email: applicant.email,
+          jobTitle,
+        }))
+    ),
+  ]
+    .filter(suggestion => suggestion.value.toLowerCase().includes(searchQuery.toLowerCase()))
     .slice(0, 5);
 
   useEffect(() => {
@@ -52,7 +70,7 @@ function AdminHome() {
       try {
         const [jobsResponse, applicantsResponse] = await Promise.all([
           axios.get('http://localhost:5000/jobs'),
-          axios.get('http://localhost:5000/applicants')
+          axios.get('http://localhost:5000/applicants'),
         ]);
         setJobs(jobsResponse.data);
         setApplicants(applicantsResponse.data);
@@ -103,9 +121,45 @@ function AdminHome() {
   };
 
   const handleSuggestionClick = (suggestion) => {
-    setSearchQuery(suggestion);
+    setSearchQuery(suggestion.value);
     setShowSuggestions(false);
     setHighlightedIndex(-1);
+
+    try {
+      if (suggestion.type === 'job') {
+        const jobIndex = jobs.findIndex(job => job._id === suggestion.id);
+        if (jobIndex === -1) {
+          console.error(`Job not found for ID: ${suggestion.id}, Title: ${suggestion.value}`);
+          setError('Selected job not found.');
+          setTimeout(() => setError(''), 3000);
+          return;
+        }
+        setOpenDetailIdx(jobIndex);
+      } else if (suggestion.type === 'applicant') {
+        const jobIndex = jobs.findIndex(job => job.title.toLowerCase() === suggestion.jobTitle.toLowerCase());
+        const applicantIndex = applicants.findIndex(applicant => applicant._id === suggestion.id);
+
+        if (jobIndex === -1) {
+          console.error(`Job not found for Title: ${suggestion.jobTitle}`);
+          setError('Job associated with applicant not found.');
+          setTimeout(() => setError(''), 3000);
+          return;
+        }
+        if (applicantIndex === -1) {
+          console.error(`Applicant not found for ID: ${suggestion.id}, Email: ${suggestion.email}`);
+          setError('Selected applicant not found.');
+          setTimeout(() => setError(''), 3000);
+          return;
+        }
+
+        setOpenApplicantsIdx(jobIndex);
+        setOpenApplicantDetailIdx(applicantIndex);
+      }
+    } catch (err) {
+      console.error('Error handling suggestion click:', err);
+      setError('An error occurred while processing your selection.');
+      setTimeout(() => setError(''), 3000);
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -175,34 +229,45 @@ function AdminHome() {
       </nav>
       <div className='components'>
         <div className='adminleftcomp'>
-          <div className='adminsearch'>
-            <input 
-              type="text" 
-              placeholder="Search jobs..." 
-              name="search"
-              value={searchQuery}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              onBlur={handleBlur}
-              onFocus={() => searchQuery.length > 0 && setShowSuggestions(true)}
-            />
-            {showSuggestions && suggestions.length > 0 && (
-              <ul className="suggestionsdropdown" ref={suggestionsRef}>
-                {suggestions.map((suggestion, index) => (
-                  <li
-                    key={suggestion}
-                    className={`suggestion-item ${index === highlightedIndex ? 'highlighted' : ''}`}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    onMouseEnter={() => setHighlightedIndex(index)}
-                  >
-                    {suggestion}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
           <div className="verticalfilter">
             <h2 style={{ paddingBottom: "24px", paddingTop: "25px", fontSize: "24px" }}>Filters</h2>
+              <div className='adminsearch'>
+                <div className="adminsearch-inputwrap">
+                  <img
+                    src={SearchIcon}
+                    alt="Search"
+                    className="searchicon"
+                    style={{ width: 22, height: 22 }}
+                  />
+                  <input 
+                    type="text" 
+                    placeholder="Search jobs or applicants..." 
+                    name="search"
+                    value={searchQuery}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    onBlur={handleBlur}
+                    onFocus={() => searchQuery.length > 0 && setShowSuggestions(true)}
+                  />
+                </div>
+                {showSuggestions && suggestions.length > 0 && (
+                  <ul
+                    className="suggestionsdropdown"
+                    ref={suggestionsRef}
+                  >
+                    {suggestions.map((suggestion, index) => (
+                      <li
+                        key={`${suggestion.type}-${suggestion.id}`}
+                        className={`suggestion-item ${index === highlightedIndex ? 'highlighted' : ''} ${suggestion.type}`}
+                        onClick={() => handleSuggestionClick(suggestion)}
+                        onMouseEnter={() => setHighlightedIndex(index)}
+                      >
+                        {suggestion.value}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             <h4 style={{ fontSize: "14px", fontWeight: "600" }}>Working Schedule</h4>
             {workingSchedule.map(option => (
               <label className="custom-checkbox" key={option.id}>
@@ -293,7 +358,7 @@ function AdminHome() {
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gridColumn: '1 / span 2' }}>
                   <h3 style={{ marginBottom: 0 }}>
-                    {filteredJobOpenings[openApplicantsIdx].title}
+                    {filteredJobOpenings[openApplicantsIdx]?.title || 'Job Title'}
                   </h3>
                   <button
                     className='jobdetailsapply'
@@ -308,7 +373,7 @@ function AdminHome() {
                   <div className='applicantinstance'>
                     <ul>
                       {applicants
-                        .filter(applicant => applicant.positionAppliedFor.includes(filteredJobOpenings[openApplicantsIdx].title))
+                        .filter(applicant => applicant.positionAppliedFor.includes(filteredJobOpenings[openApplicantsIdx]?.title))
                         .map((applicant, idx) => (
                           <li key={applicant.email} style={{ marginBottom: "16px", listStyle: "none" }}>
                             <b>{applicant.fullName}</b>
@@ -360,7 +425,7 @@ function AdminHome() {
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gridColumn: '1 / span 2' }}>
                   <h3 style={{ marginBottom: 0 }}>
-                    {filteredJobOpenings[openDetailIdx].title}
+                    {filteredJobOpenings[openDetailIdx]?.title || 'Job Title'}
                   </h3>
                   <a className='jobdetailsapply' onClick={() => setOpenDetailIdx(null)} aria-label="Close">
                     ×
@@ -368,30 +433,30 @@ function AdminHome() {
                 </div>
                 <div className="jobdetailsgrid">
                   <div>
-                    <p><b>Department:</b> {filteredJobOpenings[openDetailIdx].department}</p>
-                    <p><b>Work Schedule:</b> {filteredJobOpenings[openDetailIdx].workSchedule}</p>
-                    <p><b>Work Setup:</b> {filteredJobOpenings[openDetailIdx].workSetup}</p>
-                    <p><b>Employment Type:</b> {filteredJobOpenings[openDetailIdx].employmentType}</p>
-                    <p><b>Description:</b> {filteredJobOpenings[openDetailIdx].description.join(', ')}</p>
+                    <p><b>Department:</b> {filteredJobOpenings[openDetailIdx]?.department || 'N/A'}</p>
+                    <p><b>Work Schedule:</b> {filteredJobOpenings[openDetailIdx]?.workSchedule || 'N/A'}</p>
+                    <p><b>Work Setup:</b> {filteredJobOpenings[openDetailIdx]?.workSetup || 'N/A'}</p>
+                    <p><b>Employment Type:</b> {filteredJobOpenings[openDetailIdx]?.employmentType || 'N/A'}</p>
+                    <p><b>Description:</b> {filteredJobOpenings[openDetailIdx]?.description.join(', ') || 'N/A'}</p>
                     <p><b>Key Responsibilities:</b></p>
                     <ul>
-                      {filteredJobOpenings[openDetailIdx].keyResponsibilities.map((item, i) => (
+                      {filteredJobOpenings[openDetailIdx]?.keyResponsibilities.map((item, i) => (
                         <li key={i}>{item}</li>
-                      ))}
+                      )) || <li>N/A</li>}
                     </ul>
                   </div>
                   <div>
                     <p><b>Qualifications:</b></p>
                     <ul>
-                      {filteredJobOpenings[openDetailIdx].qualifications.map((item, i) => (
+                      {filteredJobOpenings[openDetailIdx]?.qualifications.map((item, i) => (
                         <li key={i}>{item}</li>
-                      ))}
+                      )) || <li>N/A</li>}
                     </ul>
                     <p><b>What we Offer:</b></p>
                     <ul>
-                      {filteredJobOpenings[openDetailIdx].whatWeOffer.map((item, i) => (
+                      {filteredJobOpenings[openDetailIdx]?.whatWeOffer.map((item, i) => (
                         <li key={i}>{item}</li>
-                      ))}
+                      )) || <li>N/A</li>}
                     </ul>
                     <button
                       onClick={() => setOpenDetailIdx(null)}

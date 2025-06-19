@@ -1,214 +1,219 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-}
-* {
-  margin: 0;
-  padding: 0;
-}
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+  }
+  * {
+    margin: 0; /*  all margins */
+    padding: 0; /* Reset all paddings */
+  }
 
-nav {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  background-color: #13714C;
-  color: white;
-  width: 100%;
-  height: 50px;
-  box-sizing: border-box;
-}
+  nav {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #13714C;
+    color: white;
+    width: 100%;
+    height: 50px; /* Set a fixed height for nav */
+    box-sizing: border-box;
+    
+  }
 
-nav a {
-  padding: 10px;
-  margin: 5px;
-  font-size: 18px;
-  font-weight: 300;
-  text-decoration: none;
-  color: white;
-  overflow: hidden;
-}
+  nav a {
+    padding: 10px;
+    margin: 5px;
+    font-size: 18px;
+    font-weight: 300;
+    text-decoration: none;
+    color: white;
+    overflow: hidden;
+  }
 
-nav a:hover {
-  text-decoration: underline;
-}
+  nav a:hover {
+    text-decoration: underline;
+  }
 
-.verticalfilter {
-  display: relative;
-  background-color: #A2E494;
-}
+  .verticalfilter{
+    display:relative;
+    background-color:#A2E494;
+  }
 
-.filter-option {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
 
-.filter-option p {
-  margin: 0;
-  margin-right: 10px;
-  font-size: 16px;
-}
+  .filter-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; 
+  }
 
-.filter-option input {
-  transform: scale(1.2);
-}
+  .filter-option p {
+    margin: 0;
+    margin-right: 10px;
+    font-size: 16px;
+  }
 
-.adminleftcomp {
-  display: flex;
-  position: fixed;
-  min-width: 320px;
-  max-width: 640px;
-  flex: 0 0 200px;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  padding: 20px;
-  box-sizing: border-box;
-  background-color: #A2E494;
-  padding-top: 50px;
-  height: 100%;
-  border: 1px solid black;
-}
+  .filter-option input {
+    transform: scale(1.2);
+  }
 
-.adminrightcomp {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  box-sizing: border-box;
-  margin-top: 50px;
-  margin-left: 320px;
-}
+  .adminleftcomp {
+      display: flex;
+      position:fixed;
+      min-width: 320px; 
+      max-width: 640px;
+      flex: 0 0 200px;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding: 20px;
+      box-sizing: border-box;
+      background-color: #A2E494;
+      padding-top: 50px;
+      height: 100%;      
+      border:1px solid black;
+  }
 
-.components {
-  width: 100%;
-  display: flex;
-  min-height: 100%;
-  box-sizing: border-box;
-}
+  .adminrightcomp {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+      margin-top: 50px;
+      margin-left: 320px; /* Add this line */
+  }
 
-.custom-checkbox {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  position: relative;
-  user-select: none;
-  width: 220px;
-  min-width: 260px;
-  max-width: 220px;
-  height: 32px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
+  .components {
+      width: 100%;
+      display: flex;
+      min-height: 100%;
+      box-sizing: border-box;
+  }
 
-.custom-checkbox input[type="checkbox"] {
-  opacity: 0;
-  width: 0;
-  height: 0;
-  position: absolute;
-}
 
-.custom-checkbox .checkmark {
-  height: 20px;
-  width: 20px;
-  background-color: white;
-  border: 2px solid #888;
-  border-radius: 50%;
-  margin-right: 10px;
-  display: inline-block;
-  position: relative;
-  transition: border-color 0.2s;
-  flex-shrink: 0;
-}
+  .custom-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    width: 220px;           
+    min-width: 260px;
+    max-width: 220px;
+    height: 32px;           
+    box-sizing: border-box;
+    overflow: hidden;
 
-.custom-checkbox input[type="checkbox"]:checked + .checkmark {
-  background-color: #111;
-  border: 2px solid #222;
-}
+  }
 
-.custom-checkbox input[type="checkbox"]:checked + .checkmark::after {
-  content: "";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #111;
-}
+  .custom-checkbox input[type="checkbox"] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+  }
 
-.custom-checkbox p {
-  margin: 0;
-  font-size: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex: 1 1 auto;
-  min-width: 0;
-}
+  .custom-checkbox .checkmark {
+    height: 20px;
+    width: 20px;
+    background-color: white;
+    border: 2px solid #888;
+    border-radius: 50%;
+    margin-right: 10px;
+    display: inline-block;
+    position: relative;
+    transition: border-color 0.2s;
+    flex-shrink: 0;
+  }
 
-h4 {
-  padding-bottom: 20px;
-  padding-top: 20px;
-  color: grey;
-}
+  .custom-checkbox input[type="checkbox"]:checked + .checkmark {
+    background-color: #111;
+    border: 2px solid #222;
+  }
 
-.jobscontainer {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  padding: 20px;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-}
+  .custom-checkbox input[type="checkbox"]:checked + .checkmark::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #111;
+  }
 
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin: 10px;
-}
+  .custom-checkbox p {
+    margin: 0;
+    font-size: 14px;
+    white-space: nowrap;        
+    overflow: hidden;         
+    text-overflow: ellipsis;   
+    flex: 1 1 auto;
+    min-width: 0;
+  }
 
-.tags a {
-  background-color: #13714C;
-  border: 1px solid black;
-  border-radius: 5px;
-  color: white;
-  padding: 5px;
-  margin-top: 10px;
-  font-size: 8px;
-}
+  h4{
+    padding-bottom:"20px";
+    padding-top:"20px";
+    color: grey;
 
+  }
+
+  .jobscontainer{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+  }
+
+  
+  .tags{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 10px;
+  }
+  .tags a{
+    background-color: #13714C;
+    border:1px solid black;
+    border-radius: 5px;
+    color:white;
+    padding:5px;
+    margin-top:10px;
+    font-size:8px;
+  }
+  
+  
 .joboption {
-  background-color: #13714C;
-  width: 100%;
-  border-radius: 0 0 25px 25px;
-  height: 40px;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 0;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 0;
+    background-color: #13714C;
+    width: 100%; /* Full width of the job card */
+    border-radius: 0 0 25px 25px;
+    height: 40px;
+    position: absolute; 
+    bottom: 0; 
+    left: 0;
+    right: 0;
+    z-index: 0; 
+    display: flex; /* Enable flexbox */
+    justify-content: flex-end; /* Align items to the right */
+    align-items: center; /* Center vertically */
+    padding: 0 -0px; /* Add some padding for aesthetics */
 }
-
 .applicantdetailwrap {
   padding: 24px;
   background: white;
   width: 800px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 12px; /* space between each detail */
   border-radius: 8px;
   border: 1px solid #13714C;
   margin-top: 12px;
@@ -220,87 +225,80 @@ h4 {
   display: block;
   color: #222;
 }
-
-.joboption a {
-  color: white;
-  text-decoration: none;
-  font-size: 10px;
-  padding: 5px;
-  display: flex;
-  justify-content: center;
-  flex-direction: row-reverse;
-  text-align: center;
-  position: relative;
-  margin: 10px;
-  background-color: white;
-  border: 1px solid black;
-  color: black;
-  cursor: pointer;
-  border-radius: 25px;
-}
-
-.viewdetails {
-  margin-left: 12px;
+  .joboption a{
+    color: white;
+    text-decoration: none;
+    font-size: 10px;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    flex-direction: row-reverse;
+    text-align: center;
+    position:relative;
+    margin:10px;
+    background-color:white;
+    border: 1px solid black;
+    color:black;
+    cursor:pointer;
+    border-radius:  25px;
+  }
+.viewdetails{
+  margin-left:12px;
   padding: 2px 8px;
-  font-size: 12px;
-  z-index: 1;
+  font-size:12px;
+  z-index:1;
   background-color: #A2E494;
-  border: 2px solid black;
-  cursor: pointer;
+  border:2px solid black;
+  cursor:pointer;
 }
 
-.viewdetails a:active {
-  background-color: #13714C;
+.viewdetails a:active{
+  background-color: #13714C;  
 }
+  .joboption a:hover{
+    background-color: #A2E494;
+    color: black;
+    border:1px solid black;
+    border-radius:  25px;
+  }
 
-.joboption a:hover {
-  background-color: #A2E494;
-  color: black;
-  border: 1px solid black;
-  border-radius: 25px;
-}
+  .jobcard {
+    width: 240px;
+    height: 256px;
+    border: 1px solid black;
+    margin: 25px;
+    font-size: 16px;
+    background-color: #A2E494;
+    overflow: hidden;
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    position: relative; 
+    z-index: 1; 
+  }
 
-.jobcard {
-  width: 240px;
-  height: 256px;
-  border: 1px solid black;
-  margin: 25px;
-  font-size: 16px;
-  background-color: #A2E494;
-  overflow: hidden;
-  border-radius: 25px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  z-index: 1;
-}
+  .jobcard h2{
+    margin:20px;
+    width:160px;
+    height:60px;
+    font-weight:500;
+    font-size:16px;
+    text-align: left;
+  }
 
-.jobcard h2 {
-  margin: 20px;
-  width: 160px;
-  height: 60px;
-  font-weight: 500;
-  font-size: 16px;
-  text-align: left;
-}
-
-.jobcard p {
-  position: relative;
-}
+  .jobcard p{
+    position:relative;
+  }
 
 .jobdetails {
   position: fixed;
-  top: 40%;
-  left: 20%;
-  right: 0;
-  bottom: 25%;
+  top: 40%; left: 20%; right: 0; bottom: 25%;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 5;
-  height: 200px;
+  height:200px;
 }
-
 .jobdetailsblock {
   border-radius: 12px;
   height: 600px;
@@ -314,17 +312,15 @@ h4 {
   box-sizing: border-box;
 }
 
-.jobdetailsblock p {
-  font-size: 20px;
-  margin: 20px;
+.jobdetailsblock p{
+  font-size:20px;
+  margin:20px;
 }
-
-.jobdetailsblock ul {
+.jobdetailsblock ul{
   font-size: 16px;
-  margin-left: 20px;
-  width: 320px;
+  margin-left:20px;
+  width:320px;
 }
-
 .jobdetailsblock h3 {
   color: white;
   font-weight: 600;
@@ -332,12 +328,12 @@ h4 {
   font-size: clamp(1.2rem, 2.5vw, 2rem);
   background-color: #13714C;
   border: 1px solid black;
-  padding: 12px 20px;
-  margin: 0;
+  padding: 12px 20px;      
+  margin: 0;             
   line-height: 1.2;
   width: fit-content;
   overflow-wrap: break-word;
-  border-radius: 16px;
+  border-radius:16px;
 }
 
 .jobdetailsgrid {
@@ -348,14 +344,14 @@ h4 {
 }
 
 .jobdetailsapply {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  margin-left: 20px;
-  margin-right: 30px;
-  color: black;
-  align-self: flex-start;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin-left: 20px;
+    margin-right:30px;
+    color: black;
+    align-self: flex-start; 
 }
 
 .applicantslistcontainer {
@@ -371,54 +367,92 @@ h4 {
   height: 200px;
 }
 
-.applicantsgrid {
-  border: 1px solid black;
-  width: 900px;
+.applicantsgrid{
+  border:1px solid black;
+  width:900px;  
   height: 420px;
-  margin-left: 32px;
-  margin-right: 20px;
+  margin-left:32px;
+  margin-right:20px;
   background-color: white;
 }
 
 .adminsearch {
   position: relative;
-  width: 100%;
 }
 
-.adminsearch input[type="text"] {
-  width: 100%;
-  padding: 8px 12px;
-  font-size: 16px;
-  border: 1px solid #13714C;
-  border-radius: 6px;
-  background: #f8f8f8;
-  box-sizing: border-box;
+.adminsearch input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 256px;
+  height: 40px;
+  padding: 0 12px;
+  font-size: 1rem;
+  border: 2px solid #13714C;
+  border-radius: 8px;
+  background: #f8fff8;
+  border:2px solid black;
+  color: #222;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
 }
 
-.suggestionsdropdown {
+.adminsearch input:focus {
+  border: 2px solid #A2E494;
+  box-shadow: 0 0 0 2px #A2E49433;
+  border:2px solid black;
+}
+.adminsearch .suggestionsdropdown {
   position: absolute;
-  top: 100%;
+  top: 100%; /* directly below the input */
   left: 0;
   width: 100%;
   background: white;
-  border: 2px solid black;
-  border-radius: 6px;
-  margin-top: 4px;
-  padding: 0;
-  list-style: none;
+  border: 1px solid #ccc;
   z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
   max-height: 200px;
   overflow-y: auto;
+  border:2px solid black;
+  border-radius:10px;
 }
 
-.suggestion-item {
+.suggestionsdropdown li{
+  display:flex;
+  justify-content: center;
+  text-align: center;
+}
+
+.adminsearch .suggestionsdropdown li {
+  list-style: none;
   padding: 8px 12px;
-  font-size: 14px;
   cursor: pointer;
-  color: #222;
 }
 
-.suggestion-item:hover, .suggestion-item.highlighted {
-  background: #13714C;
-  color: white;
+.adminsearch-inputwrap {
+  position: relative;
+  width: 256px;
+  display: flex;
+  align-items: center;
+}
+
+.adminsearch-inputwrap .searchicon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  opacity: 0.7;
+  z-index: 2;
+}
+
+.adminsearch-inputwrap input {
+  padding-left: 40px; /* Make space for the icon */
+  width: 100%;
+  box-sizing: border-box;
 }
