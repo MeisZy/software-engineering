@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Logo from './images/logo.png';
 import Details from './assets/jobdetailsimg.png';
-import SearchIcon from './images/search.png';
 import './AdminHome.css';
 
 function AdminHome() {
@@ -49,13 +48,16 @@ function AdminHome() {
       type: 'job',
       value: job.title,
       id: job._id,
+      workSchedule: job.workSchedule,
+      employmentType: job.employmentType,
+      workSetup: job.workSetup,
     })),
     ...applicants.flatMap(applicant =>
       applicant.positionAppliedFor
-        .filter(jobTitle => jobs.some(job => job.title.toLowerCase() === jobTitle.toLowerCase())) // Ensure job exists
+        .filter(jobTitle => jobs.some(job => job.title.toLowerCase() === jobTitle.toLowerCase()))
         .map(jobTitle => ({
           type: 'applicant',
-          value: `${applicant.fullName} (Applicant for ${jobTitle})`,
+          value: `${applicant.fullName} (Applied for ${jobTitle})`,
           id: applicant._id,
           email: applicant.email,
           jobTitle,
@@ -229,45 +231,43 @@ function AdminHome() {
       </nav>
       <div className='components'>
         <div className='adminleftcomp'>
+          <div className='adminsearch'>
+            <input 
+              type="text" 
+              placeholder="Search jobs or applicants..." 
+              name="search"
+              value={searchQuery}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              onBlur={handleBlur}
+              onFocus={() => searchQuery.length > 0 && setShowSuggestions(true)}
+            />
+            {showSuggestions && suggestions.length > 0 && (
+              <ul className="suggestionsdropdown" ref={suggestionsRef}>
+                {suggestions.map((suggestion, index) => (
+                  <li
+                    key={`${suggestion.type}-${suggestion.id}`}
+                    className={`suggestion-item ${index === highlightedIndex ? 'highlighted' : ''} ${suggestion.type}`}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    onMouseEnter={() => setHighlightedIndex(index)}
+                  >
+                    <div>
+                      <span>{suggestion.value}</span>
+                      {suggestion.type === 'job' && (
+                        <div className="suggestiontags">
+                          <span>{suggestion.workSchedule} - </span>
+                          <span>{suggestion.employmentType} - </span>
+                          <span>{suggestion.workSetup}</span>
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <div className="verticalfilter">
             <h2 style={{ paddingBottom: "24px", paddingTop: "25px", fontSize: "24px" }}>Filters</h2>
-              <div className='adminsearch'>
-                <div className="adminsearch-inputwrap">
-                  <img
-                    src={SearchIcon}
-                    alt="Search"
-                    className="searchicon"
-                    style={{ width: 22, height: 22 }}
-                  />
-                  <input 
-                    type="text" 
-                    placeholder="Search jobs or applicants..." 
-                    name="search"
-                    value={searchQuery}
-                    onChange={handleInputChange}
-                    onKeyDown={handleKeyDown}
-                    onBlur={handleBlur}
-                    onFocus={() => searchQuery.length > 0 && setShowSuggestions(true)}
-                  />
-                </div>
-                {showSuggestions && suggestions.length > 0 && (
-                  <ul
-                    className="suggestionsdropdown"
-                    ref={suggestionsRef}
-                  >
-                    {suggestions.map((suggestion, index) => (
-                      <li
-                        key={`${suggestion.type}-${suggestion.id}`}
-                        className={`suggestion-item ${index === highlightedIndex ? 'highlighted' : ''} ${suggestion.type}`}
-                        onClick={() => handleSuggestionClick(suggestion)}
-                        onMouseEnter={() => setHighlightedIndex(index)}
-                      >
-                        {suggestion.value}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
             <h4 style={{ fontSize: "14px", fontWeight: "600" }}>Working Schedule</h4>
             {workingSchedule.map(option => (
               <label className="custom-checkbox" key={option.id}>
