@@ -280,7 +280,7 @@ app.post('/forgot-password', async (req, res) => {
 
     // Send OTP via email
     await transporter.sendMail({
-      from: process.env.NODEMAILER_ADMIN,
+      from: process.env.SUPPORT_EMAIL,
       to: email,
       subject: 'Your Password Reset OTP',
       html: `
@@ -387,7 +387,7 @@ app.post('/report-problem', async (req, res) => {
 
     // Send report email
     await transporter.sendMail({
-      from: `"Collectius Support" <${process.env.SUPPORT_EMAIL}>`,
+      from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,  
       to: 'collectiushrad@gmail.com',
       replyTo: sender,
       subject: `Concern: ${subject}`,
