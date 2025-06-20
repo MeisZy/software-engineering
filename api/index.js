@@ -429,6 +429,7 @@ app.post('/jobs', async (req, res) => {
       whatWeOffer,
       keywords,
       gradedQualifications,
+      Status
     } = req.body;
 
     if (
@@ -470,6 +471,7 @@ app.post('/jobs', async (req, res) => {
       whatWeOffer,
       keywords: keywords || [],
       gradedQualifications: gradedQualifications || [],
+      Status: Status || 'To Next Interview',
     });
 
     await newJob.save();

@@ -15,6 +15,7 @@
   import About from './components/About/About.jsx';
   import GoogleRegistration from './components/GoogleRegistration.jsx';
   import Profile from './components/About/Profile.jsx';
+  import UserManagement from './components/UserManagement.jsx';
   import './App.css';
 
   function App() {
@@ -35,6 +36,7 @@
             <Route path="/about" element={<About />} />
             <Route path="/googleregistration" element={<GoogleRegistration />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/usermanagement" element={<UserManagement />} />
           </Routes>
       </>
     );

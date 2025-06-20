@@ -27,24 +27,30 @@ const jobSchema = new mongoose.Schema({
     trim: true,
   },
   description: {
-    type: [String], // Array of strings
+    type: [String],
     required: true,
   },
   keyResponsibilities: {
-    type: [String], // Array of strings
+    type: [String],
     required: true,
   },
   qualifications: {
-    type: [String], // Array of strings
+    type: [String],
     required: true,
   },
   whatWeOffer: {
-    type: [String], // Array of strings
+    type: [String],
     required: true,
   },
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  Status: {
+    type: String,
+    required: true,
+    enum: ['Rejected', 'To Next Interview'],
+    default: 'To Next Interview',
   },
 });
 

@@ -1,6 +1,43 @@
-import React from 'react'
-import './AdminMaintainance.css'
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './AdminMaintainance.css';
+import axios from 'axios';
+
 function AdminMaintainance() {
+  const [applicants, setApplicants] = useState([]);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchApplicants = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/applicants');
+        setApplicants(response.data);
+      } catch (err) {
+        console.error('Error fetching applicants:', err);
+        setError('Failed to load applicants.');
+      }
+    };
+    fetchApplicants();
+  }, []);
+
+  const handleUserManagement = () => {
+    navigate('/usermanagement');
+  }
+
+  const handleDownload = (applicant) => {
+    const jsonData = JSON.stringify(applicant, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${applicant.email.replace('@', '_').replace('.', '_')}_applicant.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <>
       <nav>
@@ -8,24 +45,26 @@ function AdminMaintainance() {
       </nav>
       <div className="maintainancecomponents">
         <div className='maintainanceleftcomp'>
-            <ul>User Management</ul>
-            <ul>User Support</ul>{/*should open the inbox of report a problem? */}
-            <ul>Data Backup</ul>
+          <li onClick={handleUserManagement}>User Management</li>
+          <li>User Support</li>
+          <li>Data Backup</li>
         </div>
-          <div className='maintainancerightcomp'>
-            <div className='backupcontainer'>
-                <div className='backupheader'>
-                </div>
-              {/*applicant mapping */}
-              <ul className='maintainanceinstance'>
-                <label>Applicant</label>
-                <a>download</a>
-              </ul> 
-          </div>  
+        <div className='maintainancerightcomp'>
+          <div className='backupcontainer'>
+            <div className='backupheader'></div>
+            {error && <div style={{ color: 'red', padding: '16px' }}>{error}</div>}
+            {applicants.length === 0 && !error && <div style={{ padding: '16px', color: '#888' }}>No applicants available.</div>}
+            {applicants.map((applicant) => (
+              <ul className='maintainanceinstance' key={applicant._id}>
+                <label>{applicant.email}</label>
+                <a onClick={() => handleDownload(applicant)}>download</a>
+              </ul>
+            ))}
+          </div>
         </div>
       </div>
     </>
-  )
+  );
 }
 
 export default AdminMaintainance;

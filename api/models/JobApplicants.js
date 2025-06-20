@@ -1,65 +1,70 @@
 const mongoose = require('mongoose');
 
-const jobApplicantSchema = new mongoose.Schema({
+const jobApplicantsSchema = new mongoose.Schema({
+  fullName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
   firstName: {
     type: String,
-    required: true
+    trim: true,
   },
   middleName: {
     type: String,
-    required: false
+    trim: true,
   },
   lastName: {
     type: String,
-    required: true
+    trim: true,
   },
   email: {
     type: String,
     required: true,
     unique: true,
-    match: /.+\@.+\..+/ // Simple email validation
+    trim: true,
   },
   mobileNumber: {
     type: String,
     required: true,
-    match: /^\d{10}$/ // Assuming a 10-digit mobile number
+    trim: true,
   },
   positionAppliedFor: {
-    type: [String], // Changed to an array of strings
-    required: true
+    type: [String],
+    required: true,
   },
   birthdate: {
     type: Date,
-    required: true
+    required: true,
   },
   gender: {
     type: String,
-    enum: ['M', 'F'],
-    required: true
+    required: true,
   },
   city: {
     type: String,
-    required: true
+    required: true,
+    trim: true,
   },
   stateProvince: {
     type: String,
-    required: true
+    required: true,
+    trim: true,
   },
   status: {
     type: String,
-    enum: ['Ongoing', 'Rejected'],
-    required: true
+    required: true,
+    enum: ['Rejected', 'To Next Interview'],
+    default: 'To Next Interview',
   },
   applicationStage: {
     type: String,
-    default: 'None'
+    default: 'None',
   },
   resume: {
-    type: [String], // Assuming skills are stored as an array of strings
-    required: true
-  }
+    type: [String],
+    default: ['Default Skill'],
+  },
 });
 
-const JobApplicants = mongoose.model('JobApplicants', jobApplicantSchema);
-
-module.exports = JobApplicants;
+module.exports = mongoose.model('JobApplicants', jobApplicantsSchema);
