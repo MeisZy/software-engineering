@@ -43,7 +43,6 @@ function UserHome() {
 
   const suggestions = jobs
     .filter(job => job.title.toLowerCase().includes(searchQuery.toLowerCase()))
-    .map(job => job.title)
     .slice(0, 5);
 
   useEffect(() => {
@@ -225,14 +224,19 @@ function UserHome() {
             />
             {showSuggestions && suggestions.length > 0 && (
               <ul className="suggestionsdropdown" ref={suggestionsRef}>
-                {suggestions.map((suggestion, index) => (
+                {suggestions.map((job, index) => (
                   <li
-                    key={suggestion}
-                    className={`suggestion-item ${index === highlightedIndex ? 'highlighted' : ''}`}
-                    onClick={() => handleSuggestionClick(suggestion)}
+                    key={job._id}
+                    className={`suggestion-item${index === highlightedIndex ? ' highlighted' : ''}`}
+                    onClick={() => handleSuggestionClick(job.title)}
                     onMouseEnter={() => setHighlightedIndex(index)}
                   >
-                    {suggestion}
+                    <span>{job.title}</span>
+                    <div className="suggestiontags">
+                      <span>{job.workSchedule} - </span>
+                      <span>{job.employmentType} - </span>
+                      <span>{job.workSetup}</span>
+                    </div>
                   </li>
                 ))}
               </ul>

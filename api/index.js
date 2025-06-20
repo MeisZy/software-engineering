@@ -19,11 +19,13 @@ console.log('Environment variables:', {
   mongoUri: process.env.CONNECTION_STRING ? '[REDACTED]' : undefined,
 });
 if (!process.env.NODEMAILER_ADMIN || !process.env.NODEMAILER_PASSWORD) {
-  console.error('Missing NODEMAILER_ADMIN or NODEMAILER_PASSWORD environment variables');
+  console.error('Missing NODEMAILER_ADMIN or NODEMAILER_PASSWORD
+environment variables');
   process.exit(1);
 }
 if (!process.env.CONNECTION_STRING) {
-  console.error('MongoDB connection string is undefined. Please check your .env file.');
+  console.error('MongoDB connection string is undefined. Please check
+your .env file.');
   process.exit(1);
 }
 
@@ -45,7 +47,51 @@ mongoose.connect(mongoURI)
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch((error) => console.error('Error connecting to MongoDB Atlas:', error));
 
-// Nodemailer setup for all emails
+
+// Fetch applicant profile by email
+app.get('/applicants', async (req, res) => {
+   console.log("Querying for email:", req.query.email); // ✅ Add this
+  try {
+    const { email } = req.query;
+
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      return res.status(400).json({ message: 'Valid email is required' });
+    }
+
+    const applicant = await Applicants.findOne({
+  email: { $regex: new RegExp(`^${email}$`, 'i') }
+});
+
+
+    if (!applicant) {
+      return res.status(404).json({ message: 'Applicant not found' });
+    }
+
+    // Respond with relevant profile fields
+    res.status(200).json({
+      applicantId: applicant.applicantId,
+      firstName: applicant.firstName,
+      middleName: applicant.middleName,
+      lastName: applicant.lastName,
+      email: applicant.email,
+      mobileNumber: applicant.mobileNumber,
+      positionAppliedFor: applicant.positionAppliedFor,
+      birthdate: applicant.birthdate,
+      gender: applicant.gender,
+      city: applicant.city,
+      stateProvince: applicant.stateProvince,
+      status: applicant.status,
+      applicationStage: applicant.applicationStage,
+      resume: applicant.resume.skills || [],
+    });
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({ message: 'Server error while fetching profile' });
+  }
+});
+
+
+  // Nodemailer setup for all emails
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 465,
@@ -97,7 +143,9 @@ app.post('/add', async (req, res) => {
     } = req.body;
 
     // Basic validation
-    if (!firstName || !lastName || !birthdate || !gender || !streetAddress || !city || !stateProvince || !postalCode || !email || !mobileNumber || !password || !confirmPassword) {
+    if (!firstName || !lastName || !birthdate || !gender ||
+!streetAddress || !city || !stateProvince || !postalCode || !email ||
+!mobileNumber || !password || !confirmPassword) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
     if (password !== confirmPassword) {
@@ -108,7 +156,8 @@ app.post('/add', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const applicant = new Applicants({
-      fullName: `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`.trim(),
+      fullName: `${firstName} ${middleName ? middleName + ' ' :
+''}${lastName}`.trim(),
       firstName,
       middleName,
       lastName,
@@ -170,17 +219,13 @@ app.post('/login', async (req, res) => {
 app.post('/google-login', async (req, res) => {
   try {
     const { email, fullName, picture } = req.body;
-
     console.log('Google login request:', { email, fullName, picture });
-
     if (!email || !fullName) {
-      return res.status(400).json({ message: 'Email and full name are required' });
+      return res.status(400).json({ message: 'Email and full name are
+required' });
     }
-
     // Normalize fullName
     const normalizedFullName = fullName.trim() || 'Unknown Google User';
-
-    // Check if user exists
     let applicant = await Applicants.findOne({ email });
     if (!applicant) {
       // Create new applicant with default values
@@ -201,14 +246,10 @@ app.post('/google-login', async (req, res) => {
       });
       await applicant.save();
     }
-
-    // Ensure applicant.fullName is set
     if (!applicant.fullName) {
       applicant.fullName = normalizedFullName;
       await applicant.save();
     }
-
-    // Log login activity
     const userLog = new UserLogs({
       date: new Date(),
       firstName: applicant.firstName || '',
@@ -217,7 +258,6 @@ app.post('/google-login', async (req, res) => {
       activity: 'Logged in',
     });
     await userLog.save();
-
     res.status(200).json({
       message: 'Google login successful',
       applicant: {
@@ -238,7 +278,8 @@ app.post('/logout', async (req, res) => {
     const { email, fullName, firstName, middleName } = req.body;
 
     if (!email || !fullName) {
-      return res.status(400).json({ message: 'Email and full name are required' });
+      return res.status(400).json({ message: 'Email and full name are
+required' });
     }
 
     // Log logout activity
@@ -274,7 +315,7 @@ app.post('/forgot-password', async (req, res) => {
 
     // Generate a 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    
+
     // Store the OTP with an expiration time (e.g., 10 minutes)
     otpStore.set(email, { otp, expires: Date.now() + 10 * 60 * 1000 });
 
@@ -285,11 +326,13 @@ app.post('/forgot-password', async (req, res) => {
       subject: 'Your Password Reset OTP',
       html: `
         <h3>Password Reset Request</h3>
-        <p>You have requested to reset your password for your Collectius account.</p>
+        <p>You have requested to reset your password for your
+Collectius account.</p>
         <hr />
         <h4>Your Verification OTP</h4>
         <p><strong>Your 6-digit OTP: ${otp}</strong></p>
-        <p>Please use this OTP to verify your identity. It is valid for 10 minutes.</p>
+        <p>Please use this OTP to verify your identity. It is valid
+for 10 minutes.</p>
       `,
     });
 
@@ -326,7 +369,8 @@ app.post('/verify-otp', async (req, res) => {
 
     // Generate reset token
     const resetToken = Math.random().toString(36).slice(-8);
-    resetTokenStore.set(email, { token: resetToken, expires: Date.now() + 10 * 60 * 1000 });
+    resetTokenStore.set(email, { token: resetToken, expires:
+Date.now() + 10 * 60 * 1000 });
 
     otpStore.delete(email); // Clear OTP
 
@@ -343,13 +387,15 @@ app.post('/reset-password', async (req, res) => {
     const { email, password, resetToken } = req.body;
 
     if (!email || !password || !resetToken) {
-      return res.status(400).json({ message: 'Email, password, and reset token are required' });
+      return res.status(400).json({ message: 'Email, password, and
+reset token are required' });
     }
 
     const stored = resetTokenStore.get(email);
     if (!stored || stored.expires < Date.now() || stored.token !== resetToken) {
       resetTokenStore.delete(email);
-      return res.status(400).json({ message: 'Invalid or expired reset token' });
+      return res.status(400).json({ message: 'Invalid or expired reset
+token' });
     }
 
     const applicant = await Applicants.findOne({ email });
@@ -377,7 +423,8 @@ app.post('/report-problem', async (req, res) => {
 
     // Validate input
     if (!sender || !subject || !body) {
-      return res.status(400).json({ message: 'Sender, subject, and body are required' });
+      return res.status(400).json({ message: 'Sender, subject, and
+body are required' });
     }
 
     // Validate email format
@@ -469,7 +516,8 @@ app.post('/jobs', async (req, res) => {
       !Array.isArray(whatWeOffer) ||
       whatWeOffer.length === 0
     ) {
-      return res.status(400).json({ message: 'All fields are required and must be valid arrays where applicable' });
+      return res.status(400).json({ message: 'All fields are required
+and must be valid arrays where applicable' });
     }
 
     // Create new job
@@ -491,7 +539,8 @@ app.post('/jobs', async (req, res) => {
   } catch (error) {
     console.error('Error creating job:', error);
     if (error.name === 'ValidationError') {
-      return res.status(400).json({ message: 'Validation error: ' + error.message });
+      return res.status(400).json({ message: 'Validation error: ' +
+error.message });
     }
     res.status(500).json({ message: 'Server error while creating job' });
   }
@@ -522,7 +571,8 @@ app.post('/apply', async (req, res) => {
 
     // Validate input
     if (!email || !jobTitle) {
-      return res.status(400).json({ message: 'Email and job title are required' });
+      return res.status(400).json({ message: 'Email and job title are
+required' });
     }
 
     // Find applicant in Applicants collection
@@ -532,7 +582,7 @@ app.post('/apply', async (req, res) => {
     }
 
     // Find job in Jobs collection
-    const job = await Jobs.findOne({ title: jobTitle });
+    const job = await Jobs.findOne({ title: 'Software Engineer' });
     if (!job) {
       return res.status(404).json({ message: 'Job not found' });
     }
@@ -541,7 +591,8 @@ app.post('/apply', async (req, res) => {
     let jobApplicant = await JobApplicants.findOne({ email });
     if (jobApplicant) {
       if (jobApplicant.positionAppliedFor.includes(jobTitle)) {
-        return res.status(400).json({ message: 'You have already applied for this job' });
+        return res.status(400).json({ message: 'You have already
+applied for this job' });
       }
       // Append job title to existing applicant
       jobApplicant.positionAppliedFor.push(jobTitle);
@@ -571,7 +622,8 @@ app.post('/apply', async (req, res) => {
   } catch (error) {
     console.error('Error applying for job:', error);
     if (error.code === 11000) {
-      return res.status(400).json({ message: 'Email already exists in job applicants' });
+      return res.status(400).json({ message: 'Email already exists in
+job applicants' });
     }
     res.status(500).json({ message: 'Server error while applying for job' });
   }

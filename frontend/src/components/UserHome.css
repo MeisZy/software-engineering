@@ -344,18 +344,22 @@ nav a:hover {
 .usersearch {
   position: relative;
   width: 100%;
+  z-index: 20;
 }
 
 .usersearch input[type="text"] {
   width: 100%;
   font-size: 16px;
-  border: 1px solid #13714C;
+  border: 2px solid black;
   border-radius: 6px;
   background: #f8f8f8;
   box-sizing: border-box;
+  height: 24px;
+  padding: 8px 12px;
 }
 
-.suggestions-dropdown {
+
+.suggestionsdropdown {
   position: absolute;
   top: 100%;
   left: 0;
@@ -368,15 +372,30 @@ nav a:hover {
   list-style: none;
   max-height: 200px;
   overflow-y: auto;
+  z-index: 30; /* Higher than filters */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .suggestion-item {
+  list-style: none;
   padding: 8px 12px;
   font-size: 14px;
   cursor: pointer;
   color: #222;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
-
+.suggestion-item:hover,
+.suggestion-item.highlighted {
+  background: #13714C;
+  color: white;
+}
+.suggestiontags span {
+  font-size: 10px;
+  padding: 2px;
+}
 .suggestion-item:hover, .suggestion-item.highlighted {
   background: #13714C;
   color: white;

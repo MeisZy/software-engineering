@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useNavigate } from "react";
 import "./About.css";
 import Navbar from "./Navbar.jsx";
 import "./MultiContainerSlider.css";

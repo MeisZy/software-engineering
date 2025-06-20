@@ -44,6 +44,9 @@ function SetCriteria() {
   const [keyResponsibilities, setKeyResponsibilities] = useState(['']);
   const [qualifications, setQualifications] = useState(['']);
   const [offers, setOffers] = useState(['']);
+  const [keywords, setKeywords] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+  const [gradedQualifications, setGradedQualifications] = useState([{ attribute: '', points: 0 }]);
   const [jobData, setJobData] = useState({
     title: '',
     department: '',
@@ -100,16 +103,13 @@ function SetCriteria() {
     navigate('/adminhome');
   };
 
-  const MIN_PAGE = 1;
-  const MAX_PAGE = 5;
-
   const handlePrevPage = () => {
-    setCriteriaPage(prev => (prev - 1 < MIN_PAGE ? MAX_PAGE : prev - 1));
+    setCriteriaPage(prev => (prev - 1 < 1 ? 6 : prev - 1));
     setError('');
   };
 
   const handleNextPage = () => {
-    setCriteriaPage(prev => (prev + 1 > MAX_PAGE ? MIN_PAGE : prev + 1));
+    setCriteriaPage(prev => (prev + 1 > 6 ? 1 : prev + 1));
     setError('');
   };
 
@@ -158,6 +158,35 @@ function SetCriteria() {
     setError('');
   };
 
+  const handleKeywordsKeyDown = (e) => {
+    if (e.key === ' ' || e.key === ',') {
+      e.preventDefault();
+      const newWord = inputValue.trim();
+      if (newWord && !keywords.includes(newWord)) {
+        setKeywords([...keywords, newWord]);
+        setInputValue('');
+      }
+    }
+  };
+
+  const removeKeyword = (wordToRemove) => {
+    setKeywords(keywords.filter(word => word !== wordToRemove));
+  };
+
+  const handleGradedQualificationChange = (idx, field, value) => {
+    const updatedQualifications = [...gradedQualifications];
+    updatedQualifications[idx] = { ...updatedQualifications[idx], [field]: value };
+    setGradedQualifications(updatedQualifications);
+  };
+
+  const handleAddGradedQualification = () => {
+    setGradedQualifications(prev => [...prev, { attribute: '', points: 0 }]);
+  };
+
+  const handleRemoveGradedQualification = (idx) => {
+    setGradedQualifications(prev => prev.filter((_, i) => i !== idx));
+  };
+
   const validateJobData = () => {
     if (!jobData.title) return 'Job title is required';
     if (!jobData.department) return 'Department is required';
@@ -168,6 +197,8 @@ function SetCriteria() {
     if (!keyResponsibilities.some(resp => resp.trim())) return 'At least one key responsibility is required';
     if (!qualifications.some(qual => qual.trim())) return 'At least one qualification is required';
     if (!offers.some(offer => offer.trim())) return 'At least one offer is required';
+    const totalScore = gradedQualifications.reduce((sum, qual) => sum + (qual.points || 0), 0);
+    if (totalScore > 20) return 'Total graded qualifications score cannot exceed 20 points';
     return '';
   };
 
@@ -194,6 +225,8 @@ function SetCriteria() {
         keyResponsibilities: keyResponsibilities.filter(Boolean).map(item => item.trim()),
         qualifications: qualifications.filter(Boolean).map(item => item.trim()),
         whatWeOffer: offers.filter(Boolean).map(item => item.trim()),
+        keywords: keywords,
+        gradedQualifications: gradedQualifications.filter(qual => qual.attribute && qual.points > 0),
       });
 
       alert('Job created successfully!');
@@ -210,25 +243,16 @@ function SetCriteria() {
       setKeyResponsibilities(['']);
       setQualifications(['']);
       setOffers(['']);
+      setKeywords([]);
+      setInputValue('');
+      setGradedQualifications([{ attribute: '', points: 0 }]);
       setError('');
-      fetchJobs(); // Refresh job list
+      fetchJobs();
     } catch (error) {
       console.error('Error creating job:', error);
       setError(error.response?.data?.message || 'Failed to create job. Please try again.');
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handleRemoveJob = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this job?')) return;
-    try {
-      await axios.delete(`http://localhost:5000/jobs/${id}`);
-      alert('Job deleted successfully!');
-      fetchJobs(); // Refresh job list
-    } catch (error) {
-      console.error('Error deleting job:', error);
-      setJobsError(error.response?.data?.message || 'Failed to delete job.');
     }
   };
 
@@ -518,6 +542,59 @@ function SetCriteria() {
                   </div>
                 </div>
               )}
+              {criteriaPage === 6 && (
+                <div className='page6'>
+                  <h1>Customize Criteria</h1>
+                  <div className="keywords-textarea">
+                    <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>Which words to look out for in the applicant's resume?</label>
+                    <div style={{ display: 'flex', padding: '10px', backgroundColor: 'white', flexWrap: 'wrap' }}>
+                      {keywords.map((word, index) => (
+                        <WordButton key={index} word={word} onRemove={removeKeyword} />
+                      ))}
+                    </div>
+                    <textarea
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onKeyDown={handleKeywordsKeyDown}
+                      placeholder="Enter keywords separated by space or comma"
+                      style={{ width: '100%', height: '100px', fontSize: '16px', padding: '8px', border: '2px solid black', borderRadius: '6px', background: 'white', resize: 'vertical' }}
+                    />
+                  </div>
+                  <div className="graded-qualifications">
+                    <h2 style={{ fontSize: '24px', color: 'white', marginBottom: '16px' }}>Graded Qualifications</h2>
+                    <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>Attribute</label>
+                    <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>Points (out of 20)</label>
+                    {gradedQualifications.map((qual, idx) => (
+                      <div className="attribute-row" key={idx}>
+                        <input
+                          type="text"
+                          value={qual.attribute}
+                          onChange={(e) => handleGradedQualificationChange(idx, 'attribute', e.target.value)}
+                          placeholder="Attribute"
+                          style={{ flex: 1, height: '32px', fontSize: '16px', border: '2px solid black', borderRadius: '6px' }}
+                        />
+                        <input
+                          type="number"
+                          value={qual.points}
+                          onChange={(e) => handleGradedQualificationChange(idx, 'points', Math.min(20, Math.max(0, e.target.value)))}
+                          min="0"
+                          max="20"
+                          placeholder="Points"
+                          style={{ width: '80px', height: '32px', fontSize: '16px', border: '2px solid black', borderRadius: '6px', textAlign: 'center' }}
+                        />
+                        {idx > 0 && (
+                          <div className='removebuttonwrap'>
+                            <a onClick={() => handleRemoveGradedQualification(idx)}>-</a>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    <div className='addbuttonwrap'>
+                      <a onClick={handleAddGradedQualification}>+</a>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="criterianavigate">
               <ul><a onClick={handlePrevPage} className='left'></a></ul>
@@ -529,5 +606,21 @@ function SetCriteria() {
     </>
   );
 }
+
+const WordButton = ({ word, onRemove }) => (
+  <button
+    onClick={() => onRemove(word)}
+    style={{
+      backgroundColor: '#A2E494',
+      border: '2px solid black',
+      margin: '4px',
+      padding: '4px 8px',
+      borderRadius: '6px',
+      cursor: 'pointer',
+    }}
+  >
+    X {word}
+  </button>
+);
 
 export default SetCriteria;
