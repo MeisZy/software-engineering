@@ -529,6 +529,28 @@ app.post('/upload-resume', upload.single('resume'), async (req, res) => {
   }
 });
 
+// Fetch user logs endpoint
+app.get('/userlogs', async (req, res) => {
+  try {
+    const logs = await UserLogs.find().sort({ date: -1 });
+    res.status(200).json(logs);
+  } catch (err) {
+    console.error('Error fetching user logs:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Fetch jobs endpoint
+app.get('/jobs', async (req, res) => {
+  try {
+    const jobs = await Jobs.find();
+    res.status(200).json(jobs);
+  } catch (err) {
+    console.error('Error fetching jobs:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Create job endpoint
 app.post('/jobs', async (req, res) => {
   try {
