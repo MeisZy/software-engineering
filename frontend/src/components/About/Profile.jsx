@@ -180,7 +180,7 @@ const Profile = () => {
             </div>
           </div>
           <div className="preview-container">
-            <h3>Your Resume</h3>
+            <h3>Resume</h3>
             {applicantData?.resume?.filePath ? (
               fileAccessible === true ? (
                 <div className="resume-display">

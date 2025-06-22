@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Logo from './images/logo.png';
+import Notification from './images/notification.png';
 import Details from './assets/jobdetailsimg.png';
 import './AdminHome.css';
 
@@ -42,7 +43,6 @@ function AdminHome() {
     { label: 'Hybrid', id: 'hybrid' },
   ];
 
-  // Generate suggestions from both jobs and applicants
   const suggestions = [
     ...jobs.map(job => ({
       type: 'job',
@@ -214,19 +214,23 @@ function AdminHome() {
   return (
     <>
       <nav>
-        <a href="/" className="logo-link">
-          <img src={Logo} alt="Logo" className="logo" />
-        </a>
-        <div>
-          <a href="javascript:;">Admin</a>
+        <div className="admin-nav-left">
+          <a href="/" className="logo-link">
+            <img src={Logo} alt="Logo" className="logo" />
+          </a>
+          <a href="javascript:void(0);">Admin</a>
         </div>
-        <div>
+        <div className="admin-nav-center">
           <a onClick={handleMaintainance}>Settings</a>
           <a onClick={handleFAQs}>FAQs</a>
-          <a>Messages</a>
           <a onClick={handleSetCriteria}>Manage Jobs</a>
           <a onClick={handleShowUserLogs}>User Logs</a>
           <a onClick={handleLogout}>Logout</a>
+        </div>
+        <div className="admin-nav-right">
+          <a href="#" className="notification-link">
+            <img src={Notification} alt="Notifications" className="notification-icon" />
+          </a>
         </div>
       </nav>
       <div className='components'>

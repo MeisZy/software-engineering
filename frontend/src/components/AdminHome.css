@@ -11,17 +11,46 @@
     padding: 0; /* Reset all paddings */
   }
 
-  nav {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    background-color: #13714C;
-    color: white;
-    width: 100%;
-    height: 50px; /* Set a fixed height for nav */
-    box-sizing: border-box;
-    
-  }
+nav {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #13714C;
+  color: white;
+  width: 100%;
+  height: 50px;
+  box-sizing: border-box;
+  justify-content: space-between;
+}
+.admin-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.admin-nav-center {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-nav-right {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.notification-link {
+  display: flex;
+  align-items: center;
+}
+
+.notification-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
 
   nav a {
     padding: 10px;

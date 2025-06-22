@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Placeholder from '../components/images/pfp_placeholder.png';
+import Notification from './images/notification.png';
 import './UserHome.css';
 
 function UserHome() {
@@ -207,14 +208,21 @@ function UserHome() {
 
   return (
     <>
-      <nav>
+  <nav className="user-nav">
+      <div className="user-nav-left">
         <img src={profilePic || Placeholder} alt="Profile" />
         <span className="usergreeting">Welcome, {userEmail}!</span>
         <a href="#" onClick={(e) => { e.preventDefault(); setShowReportForm(true); }}>Report a Problem</a>
         <a href="#" onClick={handleFAQs}>FAQs</a>
         <a href="#" onClick={handleProfile}>Settings</a>
         <a className="logout" onClick={handleLogout}>Logout</a>
-      </nav>
+      </div>
+      <div className="user-nav-right">
+        <a href="#" className="notification-link">
+          <img src={Notification} alt="Notifications" className="notification-icon" />
+        </a>
+      </div>
+  </nav>
       <div className='usercontainer'>
         <div className='userleftcomp'>
           <div className='usersearch'>
