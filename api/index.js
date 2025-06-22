@@ -450,7 +450,6 @@ app.post('/send-message', async (req, res) => {
       return res.status(400).json({ message: 'Invalid recipient email format' });
     }
 
-
     await transporter.sendMail({
       from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
       to: recipient,
@@ -466,36 +465,15 @@ app.post('/send-message', async (req, res) => {
       `,
     });
 
-    res.status(200).json({ message: 'Message sent successfully', pin });
+    res.status(200).json({ message: 'Message sent successfully' });
   } catch (err) {
-  }
-});
-
-// Verify message PIN endpoint
-app.post('/verify-message-pin', async (req, res) => {
-  try {
-    const { email, pin } = req.body;
-
-    if (!email || !pin) {
-      return res.status(400).json({ message: 'Email and PIN are required' });
-    }
-
-    const stored = otpStore.get(email);
-    if (!stored || stored.expires < Date.now()) {
-      otpStore.delete(email);
-      return res.status(400).json({ message: 'PIN expired or invalid' });
-    }
-
-    if (stored.pin !== pin) {
-      return res.status(400).json({ message: 'Invalid PIN' });
-    }
-
-    otpStore.delete(email);
-
-    res.status(200).json({ message: 'PIN verified successfully' });
-  } catch (err) {
-    console.error('Error verifying PIN:', err);
-    res.status(500).json({ message: 'Failed to verify PIN' });
+    console.error('Error sending message:', {
+      message: err.message,
+      code: err.code,
+      response: err.response,
+      stack: err.stack,
+    });
+    res.status(500).json({ message: 'Failed to send message' });
   }
 });
 
