@@ -24,6 +24,11 @@ function AdminHome() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [showMessageForm, setShowMessageForm] = useState(false);
+  const [messageRecipient, setMessageRecipient] = useState('');
+  const [messageSubject, setMessageSubject] = useState('');
+  const [messageBody, setMessageBody] = useState('');
+  const [messageFeedback, setMessageFeedback] = useState('');
   const suggestionsRef = useRef(null);
 
   const workingSchedule = [
@@ -183,6 +188,32 @@ function AdminHome() {
     setTimeout(() => setShowSuggestions(false), 100);
   };
 
+  const handleMessageSubmit = async (e) => {
+    e.preventDefault();
+    if (!messageRecipient || !messageSubject || !messageBody) {
+      setMessageFeedback('Please fill in recipient, subject, and message.');
+      setTimeout(() => setMessageFeedback(''), 3000);
+      return;
+    }
+    try {
+      const response = await axios.post('http://localhost:5000/send-message', {
+        recipient: messageRecipient,
+        subject: messageSubject,
+        body: messageBody,
+      });
+      setMessageFeedback(response.data.message);
+      setShowMessageForm(false);
+      setMessageRecipient('');
+      setMessageSubject('');
+      setMessageBody('');
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setMessageFeedback(error.response?.data?.message || 'Failed to send message. Please try again.');
+    } finally {
+      setTimeout(() => setMessageFeedback(''), 3000);
+    }
+  };
+
   const anyFilterSelected =
     selectedWorkingSchedule.length > 0 ||
     selectedEmploymentType.length > 0 ||
@@ -213,26 +244,27 @@ function AdminHome() {
 
   return (
     <>
- <nav className="admin-nav">
-  <div className="admin-nav-left">
-    <a href="/" className="logo-link">
-      <img src={Logo} alt="Logo" className="logo" />
-    </a>
-    <a href="javascript:void(0);">Admin</a>
-  </div>
-  <div className="admin-nav-center">
-    <a onClick={handleMaintainance}>Settings</a>
-    <a onClick={handleFAQs}>FAQs</a>
-    <a onClick={handleSetCriteria}>Manage Jobs</a>
-    <a onClick={handleShowUserLogs}>User Logs</a>
-  </div>
-  <div className="admin-nav-right">
-    <a href="#" className="notification-link">
-      <img src={Notification} alt="Notifications" className="notification-icon" />
-    </a>
-    <a className="logout" onClick={handleLogout}>Logout</a>
-  </div>
-</nav>
+      <nav className="admin-nav">
+        <div className="admin-nav-left">
+          <a href="/" className="logo-link">
+            <img src={Logo} alt="Logo" className="logo" />
+          </a>
+          <a href="javascript:void(0);">Admin</a>
+        </div>
+        <div className="admin-nav-center">
+          <a onClick={handleMaintainance}>Settings</a>
+          <a onClick={handleFAQs}>FAQs</a>
+          <a onClick={handleSetCriteria}>Manage Jobs</a>
+          <a onClick={handleShowUserLogs}>User Logs</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); setShowMessageForm(true); }}>Send Message</a>
+        </div>
+        <div className="admin-nav-right">
+          <a href="#" className="notification-link">
+            <img src={Notification} alt="Notifications" className="notification-icon" />
+          </a>
+          <a className="logout" onClick={handleLogout}>Logout</a>
+        </div>
+      </nav>
       <div className='components'>
         <div className='adminleftcomp'>
           <div className='adminsearch'>
@@ -319,6 +351,11 @@ function AdminHome() {
         </div>
         <div className='adminrightcomp'>
           {error && <div style={{ color: 'red', padding: '16px' }}>{error}</div>}
+          {messageFeedback && (
+            <div style={{ color: messageFeedback.includes('successfully') ? 'green' : 'red', padding: '16px' }}>
+              {messageFeedback}
+            </div>
+          )}
           {loading ? (
             <div style={{ padding: '32px', color: '#888' }}>Loading data...</div>
           ) : (
@@ -550,6 +587,99 @@ function AdminHome() {
                     </tbody>
                   </table>
                 )}
+              </div>
+            </div>
+          )}
+          {showMessageForm && (
+            <div
+              className="messagedetailsdarkgreen"
+              style={{
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '600px',
+                height: '400px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 10,
+              }}
+            >
+              <div className="messagedetailslightgreen" style={{ width: '588px', height: '388px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                  <h3 style={{ padding: '16px 24px', margin: 0 }}>Send Message</h3>
+                  <a
+                    style={{
+                      fontSize: '1.5rem',
+                      fontWeight: 'bold',
+                      color: 'black',
+                      textDecoration: 'none',
+                      cursor: 'pointer',
+                      marginRight: '24px',
+                    }}
+                    onClick={() => setShowMessageForm(false)}
+                    aria-label="Close"
+                  >
+                    ×
+                  </a>
+                </div>
+                <form className="messagedetailsgrid" onSubmit={handleMessageSubmit} style={{ padding: '0 24px' }}>
+                  <label>Recipient Email</label>
+                  <input
+                    type="email"
+                    value={messageRecipient}
+                    onChange={(e) => setMessageRecipient(e.target.value)}
+                    placeholder="Enter recipient email"
+                  />
+                  <label>Subject</label>
+                  <input
+                    type="text"
+                    value={messageSubject}
+                    onChange={(e) => setMessageSubject(e.target.value)}
+                    placeholder="Enter subject"
+                  />
+                  <label>Message</label>
+                  <textarea
+                    value={messageBody}
+                    onChange={(e) => setMessageBody(e.target.value)}
+                    placeholder="Enter your message"
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                    <button
+                      type="button"
+                      className="jobdetailexit"
+                      onClick={() => setShowMessageForm(false)}
+                      style={{
+                        marginRight: '8px',
+                        background: 'white',
+                        color: '#13714C',
+                        border: 'none',
+                        borderRadius: '6px',
+                        padding: '8px 24px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Close
+                    </button>
+                    <button
+                      type="submit"
+                      className="jobdetailapply"
+                      style={{
+                        background: '#A2E494',
+                        color: '#13714C',
+                        border: 'none',
+                        borderRadius: '6px',
+                        padding: '8px 24px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Send
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           )}

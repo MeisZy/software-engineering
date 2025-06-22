@@ -437,6 +437,68 @@ app.post('/report-problem', async (req, res) => {
   }
 });
 
+// Send message endpoint
+app.post('/send-message', async (req, res) => {
+  try {
+    const { recipient, subject, body } = req.body;
+
+    if (!recipient || !subject || !body) {
+      return res.status(400).json({ message: 'Recipient, subject, and body are required' });
+    }
+
+    if (!/\S+@\S+\.\S+/.test(recipient)) {
+      return res.status(400).json({ message: 'Invalid recipient email format' });
+    }
+
+
+    await transporter.sendMail({
+      from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
+      to: recipient,
+      subject: `Message: ${subject}`,
+      html: `
+        <h3>Your Message</h3>
+        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Message:</strong></p>
+        <p>${body.replace(/\n/g, '<br>')}</p>
+        <hr />
+        <p>Best Regards,</p>
+        <p>Collectius Admin</p>
+      `,
+    });
+
+    res.status(200).json({ message: 'Message sent successfully', pin });
+  } catch (err) {
+  }
+});
+
+// Verify message PIN endpoint
+app.post('/verify-message-pin', async (req, res) => {
+  try {
+    const { email, pin } = req.body;
+
+    if (!email || !pin) {
+      return res.status(400).json({ message: 'Email and PIN are required' });
+    }
+
+    const stored = otpStore.get(email);
+    if (!stored || stored.expires < Date.now()) {
+      otpStore.delete(email);
+      return res.status(400).json({ message: 'PIN expired or invalid' });
+    }
+
+    if (stored.pin !== pin) {
+      return res.status(400).json({ message: 'Invalid PIN' });
+    }
+
+    otpStore.delete(email);
+
+    res.status(200).json({ message: 'PIN verified successfully' });
+  } catch (err) {
+    console.error('Error verifying PIN:', err);
+    res.status(500).json({ message: 'Failed to verify PIN' });
+  }
+});
+
 // Fetch user logs endpoint
 app.get('/userlogs', async (req, res) => {
   try {
