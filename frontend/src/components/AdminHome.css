@@ -514,5 +514,8 @@ nav {
   border: 2px solid white;
 }
 .admin-nav-right {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
   position: relative;
 }

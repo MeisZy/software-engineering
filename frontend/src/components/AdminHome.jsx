@@ -9,6 +9,7 @@ import './AdminHome.css';
 function AdminHome() {
   const navigate = useNavigate();
   const [jobApplicants, setJobApplicants] = useState([]);
+  const [resumeUploads, setResumeUploads] = useState([]);
   const [showJobApplicants, setShowJobApplicants] = useState(false);
   const [currentApplicantIdx, setCurrentApplicantIdx] = useState(0);
   const [jobs, setJobs] = useState([]);
@@ -93,6 +94,7 @@ function AdminHome() {
     fetchData();
   }, []);
 
+  // Fetch job applicants and resume uploads
   useEffect(() => {
     const fetchJobApplicants = async () => {
       try {
@@ -103,6 +105,25 @@ function AdminHome() {
       }
     };
     fetchJobApplicants();
+  }, []);
+
+  useEffect(() => {
+    // Fetch all applicants and filter those with a resume uploaded
+    const fetchResumeUploads = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/applicants');
+        // Only notify if resume.filePath exists and is not null
+        const uploads = response.data.filter(applicant =>
+          applicant.resume &&
+          applicant.resume.filePath &&
+          applicant.resume.originalFileName
+        );
+        setResumeUploads(uploads);
+      } catch (err) {
+        setError('Failed to load resume uploads.');
+      }
+    };
+    fetchResumeUploads();
   }, []);
 
   const fetchUserLogs = async () => {
@@ -256,6 +277,31 @@ function AdminHome() {
     setShowJobApplicants(true);
   };
 
+  // Merge job application and resume upload notifications
+  const allNotifications = [
+    ...jobApplicants.map(applicant => ({
+      type: 'application',
+      email: applicant.email,
+      jobTitle: Array.isArray(applicant.positionAppliedFor)
+        ? applicant.positionAppliedFor[0]
+        : applicant.positionAppliedFor,
+      createdAt: applicant.createdAt,
+    })),
+    ...resumeUploads
+      // Only show resume upload notification if filePath exists and originalFileName exists
+      .filter(applicant =>
+        applicant.resume &&
+        applicant.resume.filePath &&
+        applicant.resume.originalFileName
+      )
+      .map(applicant => ({
+        type: 'resume',
+        email: applicant.email,
+        fileName: applicant.resume.originalFileName,
+        createdAt: applicant.resume.updatedAt || applicant.resume.createdAt || applicant.updatedAt || applicant.createdAt,
+      })),
+  ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Most recent first
+
   return (
     <>
       <nav className="admin-nav">
@@ -273,108 +319,101 @@ function AdminHome() {
           <a href="#" onClick={e => { e.preventDefault(); setShowMessageForm(true); }}>Send Message</a>
         </div>
         <div className="admin-nav-right" style={{ position: 'relative' }}>
-          <a
-            href="#"
-            className="notification-link"
-            onClick={e => {
-              e.preventDefault();
-              handleShowNotifications();
-            }}
-            style={{ position: 'relative' }}
-          >
-            <img src={Notification} alt="Notifications" className="notification-icon" />
-            {jobApplicants.length > 0 && (
-              <span className="notification-count">
-                {jobApplicants.length}
-              </span>
-            )}
-          </a>
+          <img
+            src={Notification}
+            alt="Notifications"
+            className="notification-icon notification-button"
+            style={{ cursor: 'pointer', position: 'relative' }}
+            onClick={handleShowNotifications}
+          />
           <a className="logout" onClick={handleLogout}>Logout</a>
         </div>
       </nav>
 
-      {/* Job Applicants Notification Modal - ONE AT A TIME */}
+      {/* Job Applicants & Resume Uploads Notification Modal */}
       {showJobApplicants && (
-  <div
-    className="notifications-container"
-    style={{
-      position: 'fixed',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      background: 'white',
-      padding: '24px',
-      borderRadius: '8px',
-      maxWidth: '400px',
-      width: '90%',
-      maxHeight: '80vh',
-      overflowY: 'auto',
-      zIndex: 1001,
-    }}
-    onClick={() => setShowJobApplicants(false)}
-  >
-    <div
-      className="notifications-content"
-      style={{ padding: '16px' }}
-      onClick={e => e.stopPropagation()}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h2>Job Applicants</h2>
-        <button
-          onClick={() => setShowJobApplicants(false)}
+        <div
+          className="notifications-container"
           style={{
-            fontSize: '1.5rem',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            border: 'none',
-            background: 'none',
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'white',
+            padding: '24px',
+            borderRadius: '8px',
+            maxWidth: '400px',
+            width: '90%',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            zIndex: 1001,
           }}
+          onClick={() => setShowJobApplicants(false)}
         >
-          ×
-        </button>
-      </div>
-      {jobApplicants.length === 0 ? (
-        <div style={{ padding: '16px', color: '#888' }}>No job applicants available.</div>
-      ) : (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {jobApplicants.map((applicant, idx) => (
-            <li
-              key={applicant.email + idx}
-              style={{
-                padding: '8px',
-                borderBottom: '1px solid #ddd',
-                background: '#fff',
-                marginBottom: '4px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '2px'
-              }}
-            >
-              <span>
-                <b>{applicant.email}</b> has applied for <b>
-                  {Array.isArray(applicant.positionAppliedFor)
-                    ? applicant.positionAppliedFor[0]
-                    : applicant.positionAppliedFor}
-                </b>
-              </span>
-              <span style={{ fontSize: 12, color: '#888' }}>
-                {applicant.createdAt
-                  ? new Date(applicant.createdAt).toLocaleString('en-US', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })
-                  : ''}
-              </span>
-            </li>
-          ))}
-        </ul>
+          <div
+            className="notifications-content"
+            style={{ padding: '16px' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h2>Notifications</h2>
+              <button
+                onClick={() => setShowJobApplicants(false)}
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: 'none',
+                }}
+              >
+                ×
+              </button>
+            </div>
+            {allNotifications.length === 0 ? (
+              <div style={{ padding: '16px', color: '#888' }}>No notifications available.</div>
+            ) : (
+              <ul style={{ listStyle: 'none', padding: 0 }}>
+                {allNotifications.map((notif, idx) => (
+                  <li
+                    key={notif.email + idx + notif.type}
+                    style={{
+                      padding: '8px',
+                      borderBottom: '1px solid #ddd',
+                      background: '#fff',
+                      marginBottom: '4px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '2px'
+                    }}
+                  >
+                    {notif.type === 'application' ? (
+                      <span>
+                        <b>{notif.email}</b> has applied for <b>{notif.jobTitle}</b>
+                      </span>
+                    ) : (
+                      <span>
+                        <b>{notif.email}</b> has uploaded a resume: <b>{notif.fileName}</b>
+                      </span>
+                    )}
+                    <span style={{ fontSize: 12, color: '#888' }}>
+                      {notif.createdAt
+                        ? new Date(notif.createdAt).toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })
+                        : ''}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
       )}
-    </div>
-  </div>
-)}
 
       <div className='components'>
         <div className='adminleftcomp'>

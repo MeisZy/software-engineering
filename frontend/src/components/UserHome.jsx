@@ -236,17 +236,21 @@ function UserHome() {
           <a href="#" onClick={handleFAQs}>FAQs</a>
           <a href="#" onClick={handleProfile}>Settings</a>
         </div>
-        <div className="user-nav-right">
-          <a href="#" onClick={() => setShowNotifications(!showNotifications)} className="notification-button">
-            <img src={Notification} alt="Notifications" className="notification-icon" />
-            {notifications.filter(n => !n.isRead).length > 0 && (
-              <span className="notification-count">
-                {notifications.filter(n => !n.isRead).length}
-              </span>
-            )}
-          </a>
-          <a className="logout" onClick={handleLogout}>Logout</a>
-        </div>
+<div className="user-nav-right">
+  <img
+    src={Notification}
+    alt="Notifications"
+    className="notification-icon notification-button"
+    style={{ cursor: 'pointer', position: 'relative' }}
+    onClick={() => setShowNotifications(!showNotifications)}
+  />
+  {notifications.filter(n => !n.isRead).length > 0 && (
+    <span className="notification-count">
+      {notifications.filter(n => !n.isRead).length}
+    </span>
+  )}
+  <a className="logout" onClick={handleLogout}>Logout</a>
+</div>
       </nav>
       <div className='usercontainer'>
         <div className='userleftcomp'>
