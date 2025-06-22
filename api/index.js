@@ -51,8 +51,8 @@ const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
-    if (ext !== '.pdf' && ext !== '.docx') {
-      return cb(new Error('Only .pdf and .docx files are allowed'));
+    if (ext !== '.pdf') {
+      return cb(new Error('Only PDF files are allowed'));
     }
     cb(null, true);
   },
@@ -477,6 +477,48 @@ app.post('/send-message', async (req, res) => {
   }
 });
 
+// Upload resume endpoint
+app.post('/upload-resume', upload.single('resume'), async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email || !req.file) {
+      if (req.file) fs.unlinkSync(req.file.path);
+      return res.status(400).json({ message: 'Email and PDF resume file are required' });
+    }
+
+    const applicant = await Applicants.findOne({ email });
+    if (!applicant) {
+      fs.unlinkSync(req.file.path);
+      return res.status(404).json({ message: 'Applicant not found' });
+    }
+
+    // Delete previous resume file if exists
+    if (applicant.resume.filePath) {
+      const oldPath = path.join(__dirname, '..', 'frontend', 'public', applicant.resume.filePath);
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+    }
+
+    applicant.resume = {
+      filePath: `/Uploads/${req.file.filename}`,
+      fileType: 'pdf'
+    };
+    await applicant.save();
+
+    res.status(200).json({ message: 'Resume uploaded successfully', resume: applicant.resume });
+  } catch (err) {
+    console.error('Error uploading resume:', err);
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    if (err.message === 'Only PDF files are allowed') {
+      return res.status(400).json({ message: 'Only PDF files are allowed' });
+    }
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Fetch user logs endpoint
 app.get('/userlogs', async (req, res) => {
   try {
@@ -688,46 +730,6 @@ app.get('/applicants/:email', async (req, res) => {
     });
   } catch (err) {
     console.error('Error fetching applicant:', err);
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// Upload resume endpoint
-app.post('/upload-resume', upload.single('resume'), async (req, res) => {
-  try {
-    const { email } = req.body;
-    if (!email || !req.file) {
-      if (req.file) fs.unlinkSync(req.file.path);
-      return res.status(400).json({ message: 'Email and resume file are required' });
-    }
-
-    const applicant = await Applicants.findOne({ email });
-    if (!applicant) {
-      fs.unlinkSync(req.file.path);
-      return res.status(404).json({ message: 'Applicant not found' });
-    }
-
-    // Delete previous resume file if exists
-    if (applicant.resume.filePath) {
-      const oldPath = path.join(__dirname, '..', 'frontend', 'public', applicant.resume.filePath);
-      if (fs.existsSync(oldPath)) {
-        fs.unlinkSync(oldPath);
-      }
-    }
-
-    const fileType = path.extname(req.file.filename).toLowerCase() === '.pdf' ? 'pdf' : 'docx';
-    applicant.resume = {
-      filePath: `/Uploads/${req.file.filename}`,
-      fileType
-    };
-    await applicant.save();
-
-    res.status(200).json({ message: 'Resume uploaded successfully', resume: applicant.resume });
-  } catch (err) {
-    console.error('Error uploading resume:', err);
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
     res.status(500).json({ message: err.message });
   }
 });

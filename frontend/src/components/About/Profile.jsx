@@ -72,7 +72,7 @@ const Profile = () => {
       setProfileData(profileRes.data || null);
       setApplicantData(applicantRes.data || null);
       setUploadError(null);
-      setFileAccessible(null);
+      setFileAccessible(null); // Reset accessibility check
     } catch (err) {
       console.error("Failed to fetch data:", err);
       setUploadError("Failed to load profile data. Please try again.");
@@ -91,6 +91,7 @@ const Profile = () => {
 
       fetch(url, { method: "HEAD" })
         .then((res) => {
+          console.log(`File accessibility check: HTTP ${res.status} ${res.statusText}`);
           setFileAccessible(res.ok);
           if (!res.ok) {
             console.error(`File not accessible: HTTP ${res.status} ${res.statusText}`);
@@ -101,9 +102,10 @@ const Profile = () => {
           setFileAccessible(false);
         });
     } else {
+      console.log("No resume file path, setting fileAccessible to null");
       setFileAccessible(null);
     }
-  }, [applicantData]);
+  }, [applicantData?.resume?.filePath]); // Depend on filePath to re-check on change
 
   // Handle file upload
   const handleFileChange = async (e) => {
@@ -113,8 +115,14 @@ const Profile = () => {
       return;
     }
 
+    // Validate file type client-side
+    if (file.type !== "application/pdf") {
+      setUploadError("Only PDF files are allowed");
+      return;
+    }
+
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("resume", file);
     formData.append("email", userEmail);
 
     try {
@@ -149,7 +157,7 @@ const Profile = () => {
                 <p>Email: {getEmailDisplay()}</p>
                 <input
                   type="file"
-                  accept=".pdf,.docx"
+                  accept=".pdf"
                   onChange={handleFileChange}
                   style={{ display: "none" }}
                   id="file-upload"
@@ -184,20 +192,12 @@ const Profile = () => {
             {applicantData?.resume?.filePath ? (
               fileAccessible === true ? (
                 <div className="resume-display">
-                  {applicantData.resume.fileType === "pdf" ? (
-                    <iframe
-                      src={`http://localhost:5173${applicantData.resume.filePath}`}
-                      title="Resume Preview"
-                      style={{ width: "100%", height: "500px", border: "1px solid #ccc" }}
-                    />
-                  ) : (
-                    <div>
-                      <p>Docx files cannot be displayed in the browser.</p>
-                      <a href={`http://localhost:5173${applicantData.resume.filePath}`} download>
-                        Download {applicantData.resume.filePath.split("/").pop()}
-                      </a>
-                    </div>
-                  )}
+                  <iframe
+                    key={applicantData.resume.filePath} // Force re-render on path change
+                    src={`http://localhost:5173${applicantData.resume.filePath}?t=${Date.now()}`} // Cache-busting
+                    title="Resume Preview"
+                    style={{ width: "100%", height: "500px", border: "1px solid #ccc" }}
+                  />
                 </div>
               ) : fileAccessible === false ? (
                 <p className="error">File not accessible. Please re-upload your resume.</p>
@@ -205,7 +205,7 @@ const Profile = () => {
                 <p>Checking file availability...</p>
               )
             ) : (
-              <p>No file uploaded</p>
+              <p>No resume uploaded</p>
             )}
           </div>
         </div>
