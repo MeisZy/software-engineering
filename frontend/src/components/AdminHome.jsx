@@ -11,7 +11,6 @@ function AdminHome() {
   const [jobApplicants, setJobApplicants] = useState([]);
   const [resumeUploads, setResumeUploads] = useState([]);
   const [showJobApplicants, setShowJobApplicants] = useState(false);
-  const [currentApplicantIdx, setCurrentApplicantIdx] = useState(0);
   const [jobs, setJobs] = useState([]);
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -72,6 +71,15 @@ function AdminHome() {
           jobTitle,
         }))
     ),
+    ...applicants
+      .filter(applicant => applicant.resume?.originalFileName)
+      .map(applicant => ({
+        type: 'resume',
+        value: `${applicant.fullName} (Resume: ${applicant.resume.originalFileName})`,
+        id: applicant._id,
+        email: applicant.email,
+        resumeName: applicant.resume.originalFileName,
+      })),
   ]
     .filter(suggestion => suggestion.value.toLowerCase().includes(searchQuery.toLowerCase()))
     .slice(0, 5);
@@ -79,12 +87,32 @@ function AdminHome() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [jobsResponse, applicantsResponse] = await Promise.all([
+        const [jobsResponse, applicantsResponse, notificationsResponse] = await Promise.all([
           axios.get('http://localhost:5000/jobs'),
           axios.get('http://localhost:5000/applicants'),
+          axios.get('http://localhost:5000/notifications/admin'),
         ]);
         setJobs(jobsResponse.data);
         setApplicants(applicantsResponse.data);
+        const notifications = notificationsResponse.data;
+        const jobApps = notifications
+          .filter(notif => notif.message.includes('has applied for'))
+          .map(notif => ({
+            type: 'application',
+            email: notif.email,
+            jobTitle: notif.message.match(/has applied for (.+)/)?.[1] || 'Unknown',
+            createdAt: notif.createdAt,
+          }));
+        const resumeUps = notifications
+          .filter(notif => notif.message.includes('has uploaded a resume'))
+          .map(notif => ({
+            type: 'resume',
+            email: notif.email,
+            fileName: notif.message.match(/has uploaded a resume: (.+)/)?.[1] || 'Unknown',
+            createdAt: notif.createdAt,
+          }));
+        setJobApplicants(jobApps);
+        setResumeUploads(resumeUps);
         setLoading(false);
       } catch (err) {
         setError('Failed to load data. Please try again.');
@@ -92,38 +120,6 @@ function AdminHome() {
       }
     };
     fetchData();
-  }, []);
-
-  // Fetch job applicants and resume uploads
-  useEffect(() => {
-    const fetchJobApplicants = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/applicants');
-        setJobApplicants(response.data);
-      } catch (err) {
-        setError('Failed to load job applicants.');
-      }
-    };
-    fetchJobApplicants();
-  }, []);
-
-  useEffect(() => {
-    // Fetch all applicants and filter those with a resume uploaded
-    const fetchResumeUploads = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/applicants');
-        // Only notify if resume.filePath exists and is not null
-      const uploads = response.data.filter(applicant =>
-        applicant.resume &&
-        applicant.resume.filePath &&
-        applicant.resume.originalFileName
-      );
-      setResumeUploads(uploads);
-      } catch (err) {
-        setError('Failed to load resume uploads.');
-      }
-    };
-    fetchResumeUploads();
   }, []);
 
   const fetchUserLogs = async () => {
@@ -165,7 +161,6 @@ function AdminHome() {
     setSearchQuery(suggestion.value);
     setShowSuggestions(false);
     setHighlightedIndex(-1);
-
     try {
       if (suggestion.type === 'job') {
         const jobIndex = jobs.findIndex(job => job._id === suggestion.id);
@@ -175,23 +170,20 @@ function AdminHome() {
           return;
         }
         setOpenDetailIdx(jobIndex);
-      } else if (suggestion.type === 'applicant') {
-        const jobIndex = jobs.findIndex(job => job.title.toLowerCase() === suggestion.jobTitle.toLowerCase());
+      } else if (suggestion.type === 'applicant' || suggestion.type === 'resume') {
         const applicantIndex = applicants.findIndex(applicant => applicant._id === suggestion.id);
-
-        if (jobIndex === -1) {
-          setError('Job associated with applicant not found.');
-          setTimeout(() => setError(''), 3000);
-          return;
-        }
         if (applicantIndex === -1) {
           setError('Selected applicant not found.');
           setTimeout(() => setError(''), 3000);
           return;
         }
-
-        setOpenApplicantsIdx(jobIndex);
         setOpenApplicantDetailIdx(applicantIndex);
+        if (suggestion.type === 'applicant') {
+          const jobIndex = jobs.findIndex(job => job.title.toLowerCase() === suggestion.jobTitle.toLowerCase());
+          if (jobIndex !== -1) {
+            setOpenApplicantsIdx(jobIndex);
+          }
+        }
       }
     } catch (err) {
       setError('An error occurred while processing your selection.');
@@ -201,7 +193,6 @@ function AdminHome() {
 
   const handleKeyDown = (e) => {
     if (!showSuggestions) return;
-
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       setHighlightedIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : prev));
@@ -253,53 +244,32 @@ function AdminHome() {
     const et = job.employmentType.toLowerCase().replace(/[^a-z]/g, '');
     const wsup = job.workSetup.toLowerCase().replace(/[^a-z]/g, '');
     const title = job.title.toLowerCase();
-
     if (searchQuery && !title.includes(searchQuery.toLowerCase())) {
       return false;
     }
-
     if (!anyFilterSelected) return true;
-
     const wsMatch = selectedWorkingSchedule.some(id => ws.includes(id.replace(/[^a-z]/g, '')));
     const etMatch = selectedEmploymentType.some(id => et.includes(id.replace(/[^a-z]/g, '')));
     const wsupMatch = selectedWorkSetup.some(id => wsup.includes(id.replace(/[^a-z]/g, '')));
-
     if (selectedWorkingSchedule.length && !wsMatch) return false;
     if (selectedEmploymentType.length && !etMatch) return false;
     if (selectedWorkSetup.length && !wsupMatch) return false;
-
     return true;
   });
 
-  // --- NOTIFICATIONS MODAL LOGIC ---
+  const filteredSearchResults = suggestions.filter(suggestion => 
+    (suggestion.type === 'applicant' || suggestion.type === 'resume') &&
+    suggestion.value.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const handleShowNotifications = () => {
-    setCurrentApplicantIdx(0);
     setShowJobApplicants(true);
   };
 
-  // Merge job application and resume upload notifications
-const allNotifications = [
-  ...jobApplicants.map(applicant => ({
-    type: 'application',
-    email: applicant.email,
-    jobTitle: Array.isArray(applicant.positionAppliedFor)
-      ? applicant.positionAppliedFor[0]
-      : applicant.positionAppliedFor,
-    createdAt: applicant.createdAt,
-  })),
-  ...resumeUploads
-    .filter(applicant =>
-      applicant.resume &&
-      applicant.resume.filePath &&
-      applicant.resume.originalFileName
-    )
-    .map(applicant => ({
-      type: 'resume',
-      email: applicant.email,
-      fileName: applicant.resume.originalFileName,
-      createdAt: applicant.resume.updatedAt || applicant.resume.createdAt || applicant.updatedAt || applicant.createdAt,
-    })),
-].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const allNotifications = [
+    ...jobApplicants,
+    ...resumeUploads,
+  ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
     <>
@@ -322,14 +292,30 @@ const allNotifications = [
             src={Notification}
             alt="Notifications"
             className="notification-icon notification-button"
-            style={{ cursor: 'pointer', position: 'relative' }}
+            style={{ cursor: 'pointer' }}
             onClick={handleShowNotifications}
           />
+          {resumeUploads.length > 0 && (
+            <span
+              className="notification-count"
+              style={{
+                position: 'absolute',
+                top: '-8px',
+                right: '-8px',
+                background: 'red',
+                color: 'white',
+                borderRadius: '50%',
+                padding: '2px 6px',
+                fontSize: '12px',
+              }}
+            >
+              {resumeUploads.length}
+            </span>
+          )}
           <a className="logout" onClick={handleLogout}>Logout</a>
         </div>
       </nav>
 
-      {/* Job Applicants & Resume Uploads Notification Modal */}
       {showJobApplicants && (
         <div
           className="notifications-container"
@@ -383,7 +369,7 @@ const allNotifications = [
                       marginBottom: '4px',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '2px'
+                      gap: '2px',
                     }}
                   >
                     {notif.type === 'application' ? (
@@ -395,7 +381,7 @@ const allNotifications = [
                         <b>{notif.email}</b> has uploaded a resume: <b>{notif.fileName}</b>
                       </span>
                     )}
-                    <span style={{ fontSize: 12, color: '#888' }}>
+                    <span style={{ fontSize: '12px', color: '#888' }}>
                       {notif.createdAt
                         ? new Date(notif.createdAt).toLocaleString('en-US', {
                             year: 'numeric',
@@ -414,9 +400,9 @@ const allNotifications = [
         </div>
       )}
 
-      <div className='components'>
-        <div className='adminleftcomp'>
-          <div className='adminsearch'>
+      <div className="components">
+        <div className="adminleftcomp">
+          <div className="adminsearch">
             <input
               type="text"
               placeholder="Search jobs or applicants..."
@@ -452,8 +438,8 @@ const allNotifications = [
             )}
           </div>
           <div className="verticalfilter">
-            <h2 style={{ paddingBottom: "24px", paddingTop: "25px", fontSize: "24px" }}>Filters</h2>
-            <h4 style={{ fontSize: "14px", fontWeight: "600" }}>Working Schedule</h4>
+            <h2 style={{ paddingBottom: '24px', paddingTop: '25px', fontSize: '24px' }}>Filters</h2>
+            <h4 style={{ fontSize: '14px', fontWeight: '600' }}>Working Schedule</h4>
             {workingSchedule.map(option => (
               <label className="custom-checkbox" key={option.id}>
                 <input
@@ -468,7 +454,7 @@ const allNotifications = [
             ))}
           </div>
           <div className="verticalfilter">
-            <h4 style={{ fontSize: "14px", fontWeight: "600" }}>Employment Type</h4>
+            <h4 style={{ fontSize: '14px', fontWeight: '600' }}>Employment Type</h4>
             {employmentType.map(option => (
               <label className="custom-checkbox" key={option.id}>
                 <input
@@ -483,7 +469,7 @@ const allNotifications = [
             ))}
           </div>
           <div className="verticalfilter">
-            <h4 style={{ fontSize: "14px", fontWeight: "600" }}>Work Setup</h4>
+            <h4 style={{ fontSize: '14px', fontWeight: '600' }}>Work Setup</h4>
             {workSetup.map(option => (
               <label className="custom-checkbox" key={option.id}>
                 <input
@@ -498,7 +484,7 @@ const allNotifications = [
             ))}
           </div>
         </div>
-        <div className='adminrightcomp'>
+        <div className="adminrightcomp">
           {error && <div style={{ color: 'red', padding: '16px' }}>{error}</div>}
           {messageFeedback && (
             <div style={{ color: messageFeedback.includes('successfully') ? 'green' : 'red', padding: '16px' }}>
@@ -508,30 +494,68 @@ const allNotifications = [
           {loading ? (
             <div style={{ padding: '32px', color: '#888' }}>Loading data...</div>
           ) : (
-            <div className='jobscontainer'>
-              {filteredJobOpenings.length === 0 ? (
-                <div style={{ padding: '32px', color: '#888' }}>No jobs match your search or filters.</div>
+            <div className="jobscontainer">
+              {filteredJobOpenings.length === 0 && (!searchQuery || filteredSearchResults.length === 0) ? (
+                <div style={{ padding: '32px', color: '#888' }}>No jobs or applicants match your search or filters.</div>
               ) : (
-                filteredJobOpenings.map((job, idx) => (
-                  <div className='jobscardwrapper' key={job._id}>
-                    <div className="jobcard">
-                      <h2>{job.title}</h2>
-                      <div className='tags'>
-                        <a>{job.workSchedule}</a>
-                        <a>{job.employmentType}</a>
-                        <a>{job.workSetup}</a>
-                      </div>
-                      <div className='joboption'>
-                        <a href="#" onClick={e => { e.preventDefault(); setOpenApplicantsIdx(idx); }}>
-                          View Applicants
-                        </a>
-                        <a href="#" onClick={e => { e.preventDefault(); setOpenDetailIdx(idx); }}>
-                          Details
-                        </a>
+                <>
+                  {filteredJobOpenings.map((job, idx) => (
+                    <div className="jobscardwrapper" key={job._id}>
+                      <div className="jobcard">
+                        <h2>{job.title}</h2>
+                        <div className="tags">
+                          <a>{job.workSchedule}</a>
+                          <a>{job.employmentType}</a>
+                          <a>{job.workSetup}</a>
+                        </div>
+                        <div className="joboption">
+                          <a href="#" onClick={e => { e.preventDefault(); setOpenApplicantsIdx(idx); }}>
+                            View Applicants
+                          </a>
+                          <a href="#" onClick={e => { e.preventDefault(); setOpenDetailIdx(idx); }}>
+                            Details
+                          </a>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  ))}
+                  {searchQuery &&
+                    filteredSearchResults.map((result, idx) => (
+                      <div className="jobscardwrapper" key={`${result.type}-${result.id}`}>
+                        <div className="jobcard">
+                          <h2>{result.value.split(' (')[0]}</h2>
+                          <div className="tags">
+                            {result.type === 'applicant' && (
+                              <>
+                                <a>{result.jobTitle}</a>
+                                {applicants.find(a => a._id === result.id)?.resume?.originalFileName && (
+                                  <a>Resume Uploaded</a>
+                                )}
+                              </>
+                            )}
+                            {result.type === 'resume' && <a>Resume: {result.resumeName}</a>}
+                          </div>
+                          <div className="joboption">
+                            <a
+                              href="#"
+                              onClick={e => {
+                                e.preventDefault();
+                                setOpenApplicantDetailIdx(applicants.findIndex(a => a._id === result.id));
+                                if (result.type === 'applicant') {
+                                  const jobIdx = jobs.findIndex(
+                                    j => j.title.toLowerCase() === result.jobTitle.toLowerCase()
+                                  );
+                                  if (jobIdx !== -1) setOpenApplicantsIdx(jobIdx);
+                                }
+                              }}
+                            >
+                              View Details
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </>
               )}
             </div>
           )}
@@ -543,15 +567,15 @@ const allNotifications = [
                 style={{
                   backgroundImage: `url(${Details})`,
                   backgroundSize: 'cover',
-                  backgroundPosition: 'center'
+                  backgroundPosition: 'center',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gridColumn: '1 / span 2' }}>
-                  <h3 style={{ marginBottom: 0 }}>
-                    {filteredJobOpenings[openApplicantsIdx]?.title || 'Job Title'}
-                  </h3>
+                <div
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gridColumn: '1 / span 2' }}
+                >
+                  <h3 style={{ marginBottom: 0 }}>{filteredJobOpenings[openApplicantsIdx]?.title || 'Job Title'}</h3>
                   <button
-                    className='jobdetailsapply'
+                    className="jobdetailsapply"
                     onClick={() => setOpenApplicantsIdx(null)}
                     aria-label="Close"
                     style={{ fontSize: '2rem', fontWeight: 'bold', cursor: 'pointer' }}
@@ -560,18 +584,20 @@ const allNotifications = [
                   </button>
                 </div>
                 <div className="applicantsgrid">
-                  <div className='applicantinstance'>
+                  <div className="applicantinstance">
                     <ul>
                       {applicants
-                        .filter(applicant => applicant.positionAppliedFor.includes(filteredJobOpenings[openApplicantsIdx]?.title))
+                        .filter(applicant =>
+                          applicant.positionAppliedFor.includes(filteredJobOpenings[openApplicantsIdx]?.title)
+                        )
                         .map((applicant, idx) => (
-                          <li key={applicant.email} style={{ marginBottom: "16px", listStyle: "none" }}>
+                          <li key={applicant.email} style={{ marginBottom: '16px', listStyle: 'none' }}>
                             <b>{applicant.fullName}</b>
                             <a className="viewdetails" onClick={() => setOpenApplicantDetailIdx(idx)}>
                               View Details
                             </a>
                             {openApplicantDetailIdx === idx && (
-                              <div className='applicantdetailwrap'>
+                              <div className="applicantdetailwrap">
                                 <span>Email: {applicant.email}</span>
                                 <span>Mobile: {applicant.mobileNumber}</span>
                                 <span>Jobs Applied For: {applicant.positionAppliedFor.join(', ')}</span>
@@ -594,7 +620,7 @@ const allNotifications = [
                                   </>
                                 )}
                                 <button
-                                  style={{ marginTop: "8px", fontSize: "12px", width: "100px" }}
+                                  style={{ marginTop: '8px', fontSize: '12px', width: '100px' }}
                                   onClick={() => setOpenApplicantDetailIdx(null)}
                                   type="button"
                                 >
@@ -621,25 +647,37 @@ const allNotifications = [
                 style={{
                   backgroundImage: `url(${Details})`,
                   backgroundSize: 'cover',
-                  backgroundPosition: 'center'
+                  backgroundPosition: 'center',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gridColumn: '1 / span 2' }}>
-                  <h3 style={{ marginBottom: 0 }}>
-                    {filteredJobOpenings[openDetailIdx]?.title || 'Job Title'}
-                  </h3>
-                  <a className='jobdetailsapply' onClick={() => setOpenDetailIdx(null)} aria-label="Close">
+                <div
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gridColumn: '1 / span 2' }}
+                >
+                  <h3 style={{ marginBottom: 0 }}>{filteredJobOpenings[openDetailIdx]?.title || 'Job Title'}</h3>
+                  <a className="jobdetailsapply" onClick={() => setOpenDetailIdx(null)} aria-label="Close">
                     ×
                   </a>
                 </div>
                 <div className="jobdetailsgrid">
                   <div>
-                    <p><b>Department:</b> {filteredJobOpenings[openDetailIdx]?.department || 'N/A'}</p>
-                    <p><b>Work Schedule:</b> {filteredJobOpenings[openDetailIdx]?.workSchedule || 'N/A'}</p>
-                    <p><b>Work Setup:</b> {filteredJobOpenings[openDetailIdx]?.workSetup || 'N/A'}</p>
-                    <p><b>Employment Type:</b> {filteredJobOpenings[openDetailIdx]?.employmentType || 'N/A'}</p>
-                    <p><b>Description:</b> {filteredJobOpenings[openDetailIdx]?.description.join(', ') || 'N/A'}</p>
-                    <p><b>Key Responsibilities:</b></p>
+                    <p>
+                      <b>Department:</b> {filteredJobOpenings[openDetailIdx]?.department || 'N/A'}
+                    </p>
+                    <p>
+                      <b>Work Schedule:</b> {filteredJobOpenings[openDetailIdx]?.workSchedule || 'N/A'}
+                    </p>
+                    <p>
+                      <b>Work Setup:</b> {filteredJobOpenings[openDetailIdx]?.workSetup || 'N/A'}
+                    </p>
+                    <p>
+                      <b>Employment Type:</b> {filteredJobOpenings[openDetailIdx]?.employmentType || 'N/A'}
+                    </p>
+                    <p>
+                      <b>Description:</b> {filteredJobOpenings[openDetailIdx]?.description.join(', ') || 'N/A'}
+                    </p>
+                    <p>
+                      <b>Key Responsibilities:</b>
+                    </p>
                     <ul>
                       {filteredJobOpenings[openDetailIdx]?.keyResponsibilities.map((item, i) => (
                         <li key={i}>{item}</li>
@@ -647,25 +685,102 @@ const allNotifications = [
                     </ul>
                   </div>
                   <div>
-                    <p><b>Qualifications:</b></p>
+                    <p>
+                      <b>Qualifications:</b>
+                    </p>
                     <ul>
                       {filteredJobOpenings[openDetailIdx]?.qualifications.map((item, i) => (
                         <li key={i}>{item}</li>
                       )) || <li>N/A</li>}
                     </ul>
-                    <p><b>What we Offer:</b></p>
+                    <p>
+                      <b>What we Offer:</b>
+                    </p>
                     <ul>
                       {filteredJobOpenings[openDetailIdx]?.whatWeOffer.map((item, i) => (
                         <li key={i}>{item}</li>
                       )) || <li>N/A</li>}
                     </ul>
-                    <button
-                      onClick={() => setOpenDetailIdx(null)}
-                      style={{ marginTop: "32px" }}
-                    >
+                    <button onClick={() => setOpenDetailIdx(null)} style={{ marginTop: '32px' }}>
                       Close
                     </button>
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {openApplicantDetailIdx !== null && (
+            <div className="applicantdetails" onClick={() => setOpenApplicantDetailIdx(null)}>
+              <div
+                className="applicantdetailsblock"
+                onClick={e => e.stopPropagation()}
+                style={{
+                  backgroundImage: `url(${Details})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  padding: '24px',
+                  borderRadius: '8px',
+                  maxWidth: '600px',
+                  margin: 'auto',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <h3 style={{ marginBottom: 0 }}>{applicants[openApplicantDetailIdx]?.fullName || 'Applicant'}</h3>
+                  <button
+                    onClick={() => setOpenApplicantDetailIdx(null)}
+                    style={{ fontSize: '2rem', fontWeight: 'bold', cursor: 'pointer', border: 'none', background: 'none' }}
+                  >
+                    ×
+                  </button>
+                </div>
+                <div style={{ marginTop: '16px' }}>
+                  <p>
+                    <b>Email:</b> {applicants[openApplicantDetailIdx]?.email}
+                  </p>
+                  <p>
+                    <b>Mobile:</b> {applicants[openApplicantDetailIdx]?.mobileNumber}
+                  </p>
+                  <p>
+                    <b>Jobs Applied For:</b> {applicants[openApplicantDetailIdx]?.positionAppliedFor.join(', ')}
+                  </p>
+                  <p>
+                    <b>Birthdate:</b> {new Date(applicants[openApplicantDetailIdx]?.birthdate).toISOString().split('T')[0]}
+                  </p>
+                  <p>
+                    <b>Gender:</b> {applicants[openApplicantDetailIdx]?.gender}
+                  </p>
+                  <p>
+                    <b>City:</b> {applicants[openApplicantDetailIdx]?.city}
+                  </p>
+                  <p>
+                    <b>State/Province:</b> {applicants[openApplicantDetailIdx]?.stateProvince}
+                  </p>
+                  <p>
+                    <b>Status:</b> {applicants[openApplicantDetailIdx]?.status}
+                  </p>
+                  <p>
+                    <b>Stage:</b> {applicants[openApplicantDetailIdx]?.applicationStage}
+                  </p>
+                  {applicants[openApplicantDetailIdx]?.resume?.originalFileName && (
+                    <>
+                      <p>
+                        <b>Resume:</b> {applicants[openApplicantDetailIdx]?.resume.originalFileName}
+                      </p>
+                      <a
+                        href={`http://localhost:5173${applicants[openApplicantDetailIdx]?.resume.filePath}`}
+                        download={applicants[openApplicantDetailIdx]?.resume.originalFileName}
+                        style={{ display: 'block', marginTop: '4px', color: '#13714C' }}
+                      >
+                        Download Resume
+                      </a>
+                    </>
+                  )}
+                  <button
+                    onClick={() => setOpenApplicantDetailIdx(null)}
+                    style={{ marginTop: '16px', padding: '8px 24px', cursor: 'pointer' }}
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
             </div>
@@ -789,20 +904,20 @@ const allNotifications = [
                   <input
                     type="email"
                     value={messageRecipient}
-                    onChange={(e) => setMessageRecipient(e.target.value)}
+                    onChange={e => setMessageRecipient(e.target.value)}
                     placeholder="Enter recipient email"
                   />
                   <label>Subject</label>
                   <input
                     type="text"
                     value={messageSubject}
-                    onChange={(e) => setMessageSubject(e.target.value)}
+                    onChange={e => setMessageSubject(e.target.value)}
                     placeholder="Enter subject"
                   />
                   <label>Message</label>
                   <textarea
                     value={messageBody}
-                    onChange={(e) => setMessageBody(e.target.value)}
+                    onChange={e => setMessageBody(e.target.value)}
                     placeholder="Enter your message"
                   />
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>

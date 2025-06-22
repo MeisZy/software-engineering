@@ -765,11 +765,6 @@ app.put('/update-applicant-status', async (req, res) => {
       return res.status(404).json({ message: 'Applicant not found' });
     }
 
-    const applicant = await Applicants.findOne({ email });
-    if (applicant && !jobApplicant.fullName) {
-      jobApplicant.fullName = applicant.fullName || 'Unknown Applicant';
-    }
-
     jobApplicant.status = status;
     await jobApplicant.save();
 
@@ -787,7 +782,7 @@ app.put('/update-applicant-status', async (req, res) => {
       subject: 'Application Status Update',
       html: `
         <h3>Application Status Update</h3>
-        <p>Dear ${jobApplicant.fullName || 'Applicant'},</p>
+        <p>Dear Applicant,</p>
         <p>Your application status has been updated to: <strong>${status}</strong>.</p>
         <p>Please log in to your Collectius account to view more details.</p>
         <hr />
