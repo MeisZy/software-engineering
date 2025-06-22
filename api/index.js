@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const Applicants = require('./models/Applicants');
 const Jobs = require('./models/Jobs');
 const JobApplicants = require('./models/JobApplicants');
@@ -27,7 +30,35 @@ if (!process.env.CONNECTION_STRING) {
   process.exit(1);
 }
 
-// In-memory store for OTPs and reset tokens (use database in production)
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '..', 'frontend', 'public', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Multer configuration
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `${Date.now()}_${file.originalname}`);
+  }
+});
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ext !== '.pdf' && ext !== '.docx') {
+      return cb(new Error('Only .pdf and .docx files are allowed'));
+    }
+    cb(null, true);
+  },
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
+
+// In-memory store for OTPs and reset tokens
 const otpStore = new Map();
 const resetTokenStore = new Map();
 
@@ -37,15 +68,26 @@ app.use(cors({
   optionsSuccessStatus: 200,
 }));
 app.use(express.json());
+// Serve uploaded files
+app.use('/uploads', express.static(uploadsDir));
 
 // MongoDB connection
-const mongoURI = process.env.CONNECTION_STRING;
+const mongoURI = process.env.CONNECTION_STRING || 'mongodb://localhost:27017/collectius';
+mongoose.connect(mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000,
+})
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((error) => {
+    console.error('Error connecting to MongoDB:', error.message);
+    if (error.name === 'MongoServerSelectionError') {
+      console.error('Possible issues: Invalid connection string, network connectivity, or IP not in Atlas allowlist.');
+    }
+    process.exit(1);
+  });
 
-mongoose.connect(mongoURI)
-  .then(() => console.log('Connected to MongoDB Atlas'))
-  .catch((error) => console.error('Error connecting to MongoDB Atlas:', error));
-
-// Nodemailer setup for all emails
+// Nodemailer setup
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 465,
@@ -58,7 +100,7 @@ const transporter = nodemailer.createTransport({
   debug: process.env.NODE_ENV !== 'production',
 });
 
-// Test Nodemailer configuration
+// Test Nodemailer
 transporter.verify((error, success) => {
   if (error) {
     console.error('Nodemailer configuration error:', {
@@ -118,7 +160,8 @@ app.post('/add', async (req, res) => {
       postalCode,
       email,
       mobileNumber,
-      password: hashedPassword
+      password: hashedPassword,
+      resume: { filePath: null, fileType: null }
     });
 
     await applicant.save();
@@ -190,6 +233,7 @@ app.post('/google-login', async (req, res) => {
         postalCode: '0000',
         mobileNumber: '0000000000',
         password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
+        resume: { filePath: null, fileType: null }
       });
       await applicant.save();
     }
@@ -429,7 +473,6 @@ app.post('/jobs', async (req, res) => {
       whatWeOffer,
       keywords,
       gradedQualifications,
-      Status
     } = req.body;
 
     if (
@@ -471,7 +514,6 @@ app.post('/jobs', async (req, res) => {
       whatWeOffer,
       keywords: keywords || [],
       gradedQualifications: gradedQualifications || [],
-      Status: Status || 'To Next Interview',
     });
 
     await newJob.save();
@@ -517,6 +559,10 @@ app.post('/apply', async (req, res) => {
       return res.status(404).json({ message: 'Applicant not found' });
     }
 
+    if (!applicant.fullName) {
+      return res.status(400).json({ message: 'Applicant fullName is missing' });
+    }
+
     const job = await Jobs.findOne({ title: jobTitle });
     if (!job) {
       return res.status(404).json({ message: 'Job not found' });
@@ -528,6 +574,9 @@ app.post('/apply', async (req, res) => {
         return res.status(400).json({ message: 'You have already applied for this job' });
       }
       jobApplicant.positionAppliedFor.push(jobTitle);
+      if (!jobApplicant.fullName) {
+        jobApplicant.fullName = applicant.fullName;
+      }
       await jobApplicant.save();
     } else {
       jobApplicant = new JobApplicants({
@@ -542,9 +591,8 @@ app.post('/apply', async (req, res) => {
         gender: applicant.gender,
         city: applicant.city,
         stateProvince: applicant.stateProvince,
-        status: 'Ongoing',
-        applicationStage: 'None',
-        resume: ['Default Skill'],
+        status: 'To Next Interview',
+        applicationStage: 'None'
       });
       await jobApplicant.save();
     }
@@ -554,6 +602,9 @@ app.post('/apply', async (req, res) => {
     console.error('Error applying for job:', error);
     if (error.code === 11000) {
       return res.status(400).json({ message: 'Email already exists in job applicants' });
+    }
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: `Validation error: ${error.message}` });
     }
     res.status(500).json({ message: 'Server error while applying for job' });
   }
@@ -566,6 +617,210 @@ app.get('/applicants', async (req, res) => {
     res.status(200).json(applicants);
   } catch (err) {
     console.error('Error fetching applicants:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Fetch single applicant endpoint
+app.get('/applicants/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    const applicant = await Applicants.findOne({ email });
+    if (!applicant) {
+      return res.status(200).json(null);
+    }
+    res.status(200).json({
+      fullName: applicant.fullName,
+      firstName: applicant.firstName,
+      middleName: applicant.middleName,
+      lastName: applicant.lastName,
+      email: applicant.email,
+      mobileNumber: applicant.mobileNumber,
+      birthdate: applicant.birthdate,
+      gender: applicant.gender,
+      city: applicant.city,
+      stateProvince: applicant.stateProvince,
+      resume: applicant.resume
+    });
+  } catch (err) {
+    console.error('Error fetching applicant:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Upload resume endpoint
+app.post('/upload-resume', upload.single('resume'), async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email || !req.file) {
+      if (req.file) fs.unlinkSync(req.file.path);
+      return res.status(400).json({ message: 'Email and resume file are required' });
+    }
+
+    const applicant = await Applicants.findOne({ email });
+    if (!applicant) {
+      fs.unlinkSync(req.file.path);
+      return res.status(404).json({ message: 'Applicant not found' });
+    }
+
+    // Delete previous resume file if exists
+    if (applicant.resume.filePath) {
+      const oldPath = path.join(__dirname, '..', 'frontend', 'public', applicant.resume.filePath);
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+    }
+
+    const fileType = path.extname(req.file.filename).toLowerCase() === '.pdf' ? 'pdf' : 'docx';
+    applicant.resume = {
+      filePath: `/uploads/${req.file.filename}`,
+      fileType
+    };
+    await applicant.save();
+
+    res.status(200).json({ message: 'Resume uploaded successfully', resume: applicant.resume });
+  } catch (err) {
+    console.error('Error uploading resume:', err);
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Update applicant status endpoint
+app.put('/update-applicant-status', async (req, res) => {
+  try {
+    const { email, status } = req.body;
+
+    if (!email || !status) {
+      return res.status(400).json({ message: 'Email and status are required' });
+    }
+
+    if (!['Rejected', 'To Next Interview'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status value' });
+    }
+
+    const jobApplicant = await JobApplicants.findOne({ email });
+    if (!jobApplicant) {
+      return res.status(404).json({ message: 'Applicant not found' });
+    }
+
+    const applicant = await Applicants.findOne({ email });
+    if (applicant && !jobApplicant.fullName) {
+      jobApplicant.fullName = applicant.fullName || 'Unknown Applicant';
+    }
+
+    jobApplicant.status = status;
+    await jobApplicant.save();
+
+    res.status(200).json({ message: 'Applicant status updated successfully', applicant: jobApplicant });
+  } catch (error) {
+    console.error('Error updating applicant status:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: `Validation error: ${error.message}` });
+    }
+    res.status(500).json({ message: 'Server error while updating applicant status' });
+  }
+});
+
+// Delete applicant endpoint
+app.delete('/delete-applicant', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const jobApplicant = await JobApplicants.findOneAndDelete({ email });
+    if (!jobApplicant) {
+      return res.status(404).json({ message: 'Applicant not found' });
+    }
+
+    res.status(200).json({ message: 'Applicant deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting applicant:', error);
+    res.status(500).json({ message: 'Server error while deleting applicant' });
+  }
+});
+
+// Fix applicant status and fullName endpoint
+app.get('/fix-applicant-status', async (req, res) => {
+  try {
+    const applicants = await JobApplicants.find();
+    let updatedCount = 0;
+
+    for (const jobApplicant of applicants) {
+      let needsUpdate = false;
+
+      // Fix status
+      if (jobApplicant.status !== 'To Next Interview' && jobApplicant.status !== 'Rejected') {
+        jobApplicant.status = 'To Next Interview';
+        needsUpdate = true;
+      }
+
+      // Fix fullName
+      if (!jobApplicant.fullName) {
+        const applicant = await Applicants.findOne({ email: jobApplicant.email });
+        jobApplicant.fullName = applicant ? applicant.fullName : 'Unknown Applicant';
+        needsUpdate = true;
+      }
+
+      if (needsUpdate) {
+        await jobApplicant.save();
+        updatedCount++;
+      }
+    }
+
+    res.status(200).json({
+      message: `Updated ${updatedCount} applicant documents`,
+      totalProcessed: applicants.length,
+    });
+  } catch (error) {
+    console.error('Error fixing applicant status:', error);
+    res.status(500).json({ message: 'Failed to update status', error: error.message });
+  }
+});
+
+// Fetch applied jobs endpoint
+app.get('/applied-jobs/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    const jobApplicant = await JobApplicants.findOne({ email });
+    if (!jobApplicant) {
+      return res.status(200).json(null);
+    }
+    const appliedJobs = await Promise.all(
+      jobApplicant.positionAppliedFor.map(async (jobTitle) => {
+        const job = await Jobs.findOne({ title: jobTitle });
+        return job || { title: jobTitle, department: 'Unknown', workSchedule: 'Unknown', workSetup: 'Unknown', employmentType: 'Unknown' };
+      })
+    );
+    const response = {
+      fullName: jobApplicant.fullName,
+      firstName: jobApplicant.firstName,
+      middleName: jobApplicant.middleName,
+      lastName: jobApplicant.lastName,
+      email: jobApplicant.email,
+      mobileNumber: jobApplicant.mobileNumber,
+      birthdate: jobApplicant.birthdate,
+      gender: jobApplicant.gender,
+      city: jobApplicant.city,
+      stateProvince: jobApplicant.stateProvince,
+      status: jobApplicant.status,
+      positionAppliedFor: jobApplicant.positionAppliedFor,
+      appliedJobs,
+    };
+    res.status(200).json(response);
+  } catch (err) {
+    console.error('Error fetching applied jobs:', err);
     res.status(500).json({ message: err.message });
   }
 });

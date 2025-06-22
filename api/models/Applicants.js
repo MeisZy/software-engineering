@@ -1,22 +1,4 @@
-/*
-Attributes of object applicants:
-
-First Name:
-Middle Name: 
-Last Name:
-Email:
-Mobile Number:
-Position Applied for:
-Birthdate:
-Gender: M/F
-City:
-State/Province:
-Status: (Ongoing or Rejected)
-Application Stage: (supposed to be kung pangilang interview na siya. value is None by default)
-Resume: (skills)
-*/
-
- const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 const applicantSchema = new mongoose.Schema({
   applicantId: {
@@ -93,10 +75,16 @@ const applicantSchema = new mongoose.Schema({
     default: 'None'
   },
   resume: {
-    skills: [{
+    filePath: {
       type: String,
-      trim: true
-    }]
+      trim: true,
+      default: null
+    },
+    fileType: {
+      type: String,
+      enum: ['pdf', 'docx', null],
+      default: null
+    }
   },
   createdAt: {
     type: Date,

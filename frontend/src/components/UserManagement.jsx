@@ -21,23 +21,23 @@ function UserManagement() {
     fetchApplicants();
   }, []);
 
-  const handleStatusChange = async (email, newStatus) => {
-    try {
-      const response = await axios.put('http://localhost:5000/update-applicant-status', {
-        email,
-        status: newStatus,
-      });
-      setApplicants((prev) =>
-        prev.map((applicant) =>
-          applicant.email === email ? { ...applicant, status: newStatus } : applicant
-        )
-      );
-      setError('');
-    } catch (err) {
-      console.error('Error updating status:', err);
-      setError('Failed to update applicant status.');
-    }
-  };
+    const handleStatusChange = async (email, newStatus) => {
+      try {
+        const response = await axios.put('http://localhost:5000/update-applicant-status', {
+          email,
+          status: newStatus,
+        });
+        setApplicants((prev) =>
+          prev.map((applicant) =>
+            applicant.email === email ? { ...applicant, status: newStatus } : applicant
+          )
+        );
+        setError('');
+      } catch (err) {
+        console.error('Error updating status:', err);
+        setError(err.response?.data?.message || 'Failed to update applicant status.');
+      }
+    };
 
   const handleDelete = async (email) => {
     try {

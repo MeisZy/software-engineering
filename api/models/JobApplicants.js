@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const jobApplicantsSchema = new mongoose.Schema({
   fullName: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
   },
   firstName: {
@@ -23,6 +23,7 @@ const jobApplicantsSchema = new mongoose.Schema({
     required: true,
     unique: true,
     trim: true,
+    lowercase: true,
   },
   mobileNumber: {
     type: String,
@@ -40,6 +41,7 @@ const jobApplicantsSchema = new mongoose.Schema({
   gender: {
     type: String,
     required: true,
+    enum: ['M', 'F', 'Other'],
   },
   city: {
     type: String,
@@ -54,17 +56,14 @@ const jobApplicantsSchema = new mongoose.Schema({
   status: {
     type: String,
     required: true,
-    enum: ['Rejected', 'To Next Interview'],
     default: 'To Next Interview',
+    enum: ['Rejected', 'To Next Interview'],
   },
   applicationStage: {
     type: String,
     default: 'None',
-  },
-  resume: {
-    type: [String],
-    default: ['Default Skill'],
-  },
+    trim: true,
+  }
 });
 
 module.exports = mongoose.model('JobApplicants', jobApplicantsSchema);

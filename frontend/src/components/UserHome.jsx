@@ -172,6 +172,11 @@ function UserHome() {
     setTimeout(() => setShowSuggestions(false), 100);
   };
 
+  const handleProfile = () => {
+    navigate('/profile');
+  }
+
+
   const anyFilterSelected =
     selectedWorkingSchedule.length > 0 ||
     selectedEmploymentType.length > 0 ||
@@ -207,6 +212,7 @@ function UserHome() {
         <span className="usergreeting">Welcome, {userEmail}!</span>
         <a href="#" onClick={(e) => { e.preventDefault(); setShowReportForm(true); }}>Report a Problem</a>
         <a href="#" onClick={handleFAQs}>FAQs</a>
+        <a href="#" onClick={handleProfile}>Settings</a>
         <a className="logout" onClick={handleLogout}>Logout</a>
       </nav>
       <div className='usercontainer'>
