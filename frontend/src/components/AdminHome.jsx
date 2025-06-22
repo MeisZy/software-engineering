@@ -113,12 +113,12 @@ function AdminHome() {
       try {
         const response = await axios.get('http://localhost:5000/applicants');
         // Only notify if resume.filePath exists and is not null
-        const uploads = response.data.filter(applicant =>
-          applicant.resume &&
-          applicant.resume.filePath &&
-          applicant.resume.originalFileName
-        );
-        setResumeUploads(uploads);
+      const uploads = response.data.filter(applicant =>
+        applicant.resume &&
+        applicant.resume.filePath &&
+        applicant.resume.originalFileName
+      );
+      setResumeUploads(uploads);
       } catch (err) {
         setError('Failed to load resume uploads.');
       }
@@ -278,29 +278,28 @@ function AdminHome() {
   };
 
   // Merge job application and resume upload notifications
-  const allNotifications = [
-    ...jobApplicants.map(applicant => ({
-      type: 'application',
+const allNotifications = [
+  ...jobApplicants.map(applicant => ({
+    type: 'application',
+    email: applicant.email,
+    jobTitle: Array.isArray(applicant.positionAppliedFor)
+      ? applicant.positionAppliedFor[0]
+      : applicant.positionAppliedFor,
+    createdAt: applicant.createdAt,
+  })),
+  ...resumeUploads
+    .filter(applicant =>
+      applicant.resume &&
+      applicant.resume.filePath &&
+      applicant.resume.originalFileName
+    )
+    .map(applicant => ({
+      type: 'resume',
       email: applicant.email,
-      jobTitle: Array.isArray(applicant.positionAppliedFor)
-        ? applicant.positionAppliedFor[0]
-        : applicant.positionAppliedFor,
-      createdAt: applicant.createdAt,
+      fileName: applicant.resume.originalFileName,
+      createdAt: applicant.resume.updatedAt || applicant.resume.createdAt || applicant.updatedAt || applicant.createdAt,
     })),
-    ...resumeUploads
-      // Only show resume upload notification if filePath exists and originalFileName exists
-      .filter(applicant =>
-        applicant.resume &&
-        applicant.resume.filePath &&
-        applicant.resume.originalFileName
-      )
-      .map(applicant => ({
-        type: 'resume',
-        email: applicant.email,
-        fileName: applicant.resume.originalFileName,
-        createdAt: applicant.resume.updatedAt || applicant.resume.createdAt || applicant.updatedAt || applicant.createdAt,
-      })),
-  ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Most recent first
+].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
     <>

@@ -503,9 +503,18 @@ app.post('/upload-resume', upload.single('resume'), async (req, res) => {
     applicant.resume = {
       filePath: `/Uploads/${req.file.filename}`,
       fileType: 'pdf',
-      originalFileName: req.file.originalname // Save original filename
+      originalFileName: req.file.originalname,
+      updatedAt: new Date()
     };
     await applicant.save();
+
+    // --- CREATE NOTIFICATION FOR ADMIN ---
+    await Notifications.create({
+      email: applicant.email,
+      message: `${applicant.email} has uploaded a resume: ${req.file.originalname}`,
+      createdAt: new Date(),
+      isRead: false
+    });
 
     res.status(200).json({ message: 'Resume uploaded successfully', resume: applicant.resume });
   } catch (err) {
@@ -516,28 +525,6 @@ app.post('/upload-resume', upload.single('resume'), async (req, res) => {
     if (err.message === 'Only PDF files are allowed') {
       return res.status(400).json({ message: 'Only PDF files are allowed' });
     }
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// Fetch user logs endpoint
-app.get('/userlogs', async (req, res) => {
-  try {
-    const logs = await UserLogs.find().sort({ date: -1 });
-    res.status(200).json(logs);
-  } catch (err) {
-    console.error('Error fetching user logs:', err);
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// Fetch jobs endpoint
-app.get('/jobs', async (req, res) => {
-  try {
-    const jobs = await Jobs.find();
-    res.status(200).json(jobs);
-  } catch (err) {
-    console.error('Error fetching jobs:', err);
     res.status(500).json({ message: err.message });
   }
 });
