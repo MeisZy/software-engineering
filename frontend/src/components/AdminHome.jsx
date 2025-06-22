@@ -8,6 +8,9 @@ import './AdminHome.css';
 
 function AdminHome() {
   const navigate = useNavigate();
+  const [jobApplicants, setJobApplicants] = useState([]);
+  const [showJobApplicants, setShowJobApplicants] = useState(false);
+  const [currentApplicantIdx, setCurrentApplicantIdx] = useState(0);
   const [jobs, setJobs] = useState([]);
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -83,12 +86,23 @@ function AdminHome() {
         setApplicants(applicantsResponse.data);
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching data:', err);
         setError('Failed to load data. Please try again.');
         setLoading(false);
       }
     };
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchJobApplicants = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/applicants');
+        setJobApplicants(response.data);
+      } catch (err) {
+        setError('Failed to load job applicants.');
+      }
+    };
+    fetchJobApplicants();
   }, []);
 
   const fetchUserLogs = async () => {
@@ -97,7 +111,6 @@ function AdminHome() {
       setUserLogs(response.data);
       setLogsError('');
     } catch (err) {
-      console.error('Error fetching user logs:', err);
       setLogsError('Failed to load user logs. Please try again.');
     }
   };
@@ -136,7 +149,6 @@ function AdminHome() {
       if (suggestion.type === 'job') {
         const jobIndex = jobs.findIndex(job => job._id === suggestion.id);
         if (jobIndex === -1) {
-          console.error(`Job not found for ID: ${suggestion.id}, Title: ${suggestion.value}`);
           setError('Selected job not found.');
           setTimeout(() => setError(''), 3000);
           return;
@@ -147,13 +159,11 @@ function AdminHome() {
         const applicantIndex = applicants.findIndex(applicant => applicant._id === suggestion.id);
 
         if (jobIndex === -1) {
-          console.error(`Job not found for Title: ${suggestion.jobTitle}`);
           setError('Job associated with applicant not found.');
           setTimeout(() => setError(''), 3000);
           return;
         }
         if (applicantIndex === -1) {
-          console.error(`Applicant not found for ID: ${suggestion.id}, Email: ${suggestion.email}`);
           setError('Selected applicant not found.');
           setTimeout(() => setError(''), 3000);
           return;
@@ -163,7 +173,6 @@ function AdminHome() {
         setOpenApplicantDetailIdx(applicantIndex);
       }
     } catch (err) {
-      console.error('Error handling suggestion click:', err);
       setError('An error occurred while processing your selection.');
       setTimeout(() => setError(''), 3000);
     }
@@ -207,7 +216,6 @@ function AdminHome() {
       setMessageSubject('');
       setMessageBody('');
     } catch (error) {
-      console.error('Error sending message:', error);
       setMessageFeedback(error.response?.data?.message || 'Failed to send message. Please try again.');
     } finally {
       setTimeout(() => setMessageFeedback(''), 3000);
@@ -242,6 +250,12 @@ function AdminHome() {
     return true;
   });
 
+  // --- NOTIFICATIONS MODAL LOGIC ---
+  const handleShowNotifications = () => {
+    setCurrentApplicantIdx(0);
+    setShowJobApplicants(true);
+  };
+
   return (
     <>
       <nav className="admin-nav">
@@ -256,21 +270,118 @@ function AdminHome() {
           <a onClick={handleFAQs}>FAQs</a>
           <a onClick={handleSetCriteria}>Manage Jobs</a>
           <a onClick={handleShowUserLogs}>User Logs</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); setShowMessageForm(true); }}>Send Message</a>
+          <a href="#" onClick={e => { e.preventDefault(); setShowMessageForm(true); }}>Send Message</a>
         </div>
-        <div className="admin-nav-right">
-          <a href="#" className="notification-link">
+        <div className="admin-nav-right" style={{ position: 'relative' }}>
+          <a
+            href="#"
+            className="notification-link"
+            onClick={e => {
+              e.preventDefault();
+              handleShowNotifications();
+            }}
+            style={{ position: 'relative' }}
+          >
             <img src={Notification} alt="Notifications" className="notification-icon" />
+            {jobApplicants.length > 0 && (
+              <span className="notification-count">
+                {jobApplicants.length}
+              </span>
+            )}
           </a>
           <a className="logout" onClick={handleLogout}>Logout</a>
         </div>
       </nav>
+
+      {/* Job Applicants Notification Modal - ONE AT A TIME */}
+      {showJobApplicants && (
+  <div
+    className="notifications-container"
+    style={{
+      position: 'fixed',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      background: 'white',
+      padding: '24px',
+      borderRadius: '8px',
+      maxWidth: '400px',
+      width: '90%',
+      maxHeight: '80vh',
+      overflowY: 'auto',
+      zIndex: 1001,
+    }}
+    onClick={() => setShowJobApplicants(false)}
+  >
+    <div
+      className="notifications-content"
+      style={{ padding: '16px' }}
+      onClick={e => e.stopPropagation()}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <h2>Job Applicants</h2>
+        <button
+          onClick={() => setShowJobApplicants(false)}
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            border: 'none',
+            background: 'none',
+          }}
+        >
+          ×
+        </button>
+      </div>
+      {jobApplicants.length === 0 ? (
+        <div style={{ padding: '16px', color: '#888' }}>No job applicants available.</div>
+      ) : (
+        <ul style={{ listStyle: 'none', padding: 0 }}>
+          {jobApplicants.map((applicant, idx) => (
+            <li
+              key={applicant.email + idx}
+              style={{
+                padding: '8px',
+                borderBottom: '1px solid #ddd',
+                background: '#fff',
+                marginBottom: '4px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2px'
+              }}
+            >
+              <span>
+                <b>{applicant.email}</b> has applied for <b>
+                  {Array.isArray(applicant.positionAppliedFor)
+                    ? applicant.positionAppliedFor[0]
+                    : applicant.positionAppliedFor}
+                </b>
+              </span>
+              <span style={{ fontSize: 12, color: '#888' }}>
+                {applicant.createdAt
+                  ? new Date(applicant.createdAt).toLocaleString('en-US', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })
+                  : ''}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+)}
+
       <div className='components'>
         <div className='adminleftcomp'>
           <div className='adminsearch'>
-            <input 
-              type="text" 
-              placeholder="Search jobs or applicants..." 
+            <input
+              type="text"
+              placeholder="Search jobs or applicants..."
               name="search"
               value={searchQuery}
               onChange={handleInputChange}
