@@ -11,6 +11,7 @@ const Applicants = require('./models/Applicants');
 const Jobs = require('./models/Jobs');
 const JobApplicants = require('./models/JobApplicants');
 const UserLogs = require('./models/UserLogs');
+const Notifications = require('./models/Notifications');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -31,9 +32,9 @@ if (!process.env.CONNECTION_STRING) {
 }
 
 // Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, '..', 'frontend', 'public', 'uploads');
+const uploadsDir = path.join(__dirname, '..', 'frontend', 'public', 'Uploads');
 if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+  fs.mkdirSync(UploadsDir, { recursive: true });
 }
 
 // Multer configuration
@@ -69,7 +70,7 @@ app.use(cors({
 }));
 app.use(express.json());
 // Serve uploaded files
-app.use('/uploads', express.static(uploadsDir));
+app.use('/Uploads', express.static(uploadsDir));
 
 // MongoDB connection
 const mongoURI = process.env.CONNECTION_STRING || 'mongodb://localhost:27017/collectius';
@@ -676,7 +677,7 @@ app.post('/upload-resume', upload.single('resume'), async (req, res) => {
 
     const fileType = path.extname(req.file.filename).toLowerCase() === '.pdf' ? 'pdf' : 'docx';
     applicant.resume = {
-      filePath: `/uploads/${req.file.filename}`,
+      filePath: `/Uploads/${req.file.filename}`,
       fileType
     };
     await applicant.save();
@@ -717,6 +718,29 @@ app.put('/update-applicant-status', async (req, res) => {
     jobApplicant.status = status;
     await jobApplicant.save();
 
+    // Create notification
+    const notification = new Notifications({
+      email,
+      message: `Your application status has been updated to: ${status}`,
+    });
+    await notification.save();
+
+    // Send email notification
+    await transporter.sendMail({
+      from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
+      to: email,
+      subject: 'Application Status Update',
+      html: `
+        <h3>Application Status Update</h3>
+        <p>Dear ${jobApplicant.fullName || 'Applicant'},</p>
+        <p>Your application status has been updated to: <strong>${status}</strong>.</p>
+        <p>Please log in to your Collectius account to view more details.</p>
+        <hr />
+        <p>Best regards,</p>
+        <p>The Collectius Team</p>
+      `,
+    });
+
     res.status(200).json({ message: 'Applicant status updated successfully', applicant: jobApplicant });
   } catch (error) {
     console.error('Error updating applicant status:', error);
@@ -745,6 +769,41 @@ app.delete('/delete-applicant', async (req, res) => {
   } catch (error) {
     console.error('Error deleting applicant:', error);
     res.status(500).json({ message: 'Server error while deleting applicant' });
+  }
+});
+
+// Fetch notifications endpoint
+app.get('/notifications/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    const notifications = await Notifications.find({ email }).sort({ createdAt: -1 });
+    res.status(200).json(notifications);
+  } catch (err) {
+    console.error('Error fetching notifications:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Mark notification as read endpoint
+app.put('/notifications/:id/read', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid notification ID' });
+    }
+    const notification = await Notifications.findById(id);
+    if (!notification) {
+      return res.status(404).json({ message: 'Notification not found' });
+    }
+    notification.isRead = true;
+    await notification.save();
+    res.status(200).json({ message: 'Notification marked as read' });
+  } catch (err) {
+    console.error('Error marking notification as read:', err);
+    res.status(500).json({ message: err.message });
   }
 });
 

@@ -39,6 +39,8 @@ function UserHome() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
   const suggestionsRef = useRef(null);
   const navigate = useNavigate();
 
@@ -47,18 +49,22 @@ function UserHome() {
     .slice(0, 5);
 
   useEffect(() => {
-    const fetchJobs = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/jobs');
-        setJobs(response.data);
+        const [jobsResponse, notificationsResponse] = await Promise.all([
+          axios.get('http://localhost:5000/jobs'),
+          axios.get(`http://localhost:5000/notifications/${localStorage.getItem('userEmail')}`),
+        ]);
+        setJobs(jobsResponse.data);
+        setNotifications(notificationsResponse.data);
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching jobs:', err);
-        setError('Failed to load jobs. Please try again.');
+        console.error('Error fetching data:', err);
+        setError('Failed to load data. Please try again.');
         setLoading(false);
       }
     };
-    fetchJobs();
+    fetchData();
 
     const storedEmail = localStorage.getItem('userEmail');
     const storedPic = localStorage.getItem('profilePic');
@@ -175,8 +181,22 @@ function UserHome() {
 
   const handleProfile = () => {
     navigate('/profile');
-  }
+  };
 
+  const handleMarkAsRead = async (notificationId) => {
+    try {
+      await axios.put(`http://localhost:5000/notifications/${notificationId}/read`);
+      setNotifications(prev =>
+        prev.map(notification =>
+          notification._id === notificationId ? { ...notification, isRead: true } : notification
+        )
+      );
+    } catch (err) {
+      console.error('Error marking notification as read:', err);
+      setApplicationMessage('Failed to mark notification as read.');
+      setTimeout(() => setApplicationMessage(''), 3000);
+    }
+  };
 
   const anyFilterSelected =
     selectedWorkingSchedule.length > 0 ||
@@ -208,21 +228,26 @@ function UserHome() {
 
   return (
     <>
-  <nav className="user-nav">
-      <div className="user-nav-left">
-        <img src={profilePic || Placeholder} alt="Profile" />
-        <span className="usergreeting">Welcome, {userEmail}!</span>
-        <a href="#" onClick={(e) => { e.preventDefault(); setShowReportForm(true); }}>Report a Problem</a>
-        <a href="#" onClick={handleFAQs}>FAQs</a>
-        <a href="#" onClick={handleProfile}>Settings</a>
-        <a className="logout" onClick={handleLogout}>Logout</a>
-      </div>
-      <div className="user-nav-right">
-        <a href="#" className="notification-link">
-          <img src={Notification} alt="Notifications" className="notification-icon" />
-        </a>
-      </div>
-  </nav>
+      <nav className="user-nav">
+        <div className="user-nav-left">
+          <img src={profilePic || Placeholder} alt="Profile" />
+          <span className="usergreeting">Welcome, {userEmail}!</span>
+          <a href="#" onClick={(e) => { e.preventDefault(); setShowReportForm(true); }}>Report a Problem</a>
+          <a href="#" onClick={handleFAQs}>FAQs</a>
+          <a href="#" onClick={handleProfile}>Settings</a>
+        </div>
+        <div className="user-nav-right">
+          <a href="#" onClick={() => setShowNotifications(!showNotifications)} className="notification-button">
+            <img src={Notification} alt="Notifications" className="notification-icon" />
+            {notifications.filter(n => !n.isRead).length > 0 && (
+              <span className="notification-count">
+                {notifications.filter(n => !n.isRead).length}
+              </span>
+            )}
+          </a>
+          <a className="logout" onClick={handleLogout}>Logout</a>
+        </div>
+      </nav>
       <div className='usercontainer'>
         <div className='userleftcomp'>
           <div className='usersearch'>
@@ -312,6 +337,97 @@ function UserHome() {
           {applicationMessage && (
             <div style={{ color: applicationMessage.includes('successfully') ? 'green' : 'red', padding: '16px' }}>
               {applicationMessage}
+            </div>
+          )}
+          {showNotifications && (
+            <div
+              className="notifications-container"
+              style={{
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                background: 'white',
+                padding: '24px',
+                borderRadius: '8px',
+                maxWidth: '600px',
+                width: '90%',
+                maxHeight: '80vh',
+                overflowY: 'auto',
+                zIndex: 10,
+              }}
+              onClick={() => setShowNotifications(false)}
+            >
+              <div
+                className="notifications-content"
+                style={{ padding: '16px' }}
+                onClick={e => e.stopPropagation()}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <h2>Notifications</h2>
+                  <button
+                    onClick={() => setShowNotifications(false)}
+                    style={{
+                      fontSize: '1.5rem',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                      border: 'none',
+                      background: 'none',
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+                {notifications.length === 0 ? (
+                  <div style={{ padding: '16px', color: '#888' }}>No notifications available.</div>
+                ) : (
+                  <ul style={{ listStyle: 'none', padding: 0 }}>
+                    {notifications.map(notification => (
+                      <li
+                        key={notification._id}
+                        style={{
+                          padding: '8px',
+                          borderBottom: '1px solid #ddd',
+                          background: notification.isRead ? '#f4f4f4' : '#fff',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <div>
+                          <p style={{ margin: 0, fontWeight: notification.isRead ? 'normal' : 'bold' }}>
+                            {notification.message}
+                          </p>
+                          <span style={{ fontSize: '12px', color: '#888' }}>
+                            {new Date(notification.createdAt).toLocaleString('en-US', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                        </div>
+                        {!notification.isRead && (
+                          <button
+                            onClick={() => handleMarkAsRead(notification._id)}
+                            style={{
+                              background: '#A2E494',
+                              color: '#13714C',
+                              border: 'none',
+                              borderRadius: '4px',
+                              padding: '4px 8px',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Mark as Read
+                          </button>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
           )}
           {loading ? (
