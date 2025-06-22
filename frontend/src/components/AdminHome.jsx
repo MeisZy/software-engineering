@@ -62,7 +62,7 @@ function AdminHome() {
         .filter(jobTitle => jobs.some(job => job.title.toLowerCase() === jobTitle.toLowerCase()))
         .map(jobTitle => ({
           type: 'applicant',
-          value: `${applicant.fullName} (Applied for ${jobTitle})`,
+          value: `${applicant.fullName} (Applied for ${jobTitle}${applicant.resume?.originalFileName ? `, resume: ${applicant.resume.originalFileName}` : ''})`,
           id: applicant._id,
           email: applicant.email,
           jobTitle,
@@ -432,7 +432,18 @@ function AdminHome() {
                                 <span>State/Province: {applicant.stateProvince}</span>
                                 <span>Status: {applicant.status}</span>
                                 <span>Stage: {applicant.applicationStage}</span>
-                                <span>Skills: {applicant.resume.join(', ')}</span>
+                                {applicant.resume?.originalFileName && (
+                                  <>
+                                    <span>Resume: {applicant.resume.originalFileName}</span>
+                                    <a
+                                      href={`http://localhost:5173${applicant.resume.filePath}`}
+                                      download={applicant.resume.originalFileName}
+                                      style={{ display: 'block', marginTop: '4px', color: '#13714C' }}
+                                    >
+                                      Download Resume
+                                    </a>
+                                  </>
+                                )}
                                 <button
                                   style={{ marginTop: "8px", fontSize: "12px", width: "100px" }}
                                   onClick={() => setOpenApplicantDetailIdx(null)}

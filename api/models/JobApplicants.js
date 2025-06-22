@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const jobApplicantsSchema = new mongoose.Schema({
   fullName: {
     type: String,
-    required: false,
+    required: true, // Changed to required
     trim: true,
   },
   firstName: {

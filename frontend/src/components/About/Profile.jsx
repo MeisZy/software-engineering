@@ -105,7 +105,7 @@ const Profile = () => {
       console.log("No resume file path, setting fileAccessible to null");
       setFileAccessible(null);
     }
-  }, [applicantData?.resume?.filePath]); // Depend on filePath to re-check on change
+  }, [applicantData?.resume?.filePath]);
 
   // Handle file upload
   const handleFileChange = async (e) => {
@@ -129,6 +129,7 @@ const Profile = () => {
       const res = await axios.post("http://localhost:5000/upload-resume", formData);
       console.log("Upload response:", res.data);
       console.log("Uploaded file path:", res.data.resume?.filePath);
+      console.log("Uploaded original filename:", res.data.resume?.originalFileName);
 
       setUploadError(null);
       await fetchData(); // Refresh data after upload
@@ -190,20 +191,23 @@ const Profile = () => {
           <div className="preview-container">
             <h3>Resume</h3>
             {applicantData?.resume?.filePath ? (
-              fileAccessible === true ? (
-                <div className="resume-display">
-                  <iframe
-                    key={applicantData.resume.filePath} // Force re-render on path change
-                    src={`http://localhost:5173${applicantData.resume.filePath}?t=${Date.now()}`} // Cache-busting
-                    title="Resume Preview"
-                    style={{ width: "100%", height: "500px", border: "1px solid #ccc" }}
-                  />
-                </div>
-              ) : fileAccessible === false ? (
-                <p className="error">File not accessible. Please re-upload your resume.</p>
-              ) : (
-                <p>Checking file availability...</p>
-              )
+              <>
+                <p>Current resume: {applicantData.resume.originalFileName || 'Unknown'}</p>
+                {fileAccessible === true ? (
+                  <div className="resume-display">
+                    <iframe
+                      key={applicantData.resume.filePath}
+                      src={`http://localhost:5173${applicantData.resume.filePath}?t=${Date.now()}`}
+                      title="Resume Preview"
+                      style={{ width: "100%", height: "500px", border: "1px solid #ccc" }}
+                    />
+                  </div>
+                ) : fileAccessible === false ? (
+                  <p className="error">File not accessible. Please re-upload your resume.</p>
+                ) : (
+                  <p>Checking file availability...</p>
+                )}
+              </>
             ) : (
               <p>No resume uploaded</p>
             )}

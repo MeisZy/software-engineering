@@ -34,7 +34,7 @@ if (!process.env.CONNECTION_STRING) {
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, '..', 'frontend', 'public', 'Uploads');
 if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(UploadsDir, { recursive: true });
+  fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
 // Multer configuration
@@ -162,7 +162,7 @@ app.post('/add', async (req, res) => {
       email,
       mobileNumber,
       password: hashedPassword,
-      resume: { filePath: null, fileType: null }
+      resume: { filePath: null, fileType: null, originalFileName: null }
     });
 
     await applicant.save();
@@ -234,7 +234,7 @@ app.post('/google-login', async (req, res) => {
         postalCode: '0000',
         mobileNumber: '0000000000',
         password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
-        resume: { filePath: null, fileType: null }
+        resume: { filePath: null, fileType: null, originalFileName: null }
       });
       await applicant.save();
     }
@@ -502,7 +502,8 @@ app.post('/upload-resume', upload.single('resume'), async (req, res) => {
 
     applicant.resume = {
       filePath: `/Uploads/${req.file.filename}`,
-      fileType: 'pdf'
+      fileType: 'pdf',
+      originalFileName: req.file.originalname // Save original filename
     };
     await applicant.save();
 
@@ -642,8 +643,10 @@ app.post('/apply', async (req, res) => {
       return res.status(404).json({ message: 'Applicant not found' });
     }
 
+    // Regenerate fullName if missing (should be handled by pre-save hook, but as fallback)
     if (!applicant.fullName) {
-      return res.status(400).json({ message: 'Applicant fullName is missing' });
+      applicant.fullName = `${applicant.firstName} ${applicant.middleName ? applicant.middleName + ' ' : ''}${applicant.lastName}`.trim();
+      await applicant.save();
     }
 
     const job = await Jobs.findOne({ title: jobTitle });
@@ -657,7 +660,8 @@ app.post('/apply', async (req, res) => {
         return res.status(400).json({ message: 'You have already applied for this job' });
       }
       jobApplicant.positionAppliedFor.push(jobTitle);
-      if (!jobApplicant.fullName) {
+      // Ensure fullName is consistent with Applicants
+      if (!jobApplicant.fullName || jobApplicant.fullName !== applicant.fullName) {
         jobApplicant.fullName = applicant.fullName;
       }
       await jobApplicant.save();

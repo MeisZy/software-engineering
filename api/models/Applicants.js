@@ -21,6 +21,11 @@ const applicantSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  fullName: { // Explicitly define fullName with a pre-save hook
+    type: String,
+    required: true,
+    trim: true
+  },
   email: {
     type: String,
     required: true,
@@ -84,6 +89,11 @@ const applicantSchema = new mongoose.Schema({
       type: String,
       enum: ['pdf', 'docx', null],
       default: null
+    },
+    originalFileName: { // Added to match JobApplicants resume structure
+      type: String,
+      trim: true,
+      default: null
     }
   },
   createdAt: {
@@ -92,6 +102,12 @@ const applicantSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
+});
+
+// Pre-save hook to ensure fullName is always updated
+applicantSchema.pre('save', function(next) {
+  this.fullName = `${this.firstName} ${this.middleName ? this.middleName + ' ' : ''}${this.lastName}`.trim();
+  next();
 });
 
 module.exports = mongoose.model('Applicant', applicantSchema);
