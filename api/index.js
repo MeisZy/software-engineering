@@ -27,6 +27,10 @@ if (!process.env.CONNECTION_STRING) {
 }
 
 // Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '..', 'frontend', 'public', 'Uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(UploadsDir, { recursive: true });
+}
 
 // Multer configuration
 const storage = multer.diskStorage({
@@ -60,6 +64,7 @@ app.use(cors({
   optionsSuccessStatus: 200,
 }));
 app.use(express.json());
+app.use('/Uploads', express.static(UploadsDir));
 
 // MongoDB connection
 const mongoURI = process.env.CONNECTION_STRING || 'mongodb://localhost:27017/collectius';
@@ -836,4 +841,104 @@ app.get('/notifications/:email', async (req, res) => {
     console.error('Error fetching notifications:', err);
     res.status(500).json({ message: err.message });
   }
+});
+
+// Mark notification as read endpoint
+app.put('/notifications/:id/read', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid notification ID' });
+    }
+    const notification = await Notifications.findById(id);
+    if (!notification) {
+      return res.status(404).json({ message: 'Notification not found' });
+    }
+    notification.isRead = true;
+    await notification.save();
+    res.status(200).json({ message: 'Notification marked as read' });
+  } catch (err) {
+    console.error('Error marking notification as read:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Fix applicant status and fullName endpoint
+app.get('/fix-applicant-status', async (req, res) => {
+  try {
+    const applicants = await JobApplicants.find();
+    let updatedCount = 0;
+
+    for (const jobApplicant of applicants) {
+      let needsUpdate = false;
+
+      if (jobApplicant.status !== 'To Next Interview' && jobApplicant.status !== 'Rejected') {
+        jobApplicant.status = 'To Next Interview';
+        needsUpdate = true;
+      }
+
+      if (!jobApplicant.fullName) {
+        const applicant = await Applicants.findOne({ email: jobApplicant.email });
+        jobApplicant.fullName = applicant ? applicant.fullName : 'Unknown Applicant';
+        needsUpdate = true;
+      }
+
+      if (needsUpdate) {
+        await jobApplicant.save();
+        updatedCount++;
+      }
+    }
+
+    res.status(200).json({
+      message: `Updated ${updatedCount} applicant documents`,
+      totalProcessed: applicants.length,
+    });
+  } catch (error) {
+    console.error('Error fixing applicant status:', error);
+    res.status(500).json({ message: 'Failed to update status', error: error.message });
+  }
+});
+
+// Fetch applied jobs endpoint
+app.get('/applied-jobs/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    const jobApplicant = await JobApplicants.findOne({ email });
+    if (!jobApplicant) {
+      return res.status(200).json(null);
+    }
+    const appliedJobs = await Promise.all(
+      jobApplicant.positionAppliedFor.map(async (jobTitle) => {
+        const job = await Jobs.findOne({ title: jobTitle });
+        return job || { title: jobTitle, department: 'Unknown', workSchedule: 'Unknown', workSetup: 'Unknown', employmentType: 'Unknown' };
+      })
+    );
+    const response = {
+      fullName: jobApplicant.fullName,
+      firstName: jobApplicant.firstName,
+      middleName: jobApplicant.middleName,
+      lastName: jobApplicant.lastName,
+      email: jobApplicant.email,
+      mobileNumber: jobApplicant.mobileNumber,
+      birthdate: jobApplicant.birthdate,
+      gender: jobApplicant.gender,
+      city: jobApplicant.city,
+      stateProvince: jobApplicant.stateProvince,
+      status: jobApplicant.status,
+      positionAppliedFor: jobApplicant.positionAppliedFor,
+      appliedJobs,
+    };
+    res.status(200).json(response);
+  } catch (err) {
+    console.error('Error fetching applied jobs:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Start server
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });

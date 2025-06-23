@@ -499,14 +499,6 @@ nav {
   box-sizing: border-box;
 }
 
-.messagedetailsdarkgreen{
-  background-color: #13714C;
-}
-
-.messagedetailslightgreen{
-  background-color: #A2E494;
-}
-
 .notification-count {
   position: absolute;
   top: 0;
