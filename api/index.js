@@ -6,7 +6,8 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs').promises;
+const pdfParse = require('pdf-parse');
 const Applicants = require('./models/Applicants');
 const Jobs = require('./models/Jobs');
 const JobApplicants = require('./models/JobApplicants');
@@ -26,7 +27,8 @@ if (!process.env.CONNECTION_STRING) {
   process.exit(1);
 }
 
-// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '../frontend/public/Uploads');
+fs.mkdir(uploadsDir, { recursive: true }).catch(err => console.error('Error creating uploads directory:', err));
 
 // Multer configuration
 const storage = multer.diskStorage({
@@ -60,6 +62,7 @@ app.use(cors({
   optionsSuccessStatus: 200,
 }));
 app.use(express.json());
+app.use('/Uploads', express.static(uploadsDir));
 
 // MongoDB connection
 const mongoURI = process.env.CONNECTION_STRING || 'mongodb://localhost:27017/collectius';
@@ -103,6 +106,28 @@ transporter.verify((error, success) => {
     console.log('Nodemailer is ready to send emails');
   }
 });
+
+// Calculate applicant score
+const calculateScore = (extractedSkills, job) => {
+  let keywordScore = 0;
+  let qualificationScore = 0;
+
+  // Keyword matching (10 points max)
+  const matchedKeywords = job.keywords.filter(keyword => 
+    extractedSkills.some(skill => skill.toLowerCase().includes(keyword.toLowerCase()))
+  );
+  keywordScore = (matchedKeywords.length / job.keywords.length) * 10;
+
+  // Graded qualifications (20 points max)
+  job.gradedQualifications.forEach(qual => {
+    if (extractedSkills.some(skill => skill.toLowerCase().includes(qual.attribute.toLowerCase()))) {
+      qualificationScore += qual.points;
+    }
+  });
+
+  // Average score (keywords only, as years of experience not implemented)
+  return Number(((keywordScore + qualificationScore) / 2).toFixed(2));
+};
 
 // Status endpoint
 app.get('/status', (req, res) => {
@@ -506,7 +531,7 @@ app.get('/userlogs', async (req, res) => {
 app.get('/jobs', async (req, res) => {
   try {
     const jobs = await Jobs.find();
-    console.log(`Retrieved ${jobs.length} jobs`); // Log the number of jobs fetched
+    console.log(`Retrieved ${jobs.length} jobs`);
     res.status(200).json(jobs);
   } catch (err) {
     console.error('Error fetching jobs:', err);
@@ -529,6 +554,7 @@ app.post('/jobs', async (req, res) => {
       whatWeOffer,
       keywords,
       gradedQualifications,
+      threshold,
     } = req.body;
 
     if (
@@ -558,6 +584,10 @@ app.post('/jobs', async (req, res) => {
       return res.status(400).json({ message: 'Total graded qualifications score cannot exceed 20 points' });
     }
 
+    if (threshold < 0 || threshold > 15) {
+      return res.status(400).json({ message: 'Threshold must be between 0 and 15' });
+    }
+
     const newJob = new Jobs({
       title,
       department,
@@ -570,6 +600,7 @@ app.post('/jobs', async (req, res) => {
       whatWeOffer,
       keywords: keywords || [],
       gradedQualifications: gradedQualifications || [],
+      threshold: threshold || 10,
     });
 
     await newJob.save();
@@ -636,14 +667,22 @@ app.post('/apply', async (req, res) => {
     }
 
     let jobApplicant = await JobApplicants.findOne({ email });
+    if (jobApplicant && jobApplicant.positionAppliedFor.includes(jobTitle)) {
+      return res.status(400).json({ message: 'You have already applied for this job' });
+    }
+
+    // Calculate score
+    const score = applicant.extractedSkills ? calculateScore(applicant.extractedSkills, job) : 0;
+    const status = score >= job.threshold ? 'To Next Interview' : 'Rejected';
+
     if (jobApplicant) {
-      if (jobApplicant.positionAppliedFor.includes(jobTitle)) {
-        return res.status(400).json({ message: 'You have already applied for this job' });
-      }
       jobApplicant.positionAppliedFor.push(jobTitle);
+      jobApplicant.scores = jobApplicant.scores || {};
+      jobApplicant.scores[jobTitle] = score;
       if (!jobApplicant.fullName) {
         jobApplicant.fullName = applicant.fullName;
       }
+      jobApplicant.status = status;
       await jobApplicant.save();
     } else {
       jobApplicant = new JobApplicants({
@@ -658,13 +697,39 @@ app.post('/apply', async (req, res) => {
         gender: applicant.gender,
         city: applicant.city,
         stateProvince: applicant.stateProvince,
-        status: 'To Next Interview',
+        status,
+        scores: { [jobTitle]: score },
         applicationStage: 'None'
       });
       await jobApplicant.save();
     }
 
-    res.status(201).json({ message: 'Application submitted successfully' });
+    // Send rejection email if below threshold
+    if (status === 'Rejected') {
+      const notification = new Notifications({
+        email,
+        message: `Your application for ${jobTitle} has been rejected due to insufficient qualifications.`,
+      });
+      await notification.save();
+
+      await transporter.sendMail({
+        from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
+        to: email,
+        subject: 'Application Status Update',
+        html: `
+          <h3>Application Status Update</h3>
+          <p>Dear ${applicant.fullName || 'Applicant'},</p>
+          <p>Your application for <strong>${jobTitle}</strong> has been reviewed.</p>
+          <p>Unfortunately, your qualifications do not meet the requirements for this position (Score: ${score}/${job.threshold}).</p>
+          <p>We appreciate your interest and encourage you to apply for other roles.</p>
+          <hr />
+          <p>Best regards,</p>
+          <p>The Collectius Team</p>
+        `,
+      });
+    }
+
+    res.status(201).json({ message: 'Application submitted successfully', score, status });
   } catch (error) {
     console.error('Error applying for job:', error);
     if (error.code === 11000) {
@@ -710,7 +775,8 @@ app.get('/applicants/:email', async (req, res) => {
       gender: applicant.gender,
       city: applicant.city,
       stateProvince: applicant.stateProvince,
-      resume: applicant.resume
+      resume: applicant.resume,
+      extractedSkills: applicant.extractedSkills,
     });
   } catch (err) {
     console.error('Error fetching applicant:', err);
@@ -723,35 +789,62 @@ app.post('/upload-resume', upload.single('resume'), async (req, res) => {
   try {
     const { email } = req.body;
     if (!email || !req.file) {
-      if (req.file) fs.unlinkSync(req.file.path);
+      if (req.file) await fs.unlink(req.file.path);
       return res.status(400).json({ message: 'Email and resume file are required' });
     }
 
     const applicant = await Applicants.findOne({ email });
     if (!applicant) {
-      fs.unlinkSync(req.file.path);
+      await fs.unlink(req.file.path);
       return res.status(404).json({ message: 'Applicant not found' });
     }
 
     if (applicant.resume.filePath) {
-      const oldPath = path.join(__dirname, '..', 'frontend', 'public', applicant.resume.filePath);
-      if (fs.existsSync(oldPath)) {
-        fs.unlinkSync(oldPath);
+      const oldPath = path.join(__dirname, '../frontend/public', applicant.resume.filePath);
+      if (await fs.access(oldPath).then(() => true).catch(() => false)) {
+        await fs.unlink(oldPath);
       }
     }
 
+    const filePath = `/Uploads/${req.file.filename}`;
     const fileType = path.extname(req.file.filename).toLowerCase() === '.pdf' ? 'pdf' : 'docx';
+    let extractedSkills = [];
+
+    if (fileType === 'pdf') {
+      const fullPath = path.join(__dirname, '../frontend/public', filePath);
+      const pdfBuffer = await fs.readFile(fullPath);
+      const pdfData = await pdfParse(pdfBuffer);
+      const text = pdfData.text.toLowerCase();
+      const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+
+      let inSkillsSection = false;
+      for (const line of lines) {
+        if (line.includes('skills')) {
+          inSkillsSection = true;
+          const skillsInLine = line.replace('skills', '').trim().split(/[,;]/).map(s => s.trim()).filter(s => s);
+          if (skillsInLine.length) extractedSkills.push(...skillsInLine);
+        } else if (inSkillsSection && !line.match(/^(education|experience|projects|certifications)/i)) {
+          const skillsInLine = line.split(/[,;]/).map(s => s.trim()).filter(s => s);
+          if (skillsInLine.length) extractedSkills.push(...skillsInLine);
+        } else if (inSkillsSection && line.match(/^(education|experience|projects|certifications)/i)) {
+          inSkillsSection = false;
+        }
+      }
+    }
+
     applicant.resume = {
-      filePath: `/Uploads/${req.file.filename}`,
-      fileType
+      filePath,
+      fileType,
+      originalFileName: req.file.originalname,
     };
+    applicant.extractedSkills = extractedSkills;
     await applicant.save();
 
     res.status(200).json({ message: 'Resume uploaded successfully', resume: applicant.resume });
   } catch (err) {
     console.error('Error uploading resume:', err);
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
+    if (req.file && await fs.access(req.file.path).then(() => true).catch(() => false)) {
+      await fs.unlink(req.file.path);
     }
     res.status(500).json({ message: err.message });
   }
@@ -936,6 +1029,7 @@ app.get('/applied-jobs/:email', async (req, res) => {
       stateProvince: jobApplicant.stateProvince,
       status: jobApplicant.status,
       positionAppliedFor: jobApplicant.positionAppliedFor,
+      scores: jobApplicant.scores,
       appliedJobs,
     };
     res.status(200).json(response);

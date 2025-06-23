@@ -60,19 +60,20 @@ const Profile = () => {
 
     try {
       const [profileRes, applicantRes] = await Promise.all([
-  axios.get(`http://localhost:5000/applied-jobs/${encodeURIComponent(userEmail)}`),
-  axios.get(`http://localhost:5000/applicants/${encodeURIComponent(userEmail)}`)
-]);
+        axios.get(`http://localhost:5000/applied-jobs/${encodeURIComponent(userEmail)}`),
+        axios.get(`http://localhost:5000/applicants/${encodeURIComponent(userEmail)}`)
+      ]);
 
       console.log("Profile response:", profileRes.data);
       console.log("Applicant response:", applicantRes.data);
       console.log("Resume data:", applicantRes.data?.resume);
       console.log("Expected file path:", applicantRes.data?.resume?.filePath ? `http://localhost:5173${applicantRes.data.resume.filePath}` : "No file path");
+      console.log("Extracted skills:", applicantRes.data?.extractedSkills);
 
       setProfileData(profileRes.data || null);
       setApplicantData(applicantRes.data || null);
       setUploadError(null);
-      setFileAccessible(null); // Reset accessibility check
+      setFileAccessible(null);
     } catch (err) {
       console.error("Failed to fetch data:", err);
       setUploadError("Failed to load profile data. Please try again.");
@@ -115,7 +116,6 @@ const Profile = () => {
       return;
     }
 
-    // Validate file type client-side
     if (file.type !== "application/pdf") {
       setUploadError("Only PDF files are allowed");
       return;
@@ -132,7 +132,7 @@ const Profile = () => {
       console.log("Uploaded original filename:", res.data.resume?.originalFileName);
 
       setUploadError(null);
-      await fetchData(); // Refresh data after upload
+      await fetchData();
     } catch (err) {
       console.error("Upload error:", err);
       setUploadError(err.response?.data?.message || "Failed to upload file. Please try again.");
@@ -206,6 +206,18 @@ const Profile = () => {
                   <p className="error">File not accessible. Please re-upload your resume.</p>
                 ) : (
                   <p>Checking file availability...</p>
+                )}
+                {applicantData?.extractedSkills?.length > 0 ? (
+                  <div className="skills-container">
+                    <h4>Extracted Skills</h4>
+                    <ul>
+                      {applicantData.extractedSkills.map((skill, index) => (
+                        <li key={index}>{skill}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <p>No skills extracted from resume</p>
                 )}
               </>
             ) : (

@@ -92,6 +92,8 @@ function UserManagement() {
             {applicants.map((applicant) => (
               <ul className="managementinstance" key={applicant._id}>
                 <label>{applicant.email}</label>
+                <p>Positions Applied: {applicant.positionAppliedFor.join(', ')}</p>
+                <p>Scores: {Object.entries(applicant.scores || {}).map(([job, score]) => `${job}: ${score}`).join(', ')}</p>
                 <select
                   value={applicant.status}
                   onChange={(e) => handleStatusChange(applicant.email, e.target.value)}
