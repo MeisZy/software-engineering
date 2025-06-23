@@ -8,10 +8,6 @@ import './AdminHome.css';
 
 function AdminHome() {
   const navigate = useNavigate();
-  const [jobApplicants, setJobApplicants] = useState([]);
-  const [resumeUploads, setResumeUploads] = useState([]);
-  const [showJobApplicants, setShowJobApplicants] = useState(false);
-  const [currentApplicantIdx, setCurrentApplicantIdx] = useState(0);
   const [jobs, setJobs] = useState([]);
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,9 +18,9 @@ function AdminHome() {
   const [selectedWorkingSchedule, setSelectedWorkingSchedule] = useState([]);
   const [selectedEmploymentType, setSelectedEmploymentType] = useState([]);
   const [selectedWorkSetup, setSelectedWorkSetup] = useState([]);
-  const [showUserLogs, setShowUserLogs] = useState(false);
-  const [userLogs, setUserLogs] = useState([]);
-  const [logsError, setLogsError] = useState('');
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [notificationsError, setNotificationsError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -32,7 +28,7 @@ function AdminHome() {
   const [messageRecipient, setMessageRecipient] = useState('');
   const [messageSubject, setMessageSubject] = useState('');
   const [messageBody, setMessageBody] = useState('');
-  const [messageFeedback, setMessageFeedback] = useState('');
+  const [messageStatus, setMessageStatus] = useState('');
   const suggestionsRef = useRef(null);
 
   const workingSchedule = [
@@ -66,7 +62,7 @@ function AdminHome() {
         .filter(jobTitle => jobs.some(job => job.title.toLowerCase() === jobTitle.toLowerCase()))
         .map(jobTitle => ({
           type: 'applicant',
-          value: `${applicant.fullName} (Applied for ${jobTitle}${applicant.resume?.originalFileName ? `, resume: ${applicant.resume.originalFileName}` : ''})`,
+          value: `${applicant.fullName} (Applied for ${jobTitle})`,
           id: applicant._id,
           email: applicant.email,
           jobTitle,
@@ -85,8 +81,20 @@ function AdminHome() {
         ]);
         setJobs(jobsResponse.data);
         setApplicants(applicantsResponse.data);
+        // Generate notifications from applicants' job applications
+        const applicationNotifications = applicantsResponse.data.flatMap(applicant =>
+          applicant.positionAppliedFor.map(jobTitle => ({
+            _id: `${applicant._id}-${jobTitle}`,
+            message: `${applicant.fullName} has applied for the ${jobTitle}.`,
+            createdAt: applicant.createdAt || new Date(),
+            isRead: false,
+            email: applicant.email,
+          }))
+        ).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setNotifications(applicationNotifications);
         setLoading(false);
       } catch (err) {
+        console.error('Error fetching data:', err);
         setError('Failed to load data. Please try again.');
         setLoading(false);
       }
@@ -94,51 +102,39 @@ function AdminHome() {
     fetchData();
   }, []);
 
-  // Fetch job applicants and resume uploads
-  useEffect(() => {
-    const fetchJobApplicants = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/applicants');
-        setJobApplicants(response.data);
-      } catch (err) {
-        setError('Failed to load job applicants.');
-      }
-    };
-    fetchJobApplicants();
-  }, []);
-
-  useEffect(() => {
-    // Fetch all applicants and filter those with a resume uploaded
-    const fetchResumeUploads = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/applicants');
-        // Only notify if resume.filePath exists and is not null
-        const uploads = response.data.filter(applicant =>
-          applicant.resume &&
-          applicant.resume.filePath &&
-          applicant.resume.originalFileName
-        );
-        setResumeUploads(uploads);
-      } catch (err) {
-        setError('Failed to load resume uploads.');
-      }
-    };
-    fetchResumeUploads();
-  }, []);
-
-  const fetchUserLogs = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/userlogs');
-      setUserLogs(response.data);
-      setLogsError('');
-    } catch (err) {
-      setLogsError('Failed to load user logs. Please try again.');
-    }
+  const handleMarkAsRead = (notificationId) => {
+    setNotifications(prev =>
+      prev.map(notification =>
+        notification._id === notificationId ? { ...notification, isRead: true } : notification
+      )
+    );
   };
 
-  const handleShowUserLogs = () => {
-    setShowUserLogs(true);
-    fetchUserLogs();
+  const handleMessageSubmit = async (e) => {
+    e.preventDefault();
+    if (!messageRecipient || !messageSubject || !messageBody) {
+      setMessageStatus('Please fill in all fields.');
+      setTimeout(() => setMessageStatus(''), 3000);
+      return;
+    }
+    try {
+      const response = await axios.post('http://localhost:5000/send-message', {
+        sender: 'admin@collectius.com',
+        recipient: messageRecipient,
+        subject: messageSubject,
+        body: messageBody,
+      });
+      setMessageStatus(response.data.message || 'Message sent successfully');
+      setShowMessageForm(false);
+      setMessageRecipient('');
+      setMessageSubject('');
+      setMessageBody('');
+    } catch (error) {
+      console.error('Error sending message:', error.response?.data || error.message);
+      setMessageStatus(error.response?.data?.message || 'Failed to send message. Please try again.');
+    } finally {
+      setTimeout(() => setMessageStatus(''), 3000);
+    }
   };
 
   const handleLogout = () => navigate('/');
@@ -170,6 +166,7 @@ function AdminHome() {
       if (suggestion.type === 'job') {
         const jobIndex = jobs.findIndex(job => job._id === suggestion.id);
         if (jobIndex === -1) {
+          console.error(`Job not found for ID: ${suggestion.id}, Title: ${suggestion.value}`);
           setError('Selected job not found.');
           setTimeout(() => setError(''), 3000);
           return;
@@ -180,11 +177,13 @@ function AdminHome() {
         const applicantIndex = applicants.findIndex(applicant => applicant._id === suggestion.id);
 
         if (jobIndex === -1) {
+          console.error(`Job not found for Title: ${suggestion.jobTitle}`);
           setError('Job associated with applicant not found.');
           setTimeout(() => setError(''), 3000);
           return;
         }
         if (applicantIndex === -1) {
+          console.error(`Applicant not found for ID: ${suggestion.id}, Email: ${suggestion.email}`);
           setError('Selected applicant not found.');
           setTimeout(() => setError(''), 3000);
           return;
@@ -194,6 +193,7 @@ function AdminHome() {
         setOpenApplicantDetailIdx(applicantIndex);
       }
     } catch (err) {
+      console.error('Error handling suggestion click:', err);
       setError('An error occurred while processing your selection.');
       setTimeout(() => setError(''), 3000);
     }
@@ -216,31 +216,6 @@ function AdminHome() {
 
   const handleBlur = () => {
     setTimeout(() => setShowSuggestions(false), 100);
-  };
-
-  const handleMessageSubmit = async (e) => {
-    e.preventDefault();
-    if (!messageRecipient || !messageSubject || !messageBody) {
-      setMessageFeedback('Please fill in recipient, subject, and message.');
-      setTimeout(() => setMessageFeedback(''), 3000);
-      return;
-    }
-    try {
-      const response = await axios.post('http://localhost:5000/send-message', {
-        recipient: messageRecipient,
-        subject: messageSubject,
-        body: messageBody,
-      });
-      setMessageFeedback(response.data.message);
-      setShowMessageForm(false);
-      setMessageRecipient('');
-      setMessageSubject('');
-      setMessageBody('');
-    } catch (error) {
-      setMessageFeedback(error.response?.data?.message || 'Failed to send message. Please try again.');
-    } finally {
-      setTimeout(() => setMessageFeedback(''), 3000);
-    }
   };
 
   const anyFilterSelected =
@@ -271,156 +246,49 @@ function AdminHome() {
     return true;
   });
 
-  // --- NOTIFICATIONS MODAL LOGIC ---
-  const handleShowNotifications = () => {
-    setCurrentApplicantIdx(0);
-    setShowJobApplicants(true);
-  };
-
-  // Merge job application and resume upload notifications
-  const allNotifications = [
-    ...jobApplicants.map(applicant => ({
-      type: 'application',
-      email: applicant.email,
-      jobTitle: Array.isArray(applicant.positionAppliedFor)
-        ? applicant.positionAppliedFor[0]
-        : applicant.positionAppliedFor,
-      createdAt: applicant.createdAt,
-    })),
-    ...resumeUploads
-      // Only show resume upload notification if filePath exists and originalFileName exists
-      .filter(applicant =>
-        applicant.resume &&
-        applicant.resume.filePath &&
-        applicant.resume.originalFileName
-      )
-      .map(applicant => ({
-        type: 'resume',
-        email: applicant.email,
-        fileName: applicant.resume.originalFileName,
-        createdAt: applicant.resume.updatedAt || applicant.resume.createdAt || applicant.updatedAt || applicant.createdAt,
-      })),
-  ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Most recent first
-
   return (
     <>
-      <nav className="admin-nav">
-        <div className="admin-nav-left">
-          <a href="/" className="logo-link">
-            <img src={Logo} alt="Logo" className="logo" />
-          </a>
-          <a href="javascript:void(0);">Admin</a>
-        </div>
-        <div className="admin-nav-center">
-          <a onClick={handleMaintainance}>Settings</a>
-          <a onClick={handleFAQs}>FAQs</a>
-          <a onClick={handleSetCriteria}>Manage Jobs</a>
-          <a onClick={handleShowUserLogs}>User Logs</a>
-          <a href="#" onClick={e => { e.preventDefault(); setShowMessageForm(true); }}>Send Message</a>
-        </div>
-        <div className="admin-nav-right" style={{ position: 'relative' }}>
-          <img
-            src={Notification}
-            alt="Notifications"
-            className="notification-icon notification-button"
-            style={{ cursor: 'pointer', position: 'relative' }}
-            onClick={handleShowNotifications}
-          />
-          <a className="logout" onClick={handleLogout}>Logout</a>
-        </div>
-      </nav>
-
-      {/* Job Applicants & Resume Uploads Notification Modal */}
-      {showJobApplicants && (
-        <div
-          className="notifications-container"
-          style={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            background: 'white',
-            padding: '24px',
-            borderRadius: '8px',
-            maxWidth: '400px',
-            width: '90%',
-            maxHeight: '80vh',
-            overflowY: 'auto',
-            zIndex: 1001,
-          }}
-          onClick={() => setShowJobApplicants(false)}
-        >
-          <div
-            className="notifications-content"
-            style={{ padding: '16px' }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h2>Notifications</h2>
-              <button
-                onClick={() => setShowJobApplicants(false)}
-                style={{
-                  fontSize: '1.5rem',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  border: 'none',
-                  background: 'none',
-                }}
-              >
-                ×
-              </button>
-            </div>
-            {allNotifications.length === 0 ? (
-              <div style={{ padding: '16px', color: '#888' }}>No notifications available.</div>
-            ) : (
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                {allNotifications.map((notif, idx) => (
-                  <li
-                    key={notif.email + idx + notif.type}
-                    style={{
-                      padding: '8px',
-                      borderBottom: '1px solid #ddd',
-                      background: '#fff',
-                      marginBottom: '4px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '2px'
-                    }}
-                  >
-                    {notif.type === 'application' ? (
-                      <span>
-                        <b>{notif.email}</b> has applied for <b>{notif.jobTitle}</b>
-                      </span>
-                    ) : (
-                      <span>
-                        <b>{notif.email}</b> has uploaded a resume: <b>{notif.fileName}</b>
-                      </span>
-                    )}
-                    <span style={{ fontSize: 12, color: '#888' }}>
-                      {notif.createdAt
-                        ? new Date(notif.createdAt).toLocaleString('en-US', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })
-                        : ''}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
+<nav className="admin-nav">
+  <div className="admin-nav-left">
+    <a href="/" className="logo-link">
+      <img src={Logo} alt="Logo" className="logo" />
+    </a>
+    <a href="javascript:void(0);">Admin</a>
+  </div>
+  <div className="admin-nav-center">
+    <a onClick={handleMaintainance}>Settings</a>
+    <a onClick={handleFAQs}>FAQs</a>
+    <a onClick={handleSetCriteria}>Manage Jobs</a>
+    <a onClick={() => setShowMessageForm(true)}>Send Message</a>
+  </div>
+  <div className="admin-nav-right">
+    <div style={{ position: 'relative', display: 'inline-block' }}>
+      <img
+        src={Notification}
+        alt="Notifications"
+        className="notification-icon"
+        style={{ cursor: 'pointer' }}
+        onClick={() => setShowNotifications(!showNotifications)}
+      />
+      {notifications.filter(n => !n.isRead).length > 0 && (
+        <span className="notification-count" style={{
+          position: 'absolute',
+          top: '-6px',
+          right: '-6px'
+        }}>
+          {notifications.filter(n => !n.isRead).length}
+        </span>
       )}
-
+    </div>
+    <a className="logout" onClick={handleLogout}>Logout</a>
+  </div>
+</nav>
       <div className='components'>
         <div className='adminleftcomp'>
           <div className='adminsearch'>
-            <input
-              type="text"
-              placeholder="Search jobs or applicants..."
+            <input 
+              type="text" 
+              placeholder="Search jobs or applicants..." 
               name="search"
               value={searchQuery}
               onChange={handleInputChange}
@@ -501,9 +369,9 @@ function AdminHome() {
         </div>
         <div className='adminrightcomp'>
           {error && <div style={{ color: 'red', padding: '16px' }}>{error}</div>}
-          {messageFeedback && (
-            <div style={{ color: messageFeedback.includes('successfully') ? 'green' : 'red', padding: '16px' }}>
-              {messageFeedback}
+          {messageStatus && (
+            <div style={{ color: messageStatus.includes('successfully') ? 'green' : 'red', padding: '16px' }}>
+              {messageStatus}
             </div>
           )}
           {loading ? (
@@ -534,6 +402,98 @@ function AdminHome() {
                   </div>
                 ))
               )}
+            </div>
+          )}
+          {showNotifications && (
+            <div
+              className="notifications-container"
+              style={{
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                background: 'white',
+                padding: '24px',
+                borderRadius: '8px',
+                maxWidth: '600px',
+                width: '90%',
+                maxHeight: '80vh',
+                overflowY: 'auto',
+                zIndex: 10,
+              }}
+              onClick={() => setShowNotifications(false)}
+            >
+              <div
+                className="notifications-content"
+                style={{ padding: '16px' }}
+                onClick={e => e.stopPropagation()}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <h2>Notifications</h2>
+                  <button
+                    onClick={() => setShowNotifications(false)}
+                    style={{
+                      fontSize: '1.5rem',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                      border: 'none',
+                      background: 'none',
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+                {notificationsError && <div style={{ color: 'red', marginBottom: '16px' }}>{notificationsError}</div>}
+                {notifications.length === 0 ? (
+                  <div style={{ padding: '16px', color: '#888' }}>No notifications available.</div>
+                ) : (
+                  <ul style={{ listStyle: 'none', padding: 0 }}>
+                    {notifications.map(notification => (
+                      <li
+                        key={notification._id}
+                        style={{
+                          padding: '8px',
+                          borderBottom: '1px solid #ddd',
+                          background: notification.isRead ? '#f4f4f4' : '#fff',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <div>
+                          <p style={{ margin: 0, fontWeight: notification.isRead ? 'normal' : 'bold' }}>
+                            {notification.message}
+                          </p>
+                          <span style={{ fontSize: '12px', color: '#888' }}>
+                            {new Date(notification.createdAt).toLocaleString('en-US', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                        </div>
+                        {!notification.isRead && (
+                          <button
+                            onClick={() => handleMarkAsRead(notification._id)}
+                            style={{
+                              background: '#A2E494',
+                              color: '#13714C',
+                              border: 'none',
+                              borderRadius: '4px',
+                              padding: '4px 8px',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Mark as Read
+                          </button>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
           )}
           {openApplicantsIdx !== null && (
@@ -582,18 +542,7 @@ function AdminHome() {
                                 <span>State/Province: {applicant.stateProvince}</span>
                                 <span>Status: {applicant.status}</span>
                                 <span>Stage: {applicant.applicationStage}</span>
-                                {applicant.resume?.originalFileName && (
-                                  <>
-                                    <span>Resume: {applicant.resume.originalFileName}</span>
-                                    <a
-                                      href={`http://localhost:5173${applicant.resume.filePath}`}
-                                      download={applicant.resume.originalFileName}
-                                      style={{ display: 'block', marginTop: '4px', color: '#13714C' }}
-                                    >
-                                      Download Resume
-                                    </a>
-                                  </>
-                                )}
+                                <span>Skills: {applicant.resume.join(', ')}</span>
                                 <button
                                   style={{ marginTop: "8px", fontSize: "12px", width: "100px" }}
                                   onClick={() => setOpenApplicantDetailIdx(null)}
@@ -636,10 +585,10 @@ function AdminHome() {
                 <div className="jobdetailsgrid">
                   <div>
                     <p><b>Department:</b> {filteredJobOpenings[openDetailIdx]?.department || 'N/A'}</p>
-                    <p><b>Work Schedule:</b> {filteredJobOpenings[openDetailIdx]?.workSchedule || 'N/A'}</p>
-                    <p><b>Work Setup:</b> {filteredJobOpenings[openDetailIdx]?.workSetup || 'N/A'}</p>
-                    <p><b>Employment Type:</b> {filteredJobOpenings[openDetailIdx]?.employmentType || 'N/A'}</p>
-                    <p><b>Description:</b> {filteredJobOpenings[openDetailIdx]?.description.join(', ') || 'N/A'}</p>
+                    <p><b>Work Schedule:</b> {filteredJobOpenings[openDetailIdx]?.workSchedule}</p>
+                    <p><b>Work Setup:</b> {filteredJobOpenings[openDetailIdx]?.workSetup}</p>
+                    <p><b>Employment Type:</b> {filteredJobOpenings[openDetailIdx]?.employmentType}</p>
+                    <p><b>Description:</b> {filteredJobOpenings[openDetailIdx]?.description.join(', ')}</p>
                     <p><b>Key Responsibilities:</b></p>
                     <ul>
                       {filteredJobOpenings[openDetailIdx]?.keyResponsibilities.map((item, i) => (
@@ -671,86 +620,6 @@ function AdminHome() {
               </div>
             </div>
           )}
-          {showUserLogs && (
-            <div
-              className="userlogs-container"
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100vw',
-                height: '100vh',
-                background: 'rgba(0,0,0,0.4)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: 10,
-              }}
-              onClick={() => setShowUserLogs(false)}
-            >
-              <div
-                className="userlogs-content"
-                style={{
-                  background: 'white',
-                  padding: '24px',
-                  borderRadius: '8px',
-                  maxWidth: '800px',
-                  width: '90%',
-                  maxHeight: '80vh',
-                  overflowY: 'auto',
-                }}
-                onClick={e => e.stopPropagation()}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h2>User Logs</h2>
-                  <button
-                    onClick={() => setShowUserLogs(false)}
-                    style={{
-                      fontSize: '1.5rem',
-                      fontWeight: 'bold',
-                      cursor: 'pointer',
-                      border: 'none',
-                      background: 'none',
-                    }}
-                  >
-                    ×
-                  </button>
-                </div>
-                {logsError && <div style={{ color: 'red', marginBottom: '16px' }}>{logsError}</div>}
-                {userLogs.length === 0 ? (
-                  <div style={{ padding: '16px', color: '#888' }}>No user logs available.</div>
-                ) : (
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr style={{ background: '#f4f4f4' }}>
-                        <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Date</th>
-                        <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Full Name</th>
-                        <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Activity</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {userLogs.map(log => (
-                        <tr key={log._id}>
-                          <td style={{ padding: '8px', border: '1px solid #ddd' }}>
-                            {new Date(log.date).toLocaleString('en-US', {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: '2-digit',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                              second: '2-digit',
-                            })}
-                          </td>
-                          <td style={{ padding: '8px', border: '1px solid #ddd' }}>{log.fullName}</td>
-                          <td style={{ padding: '8px', border: '1px solid #ddd' }}>{log.activity}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-            </div>
-          )}
           {showMessageForm && (
             <div
               className="messagedetailsdarkgreen"
@@ -764,12 +633,11 @@ function AdminHome() {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                zIndex: 10,
               }}
             >
               <div className="messagedetailslightgreen" style={{ width: '588px', height: '388px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                  <h3 style={{ padding: '16px 24px', margin: 0 }}>Send Message</h3>
+                  <h3 style={{ padding: '16px 24px', margin: 0 }}>Send Email</h3>
                   <a
                     style={{
                       fontSize: '1.5rem',
@@ -786,55 +654,60 @@ function AdminHome() {
                   </a>
                 </div>
                 <form className="messagedetailsgrid" onSubmit={handleMessageSubmit} style={{ padding: '0 24px' }}>
-                  <label>Recipient Email</label>
+                  <label htmlFor="recipient">Recipient:</label>
                   <input
                     type="email"
+                    id="recipient"
                     value={messageRecipient}
                     onChange={(e) => setMessageRecipient(e.target.value)}
                     placeholder="Enter recipient email"
+                    required
                   />
-                  <label>Subject</label>
+                  <label htmlFor="subject">Subject:</label>
                   <input
                     type="text"
+                    id="subject"
                     value={messageSubject}
                     onChange={(e) => setMessageSubject(e.target.value)}
                     placeholder="Enter subject"
+                    required
                   />
-                  <label>Message</label>
+                  <label htmlFor="body">Message:</label>
                   <textarea
+                    id="body"
                     value={messageBody}
                     onChange={(e) => setMessageBody(e.target.value)}
                     placeholder="Enter your message"
+                    required
+                    style={{ height: '100px', resize: 'vertical' }}
                   />
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
                     <button
                       type="button"
-                      className="jobdetailexit"
+                      className="userjobdetailsbutton"
                       onClick={() => setShowMessageForm(false)}
                       style={{
                         marginRight: '8px',
                         background: 'white',
                         color: '#13714C',
-                        border: 'none',
+                        border: '1px solid #13714C',
+                        padding: '8px 16px',
                         borderRadius: '6px',
-                        padding: '8px 24px',
-                        fontWeight: 600,
-                        cursor: 'pointer',
+                        cursor: 'pointer'
                       }}
                     >
                       Close
                     </button>
                     <button
                       type="submit"
-                      className="jobdetailapply"
+                      className="userjobdetailsbutton"
                       style={{
                         background: '#A2E494',
                         color: '#13714C',
                         border: 'none',
+                        padding: '8px 16px',
                         borderRadius: '6px',
-                        padding: '8px 24px',
-                        fontWeight: 600,
-                        cursor: 'pointer',
+                        cursor: 'pointer'
                       }}
                     >
                       Send
