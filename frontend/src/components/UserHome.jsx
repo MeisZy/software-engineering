@@ -236,19 +236,35 @@ function UserHome() {
           <a href="#" onClick={handleFAQs}>FAQs</a>
           <a href="#" onClick={handleProfile}>Settings</a>
         </div>
-<div className="user-nav-right">
-  <img
-    src={Notification}
-    alt="Notifications"
-    className="notification-icon notification-button"
-    style={{ cursor: 'pointer', position: 'relative' }}
-    onClick={() => setShowNotifications(!showNotifications)}
-  />
-  {notifications.filter(n => !n.isRead).length > 0 && (
-    <span className="notification-count">
-      {notifications.filter(n => !n.isRead).length}
-    </span>
-  )}
+<div className="user-nav-right" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+  <div style={{ position: 'relative', display: 'inline-block' }}>
+    <img
+      src={Notification}
+      alt="Notifications"
+      className="notification-icon notification-button"
+      style={{ cursor: 'pointer', position: 'relative' }}
+      onClick={() => setShowNotifications(!showNotifications)}
+    />
+    {notifications.filter(n => !n.isRead).length > 0 && (
+      <span
+        className="notification-count"
+        style={{
+          position: 'absolute',
+          top: '-6px',
+          right: '-6px',
+          background: 'red',
+          color: 'white',
+          borderRadius: '50%',
+          padding: '2px 6px',
+          fontSize: '12px',
+          fontWeight: 'bold',
+          zIndex: 2
+        }}
+      >
+        {notifications.filter(n => !n.isRead).length}
+      </span>
+    )}
+  </div>
   <a className="logout" onClick={handleLogout}>Logout</a>
 </div>
       </nav>

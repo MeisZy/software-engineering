@@ -21,23 +21,23 @@ function UserManagement() {
     fetchApplicants();
   }, []);
 
-    const handleStatusChange = async (email, newStatus) => {
-      try {
-        const response = await axios.put('http://localhost:5000/update-applicant-status', {
-          email,
-          status: newStatus,
-        });
-        setApplicants((prev) =>
-          prev.map((applicant) =>
-            applicant.email === email ? { ...applicant, status: newStatus } : applicant
-          )
-        );
-        setError('');
-      } catch (err) {
-        console.error('Error updating status:', err);
-        setError(err.response?.data?.message || 'Failed to update applicant status.');
-      }
-    };
+  const handleStatusChange = async (email, newStatus) => {
+    try {
+      const response = await axios.put('http://localhost:5000/update-applicant-status', {
+        email,
+        status: newStatus,
+      });
+      setApplicants((prev) =>
+        prev.map((applicant) =>
+          applicant.email === email ? { ...applicant, status: newStatus } : applicant
+        )
+      );
+      setError('');
+    } catch (err) {
+      console.error('Error updating status:', err);
+      setError(err.response?.data?.message || 'Failed to update applicant status.');
+    }
+  };
 
   const handleDelete = async (email) => {
     try {
@@ -56,6 +56,19 @@ function UserManagement() {
     navigate('/adminmaintainance');
   };
 
+  const handleDownloadAll = () => {
+    const jsonData = JSON.stringify(applicants, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'all_applicants.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <>
       <nav>
@@ -67,7 +80,11 @@ function UserManagement() {
         </div>
         <div className="usermanagementrightcomp">
           <div className="managementcontainer">
-            <div className="managementheader"></div>
+            <div className="managementheader">
+              <a onClick={handleDownloadAll} style={{ cursor: 'pointer', color: '#13714C', textDecoration: 'none', fontWeight: '600' }}>
+                Download All Applicants
+              </a>
+            </div>
             {error && <div style={{ color: 'red', padding: '16px' }}>{error}</div>}
             {applicants.length === 0 && !error && (
               <div style={{ padding: '16px', color: '#888' }}>No applicants available.</div>

@@ -11,12 +11,16 @@ const Applicants = require('./models/Applicants');
 const Jobs = require('./models/Jobs');
 const JobApplicants = require('./models/JobApplicants');
 const UserLogs = require('./models/UserLogs');
-const Notifications = require('./models/Notifications');
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 // Validate environment variables
+console.log('Environment variables:', {
+  emailUser: process.env.NODEMAILER_ADMIN,
+  emailPassLength: process.env.NODEMAILER_PASSWORD?.length,
+  mongoUri: process.env.CONNECTION_STRING ? '[REDACTED]' : undefined,
+});
 if (!process.env.NODEMAILER_ADMIN || !process.env.NODEMAILER_PASSWORD) {
   console.error('Missing NODEMAILER_ADMIN or NODEMAILER_PASSWORD environment variables');
   process.exit(1);
@@ -26,7 +30,11 @@ if (!process.env.CONNECTION_STRING) {
   process.exit(1);
 }
 
-
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // Multer configuration
 const storage = multer.diskStorage({
@@ -34,8 +42,9 @@ const storage = multer.diskStorage({
     cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
+    const email = req.body.email || 'unknown';
     const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `${Date.now()}_${file.originalname}`);
+    cb(null, `resume-${email.replace(/[^a-z0-9]/gi, '-')}${ext}`);
   }
 });
 const upload = multer({
@@ -47,7 +56,7 @@ const upload = multer({
     }
     cb(null, true);
   },
-  limits: { fileSize: 5 * 1024 * 1024 }
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
 // In-memory store for OTPs and reset tokens
@@ -60,22 +69,14 @@ app.use(cors({
   optionsSuccessStatus: 200,
 }));
 app.use(express.json());
+// Serve uploaded files
+app.use('/uploads', express.static(uploadsDir));
 
 // MongoDB connection
-const mongoURI = process.env.CONNECTION_STRING || 'mongodb://localhost:27017/collectius';
-mongoose.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-})
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((error) => {
-    console.error('Error connecting to MongoDB:', error.message);
-    if (error.name === 'MongoServerSelectionError') {
-      console.error('Possible issues: Invalid connection string, network connectivity, or IP not in Atlas allowlist.');
-    }
-    process.exit(1);
-  });
+const mongoURI = process.env.CONNECTION_STRING;
+mongoose.connect(mongoURI)
+  .then(() => console.log('Connected to MongoDB Atlas'))
+  .catch((error) => console.error('Error connecting to MongoDB Atlas:', error));
 
 // Nodemailer setup
 const transporter = nodemailer.createTransport({
@@ -90,7 +91,7 @@ const transporter = nodemailer.createTransport({
   debug: process.env.NODE_ENV !== 'production',
 });
 
-// Test Nodemailer configuration
+// Test Nodemailer
 transporter.verify((error, success) => {
   if (error) {
     console.error('Nodemailer configuration error:', {
@@ -426,71 +427,6 @@ app.post('/report-problem', async (req, res) => {
   }
 });
 
-// Send message endpoint
-app.post('/send-message', async (req, res) => {
-  try {
-    const { sender, recipient, subject, body } = req.body;
-
-    if (!sender || !recipient || !subject || !body) {
-      console.error('Missing required fields:', { sender, recipient, subject, body });
-      return res.status(400).json({ message: 'Sender, recipient, subject, and body are required' });
-    }
-
-    if (!/\S+@\S+\.\S+/.test(recipient)) {
-      console.error('Invalid recipient email:', recipient);
-      return res.status(400).json({ message: 'Invalid recipient email format' });
-    }
-
-    if (!/\S+@\S+\.\S+/.test(sender)) {
-      console.error('Invalid sender email:', sender);
-      return res.status(400).json({ message: 'Invalid sender email format' });
-    }
-
-    const mailOptions = {
-      from: `"Collectius Admin" <${process.env.NODEMAILER_ADMIN}>`,
-      to: recipient,
-      replyTo: sender,
-      subject: subject,
-      html: `
-        <p><strong>From:</strong> ${sender}</p>
-        <p><strong>Subject:</strong> ${subject}</p>
-        <p><strong>Message:</strong></p>
-        <p>${body.replace(/\n/g, '<br>')}</p>
-        <hr />
-        <p>Best regards,</p>
-        <p>The Collectius Team</p>
-      `,
-    };
-
-    await new Promise((resolve, reject) => {
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('Nodemailer sendMail error:', {
-            message: error.message,
-            code: error.code,
-            response: error.response,
-            stack: error.stack,
-          });
-          reject(error);
-        } else {
-          console.log('Email sent:', info.response);
-          resolve(info);
-        }
-      });
-    });
-
-    res.status(200).json({ message: 'Message sent successfully' });
-  } catch (err) {
-    console.error('Error in send-message endpoint:', {
-      message: err.message,
-      code: err.code,
-      response: err.response,
-      stack: err.stack,
-    });
-    res.status(500).json({ message: `Failed to send message: ${err.message}` });
-  }
-});
-
 // Fetch user logs endpoint
 app.get('/userlogs', async (req, res) => {
   try {
@@ -711,18 +647,18 @@ app.post('/upload-resume', upload.single('resume'), async (req, res) => {
   try {
     const { email } = req.body;
     if (!email || !req.file) {
-      if (req.file) fs.unlinkSync(req.file.path);
       return res.status(400).json({ message: 'Email and resume file are required' });
     }
 
     const applicant = await Applicants.findOne({ email });
     if (!applicant) {
-      fs.unlinkSync(req.file.path);
+      fs.unlinkSync(req.file.path); // Delete uploaded file if applicant not found
       return res.status(404).json({ message: 'Applicant not found' });
     }
 
+    // Delete previous resume file if exists
     if (applicant.resume.filePath) {
-      const oldPath = path.join(__dirname, '..', 'frontend', 'public', applicant.resume.filePath);
+      const oldPath = path.join(__dirname, applicant.resume.filePath);
       if (fs.existsSync(oldPath)) {
         fs.unlinkSync(oldPath);
       }
@@ -730,7 +666,7 @@ app.post('/upload-resume', upload.single('resume'), async (req, res) => {
 
     const fileType = path.extname(req.file.filename).toLowerCase() === '.pdf' ? 'pdf' : 'docx';
     applicant.resume = {
-      filePath: `/Uploads/${req.file.filename}`,
+      filePath: `/uploads/${req.file.filename}`,
       fileType
     };
     await applicant.save();
@@ -771,27 +707,6 @@ app.put('/update-applicant-status', async (req, res) => {
     jobApplicant.status = status;
     await jobApplicant.save();
 
-    const notification = new Notifications({
-      email,
-      message: `Your application status has been updated to: ${status}`,
-    });
-    await notification.save();
-
-    await transporter.sendMail({
-      from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
-      to: email,
-      subject: 'Application Status Update',
-      html: `
-        <h3>Application Status Update</h3>
-        <p>Dear ${jobApplicant.fullName || 'Applicant'},</p>
-        <p>Your application status has been updated to: <strong>${status}</strong>.</p>
-        <p>Please log in to your Collectius account to view more details.</p>
-        <hr />
-        <p>Best regards,</p>
-        <p>The Collectius Team</p>
-      `,
-    });
-
     res.status(200).json({ message: 'Applicant status updated successfully', applicant: jobApplicant });
   } catch (error) {
     console.error('Error updating applicant status:', error);
@@ -823,41 +738,6 @@ app.delete('/delete-applicant', async (req, res) => {
   }
 });
 
-// Fetch notifications endpoint
-app.get('/notifications/:email', async (req, res) => {
-  try {
-    const { email } = req.params;
-    if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
-    }
-    const notifications = await Notifications.find({ email }).sort({ createdAt: -1 });
-    res.status(200).json(notifications);
-  } catch (err) {
-    console.error('Error fetching notifications:', err);
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// Mark notification as read endpoint
-app.put('/notifications/:id/read', async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid notification ID' });
-    }
-    const notification = await Notifications.findById(id);
-    if (!notification) {
-      return res.status(404).json({ message: 'Notification not found' });
-    }
-    notification.isRead = true;
-    await notification.save();
-    res.status(200).json({ message: 'Notification marked as read' });
-  } catch (err) {
-    console.error('Error marking notification as read:', err);
-    res.status(500).json({ message: err.message });
-  }
-});
-
 // Fix applicant status and fullName endpoint
 app.get('/fix-applicant-status', async (req, res) => {
   try {
@@ -867,11 +747,13 @@ app.get('/fix-applicant-status', async (req, res) => {
     for (const jobApplicant of applicants) {
       let needsUpdate = false;
 
+      // Fix status
       if (jobApplicant.status !== 'To Next Interview' && jobApplicant.status !== 'Rejected') {
         jobApplicant.status = 'To Next Interview';
         needsUpdate = true;
       }
 
+      // Fix fullName
       if (!jobApplicant.fullName) {
         const applicant = await Applicants.findOne({ email: jobApplicant.email });
         jobApplicant.fullName = applicant ? applicant.fullName : 'Unknown Applicant';
