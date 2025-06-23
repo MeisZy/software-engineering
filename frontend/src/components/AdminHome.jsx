@@ -249,30 +249,40 @@ function AdminHome() {
   return (
     <>
       <nav className="admin-nav">
-        <div className="admin-nav-left">
-          <a href="/" className="logo-link">
-            <img src={Logo} alt="Logo" className="logo" />
-          </a>
-          <a href="javascript:void(0);">Admin</a>
-        </div>
-        <div className="admin-nav-center">
-          <a onClick={handleMaintainance}>Settings</a>
-          <a onClick={handleFAQs}>FAQs</a>
-          <a onClick={handleSetCriteria}>Manage Jobs</a>
-          <a onClick={() => setShowMessageForm(true)}>Send Message</a>
-        </div>
-        <div className="admin-nav-right">
-          <a href="#" className="notification-link" onClick={() => setShowNotifications(!showNotifications)}>
-            <img src={Notification} alt="Notifications" className="notification-icon" />
-            {notifications.filter(n => !n.isRead).length > 0 && (
-              <span className="notification-count">
-                {notifications.filter(n => !n.isRead).length}
-              </span>
-            )}
-          </a>
-          <a className="logout" onClick={handleLogout}>Logout</a>
-        </div>
-      </nav>
+  <div className="admin-nav-left">
+    <a href="/" className="logo-link">
+      <img src={Logo} alt="Logo" className="logo" />
+    </a>
+    <a href="javascript:void(0);">Admin</a>
+  </div>
+  <div className="admin-nav-center">
+    <a onClick={handleMaintainance}>Settings</a>
+    <a onClick={handleFAQs}>FAQs</a>
+    <a onClick={handleSetCriteria}>Manage Jobs</a>
+    <a onClick={() => setShowMessageForm(true)}>Send Message</a>
+  </div>
+  <div className="admin-nav-right">
+    <div style={{ position: 'relative', display: 'inline-block' }}>
+      <img
+        src={Notification}
+        alt="Notifications"
+        className="notification-icon"
+        style={{ cursor: 'pointer' }}
+        onClick={() => setShowNotifications(!showNotifications)}
+      />
+      {notifications.filter(n => !n.isRead).length > 0 && (
+        <span className="notification-count" style={{
+          position: 'absolute',
+          top: '-6px',
+          right: '-6px'
+        }}>
+          {notifications.filter(n => !n.isRead).length}
+        </span>
+      )}
+    </div>
+    <a className="logout" onClick={handleLogout}>Logout</a>
+  </div>
+</nav>
       <div className='components'>
         <div className='adminleftcomp'>
           <div className='adminsearch'>

@@ -26,11 +26,7 @@ if (!process.env.CONNECTION_STRING) {
   process.exit(1);
 }
 
-// Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, '..', 'frontend', 'public', 'Uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(UploadsDir, { recursive: true });
-}
+
 
 // Multer configuration
 const storage = multer.diskStorage({
@@ -64,7 +60,6 @@ app.use(cors({
   optionsSuccessStatus: 200,
 }));
 app.use(express.json());
-app.use('/Uploads', express.static(UploadsDir));
 
 // MongoDB connection
 const mongoURI = process.env.CONNECTION_STRING || 'mongodb://localhost:27017/collectius';
