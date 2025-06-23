@@ -569,32 +569,33 @@ function UserHome() {
           )}
         </div>
       </div>
-      {showReportForm && (
+     {showReportForm && (
         <div
-          className="reportsdetailsdarkgreen"
           style={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '600px',
-            height: '400px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    background: 'rgba(0,0,0,0.4)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 10,
           }}
         >
-          <div className="reportsdetailslightgreen" style={{ width: '588px', height: '388px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-              <h3 style={{ padding: '16px 24px', margin: 0 }}>Report a Problem</h3>
+        <div  className="reportsdetailsdarkgreen">
+          <div className="reportsdetailslightgreen">
+            <div className= "header-report">
+              <h3>Report a Problem</h3>
               <a
                 style={{
-                  fontSize: '1.5rem',
+                  fontSize: '30px',
+                  marginRight: '19px',
                   fontWeight: 'bold',
-                  color: 'black',
-                  textDecoration: 'none',
                   cursor: 'pointer',
-                  marginRight: '24px',
+                  border: 'none',
+                  background: 'none',
                 }}
                 onClick={() => setShowReportForm(false)}
                 aria-label="Close"
@@ -602,43 +603,37 @@ function UserHome() {
                 ×
               </a>
             </div>
-            <form className="reportsdetailsgrid" onSubmit={handleReportSubmit} style={{ padding: '0 24px' }}>
-              <label>Subject</label>
-              <input
-                type="text"
-                value={reportSubject}
-                onChange={(e) => setReportSubject(e.target.value)}
-                placeholder="Enter subject"
-              />
+            
+
+            <div className='reportsdetailscontent'>
+               <form className="reportsdetailsgrid" onSubmit={handleReportSubmit}>
+                  <div className="form-row">
+                    <label>Subject:</label>
+                    <input
+                      type="text"
+                      value={reportSubject}
+                      onChange={(e) => setReportSubject(e.target.value)}
+                      placeholder="Enter subject"
+                    />
+                  </div>
+            <div className="form-message">
               <label>Message</label>
               <textarea
                 value={reportMessage}
                 onChange={(e) => setReportMessage(e.target.value)}
                 placeholder="Describe the problem"
               />
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-                <button
-                  type="button"
-                  className="userjobdetailexit"
-                  onClick={() => setShowReportForm(false)}
-                  style={{
-                    marginRight: '8px',
-                  }}
-                >
-                  Close
-                </button>
+              </div>
+
                 <button
                   type="submit"
                   className="userjobdetailapply"
-                  style={{
-                    background: '#A2E494',
-                    color: '#13714C',
-                  }}
                 >
                   Submit
                 </button>
-              </div>
             </form>
+          </div>
+          </div>
           </div>
         </div>
       )}
