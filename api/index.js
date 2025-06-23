@@ -508,14 +508,6 @@ app.post('/upload-resume', upload.single('resume'), async (req, res) => {
     };
     await applicant.save();
 
-    // --- CREATE NOTIFICATION FOR ADMIN ---
-    await Notifications.create({
-      email: applicant.email,
-      message: `${applicant.email} has uploaded a resume: ${req.file.originalname}`,
-      createdAt: new Date(),
-      isRead: false
-    });
-
     res.status(200).json({ message: 'Resume uploaded successfully', resume: applicant.resume });
   } catch (err) {
     console.error('Error uploading resume:', err);
@@ -767,29 +759,6 @@ app.put('/update-applicant-status', async (req, res) => {
 
     jobApplicant.status = status;
     await jobApplicant.save();
-
-    // Create notification
-    const notification = new Notifications({
-      email,
-      message: `Your application status has been updated to: ${status}`,
-    });
-    await notification.save();
-
-    // Send email notification
-    await transporter.sendMail({
-      from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
-      to: email,
-      subject: 'Application Status Update',
-      html: `
-        <h3>Application Status Update</h3>
-        <p>Dear Applicant,</p>
-        <p>Your application status has been updated to: <strong>${status}</strong>.</p>
-        <p>Please log in to your Collectius account to view more details.</p>
-        <hr />
-        <p>Best regards,</p>
-        <p>The Collectius Team</p>
-      `,
-    });
 
     res.status(200).json({ message: 'Applicant status updated successfully', applicant: jobApplicant });
   } catch (error) {

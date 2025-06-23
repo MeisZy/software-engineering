@@ -33,6 +33,8 @@ function AdminHome() {
   const [messageBody, setMessageBody] = useState('');
   const [messageFeedback, setMessageFeedback] = useState('');
   const suggestionsRef = useRef(null);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const workingSchedule = [
     { label: 'Full Time', id: 'fulltime' },
@@ -83,6 +85,18 @@ function AdminHome() {
   ]
     .filter(suggestion => suggestion.value.toLowerCase().includes(searchQuery.toLowerCase()))
     .slice(0, 5);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/notifications/admin');
+        setNotifications(res.data);
+      } catch (err) {
+        console.error('Error fetching notifications:', err);
+      }
+    };
+    fetchNotifications();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -273,7 +287,7 @@ function AdminHome() {
 
   return (
     <>
-      <nav className="admin-nav">
+            <nav className="admin-nav">
         <div className="admin-nav-left">
           <a href="/" className="logo-link">
             <img src={Logo} alt="Logo" className="logo" />
@@ -287,35 +301,100 @@ function AdminHome() {
           <a onClick={handleShowUserLogs}>User Logs</a>
           <a href="#" onClick={e => { e.preventDefault(); setShowMessageForm(true); }}>Send Message</a>
         </div>
-        <div className="admin-nav-right" style={{ position: 'relative' }}>
-          <img
-            src={Notification}
-            alt="Notifications"
-            className="notification-icon notification-button"
-            style={{ cursor: 'pointer' }}
-            onClick={handleShowNotifications}
-          />
-          {resumeUploads.length > 0 && (
-            <span
-              className="notification-count"
-              style={{
-                position: 'absolute',
-                top: '-8px',
-                right: '-8px',
-                background: 'red',
-                color: 'white',
-                borderRadius: '50%',
-                padding: '2px 6px',
-                fontSize: '12px',
-              }}
-            >
-              {resumeUploads.length}
-            </span>
-          )}
+        <div className="admin-nav-right">
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <img
+              src={Notification}
+              alt="Notifications"
+              className="notification-icon notification-button"
+              style={{ cursor: 'pointer' }}
+              onClick={() => setShowNotifications(!showNotifications)}
+            />
+            {notifications.filter(n => !n.isRead).length > 0 && (
+              <span className="notification-count" style={{ position: 'absolute', top: '-8px', right: '-8px' }}>
+                {notifications.filter(n => !n.isRead).length}
+              </span>
+            )}
+          </div>
           <a className="logout" onClick={handleLogout}>Logout</a>
         </div>
       </nav>
-
+       {showNotifications && (
+        <div
+          className="notifications-container"
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'white',
+            padding: '24px',
+            borderRadius: '8px',
+            maxWidth: '600px',
+            width: '90%',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            zIndex: 10,
+          }}
+          onClick={() => setShowNotifications(false)}
+        >
+          <div
+            className="notifications-content"
+            style={{ padding: '16px' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h2>Notifications</h2>
+              <button
+                onClick={() => setShowNotifications(false)}
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: 'none',
+                }}
+              >
+                ×
+              </button>
+            </div>
+            {notifications.length === 0 ? (
+              <div style={{ padding: '16px', color: '#888' }}>No notifications available.</div>
+            ) : (
+              <ul style={{ listStyle: 'none', padding: 0 }}>
+                {notifications.map(notification => (
+                  <li
+                    key={notification._id}
+                    style={{
+                      padding: '8px',
+                      borderBottom: '1px solid #ddd',
+                      background: notification.isRead ? '#f4f4f4' : '#fff',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <div>
+                      <p style={{ margin: 0, fontWeight: notification.isRead ? 'normal' : 'bold' }}>
+                        {notification.message}
+                      </p>
+                      <span style={{ fontSize: '12px', color: '#888' }}>
+                        {new Date(notification.createdAt).toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
       {showJobApplicants && (
         <div
           className="notifications-container"
