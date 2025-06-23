@@ -236,37 +236,23 @@ function UserHome() {
           <a href="#" onClick={handleFAQs}>FAQs</a>
           <a href="#" onClick={handleProfile}>Settings</a>
         </div>
-<div className="user-nav-right" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-  <div style={{ position: 'relative', display: 'inline-block' }}>
-    <img
-      src={Notification}
-      alt="Notifications"
-      className="notification-icon notification-button"
-      style={{ cursor: 'pointer', position: 'relative' }}
-      onClick={() => setShowNotifications(!showNotifications)}
-    />
-    {notifications.filter(n => !n.isRead).length > 0 && (
-      <span
-        className="notification-count"
-        style={{
-          position: 'absolute',
-          top: '-6px',
-          right: '-6px',
-          background: 'red',
-          color: 'white',
-          borderRadius: '50%',
-          padding: '2px 6px',
-          fontSize: '12px',
-          fontWeight: 'bold',
-          zIndex: 2
-        }}
-      >
-        {notifications.filter(n => !n.isRead).length}
-      </span>
-    )}
-  </div>
-  <a className="logout" onClick={handleLogout}>Logout</a>
-</div>
+        <div className="user-nav-right">
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <img
+              src={Notification}
+              alt="Notifications"
+              className="notification-icon notification-button"
+              style={{ cursor: 'pointer' }}
+              onClick={() => setShowNotifications(!showNotifications)}
+            />
+            {notifications.filter(n => !n.isRead).length > 0 && (
+              <span className="notification-count" style={{ position: 'absolute', top: '-8px', right: '-8px' }}>
+                {notifications.filter(n => !n.isRead).length}
+              </span>
+            )}
+          </div>
+          <a className="logout" onClick={handleLogout}>Logout</a>
+        </div>
       </nav>
       <div className='usercontainer'>
         <div className='userleftcomp'>
@@ -569,25 +555,26 @@ function UserHome() {
           )}
         </div>
       </div>
-     {showReportForm && (
+      {showReportForm && (
         <div
+
           style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100vw',
-                    height: '100vh',
-                    background: 'rgba(0,0,0,0.4)',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    zIndex: 10,
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              background: 'rgba(0,0,0,0.4)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 10,
           }}
         >
-        <div  className="reportsdetailsdarkgreen">
+        <div className="reportsdetailsdarkgreen">
           <div className="reportsdetailslightgreen">
-            <div className= "header-report">
-              <h3>Report a Problem</h3>
+            <div className='header-report'>
+              <h3 style={{ padding: '16px 24px', margin: 0 }}>Report a Problem</h3>
               <a
                 style={{
                   fontSize: '30px',
@@ -603,38 +590,54 @@ function UserHome() {
                 ×
               </a>
             </div>
-            
 
             <div className='reportsdetailscontent'>
-               <form className="reportsdetailsgrid" onSubmit={handleReportSubmit}>
-                  <div className="form-row">
-                    <label>Subject:</label>
+              <form className="reportsdetailsgrid" onSubmit={handleReportSubmit} style={{ padding: '0 24px' }}>
+                <div className='form-row'>
+                    <label>Subject</label>
                     <input
                       type="text"
                       value={reportSubject}
                       onChange={(e) => setReportSubject(e.target.value)}
                       placeholder="Enter subject"
                     />
+                </div>
+                <div className='form-message'>
+                  <label>Message</label>
+                  <textarea
+                    value={reportMessage}
+                    onChange={(e) => setReportMessage(e.target.value)}
+                    placeholder="Describe the problem"
+                  />
+                </div>
+                  <div className='form-buttons'>
+                    <button
+                      type="button"
+                      className="userjobdetailexit"
+                      onClick={() => setShowReportForm(false)}
+                      style={{
+                        marginRight: '8px',
+                        border:"2px solid black"
+                      }}
+                    >
+                      Close
+                    </button>
+                    <button
+                      type="submit"
+                      className="userjobdetailapply"
+                      style={{
+                        background: '#A2E494',
+                        color: '#13714C',
+                        border:"2px solid black"
+                      }}
+                    >
+                      Submit
+                    </button>
                   </div>
-            <div className="form-message">
-              <label>Message</label>
-              <textarea
-                value={reportMessage}
-                onChange={(e) => setReportMessage(e.target.value)}
-                placeholder="Describe the problem"
-              />
-              </div>
-
-                <button
-                  type="submit"
-                  className="userjobdetailapply"
-                >
-                  Submit
-                </button>
-            </form>
+              </form>
+            </div>
           </div>
-          </div>
-          </div>
+        </div>
         </div>
       )}
     </>

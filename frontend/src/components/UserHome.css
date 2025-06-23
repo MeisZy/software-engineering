@@ -1,122 +1,119 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
-
-
 body {
-    font-family: "Montserrat", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
-nav img{
-    width:40px;
-    height:40px;
-    border-radius: 50%;
-    margin: 5px;
+nav img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 5px;
 }
-
 
 nav a {
-    padding: 10px;
-    margin: 5px;    
-    font-size: 18px;
-    font-weight: 300;
-    text-decoration:none;
-    color:white;
+  padding: 10px;
+  margin: 5px;
+  font-size: 18px;
+  font-weight: 300;
+  text-decoration: none;
+  color: white;
 }
 
 nav a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
+
 .usercontainer {
-    width: 100%;
-    display: flex;
-    min-height: 100%;
-    box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  min-height: 100%;
+  box-sizing: border-box;
 }
 
 .proper {
-    margin: 0;
+  margin: 0;
 }
 
-
 .moreinfo {
-    display: flex; 
-    justify-content: flex-end; 
-    height: 100px; 
-    border: 1px solid black; 
-    background-color: #13714C; 
-    width: 100%; 
-    border-radius: 10px; 
+  display: flex;
+  justify-content: flex-end;
+  height: 100px;
+  border: 1px solid black;
+  background-color: #13714C;
+  width: 100%;
+  border-radius: 10px;
 }
 
 .infobutton {
-    background-color: white;
-    padding: 8px;
-    max-width: 50px;
-    max-height: 10px;
-    border-radius: 18.75px;
-    position: relative; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    margin-right: 10px; 
-    margin-top:40px;
+  background-color: white;
+  padding: 8px;
+  max-width: 50px;
+  max-height: 10px;
+  border-radius: 18.75px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+  margin-top: 40px;
 }
 
 .infobutton a {
-   font-size:16px; 
-   text-align:center;
+  font-size: 16px;
+  text-align: center;
 }
 
-.usergreeting{
-    color:white;
-    margin: 5px;
-    font-weight: 300;
-    font-size:20px;
+.usergreeting {
+  color: white;
+  margin: 5px;
+  font-weight: 300;
+  font-size: 20px;
 }
 
-.logout{
-    text-decoration:none;
+.logout {
+  text-decoration: none;
 }
 
 .userleftcomp {
-    display: flex;
-    position:fixed;
-    min-width: 320px; 
-    max-width: 640px;
-    flex: 0 0 200px;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    padding: 20px;
-    box-sizing: border-box;
-    background-color: #A2E494;
-    padding-top: 50px;
-    height: 100%;      
-    border:1px solid black;
+  display: flex;
+  position: fixed;
+  min-width: 320px;
+  max-width: 640px;
+  flex: 0 0 200px;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #A2E494;
+  padding-top: 50px;
+  height: 100%;
+  border: 1px solid black;
 }
 
 .userrightcomp {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    box-sizing: border-box;
-    margin-top: 50px;
-    margin-left:  320px; 
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  margin-top: 50px;
+  margin-left: 320px;
 }
 
-.adminrightcomp img{
-    width:4 0px;
-    height:40px;
-    border-radius: 50%;
-    margin: 5px;
+.adminrightcomp img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 5px;
 }
 
-.userverticalfilter{
-  display:relative;
-  background-color:#A2E494;
+.userverticalfilter {
+  display: relative;
+  background-color: #A2E494;
 }
 
 .reportsdetailsdarkgreen {
@@ -133,8 +130,8 @@ nav a:hover {
 
 }
 
-.reportsdetailsdarkgreen a{
-    cursor:pointer;
+.reportsdetailsdarkgreen a {
+  cursor: pointer;
 }
 
 .reportsdetailslightgreen {
@@ -154,7 +151,296 @@ nav a:hover {
   box-sizing: border-box;
 }
 
+.reportsdetailslightgreen h3 {
+  margin: 0;
+  padding: 24px 32px 0 32px;
+  align-self: flex-start;
+  font-size: 2rem;
+  font-weight: 600;
+  color: Black;
+  background: none;
+  border: none;
+  line-height: 1.2;
+  max-width: 400px;
+  overflow-wrap: break-word;
+}
 
+.reportsdetails {
+  margin-left: 60px;
+  margin-top: 36px;
+  width: 864px;
+  border: 2px solid black;
+  background: white;
+}
+
+.reportsdetailsblock {
+  background-image: none;
+  background-size: cover;
+  background-position: center;
+  padding: 32px;
+  position: relative;
+}
+
+.reportsdetailsgrid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  width: 100%;
+}
+
+.reportsdetailsgrid a {
+  width: 120px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin: 32px 0 0 0;
+  align-self: flex-end;
+}
+
+.reportsdetailsgrid label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  font-size: 1rem;
+  color: black;
+}
+
+.reportsdetailsgrid input[type="text"] {
+  width: 400px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  border: 1px solid #13714C;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  background: #f8f8f8;
+}
+
+.reportsdetailsgrid textarea {
+  width: 800px;
+  height: 120px;
+  font-size: 16px;
+  padding: 8px;
+  border: 1px solid #13714C;
+  border-radius: 6px;
+  resize: vertical;
+  background: #f8f8f8;
+}
+
+.submitarrow img {
+  width: 80px;
+  height: 40px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin: 16px 16px 16px 16px;
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: "center";
+  gap: 8px;
+}
+
+.joboption {
+  background-color: #13714C;
+  width: 100%;
+  border-radius: 0 0 25px 25px;
+  height: 40px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0;
+}
+
+.userjobdetails {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.userjobdetailsblock {
+  background: #13714C;
+  color: white;
+  border-radius: 12px;
+  padding: 24px;
+  width: 600px;
+  max-height: 80vh;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  z-index: 11;
+  overflow-y: auto;
+  position: relative;
+}
+
+.joboption a {
+  color: white;
+  text-decoration: none;
+  font-size: 10px;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  flex-direction: row-reverse;
+  text-align: center;
+  position: relative;
+  margin: 10px;
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+  cursor: pointer;
+  border-radius: 25px;
+}
+
+.joboption a:hover {
+  background-color: #A2E494;
+  color: black;
+  border: 1px solid black;
+  border-radius: 25px;
+}
+
+.jobcard {
+  width: 240px;
+  height: 256px;
+  border: 1px solid black;
+  margin: 25px;
+  font-size: 16px;
+  background-color: #A2E494;
+  overflow: hidden;
+  border-radius: 25px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+.submitarrow {
+  width: 120px;
+  position: "absolute";
+  right: 0;
+  bottom: 0;
+  margin: 32px 0 0 0;
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.userjobdetailexit, .userjobdetailapply {
+  margin-top: 24px;
+  background: white;
+  color: #13714C;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 24px;
+  font-weight: 600;
+  cursor: "pointer";
+  margin: 20px;
+}
+
+.usersearch {
+  position: relative;
+  width: 100%;
+  z-index: 20;
+}
+
+.usersearch input[type="text"] {
+  width: 100%;
+  font-size: 16px;
+  border: 2px solid black;
+  border-radius: 6px;
+  background: #f8f8f8;
+  box-sizing: border-box;
+  height: 24px;
+  padding: 8px 12px;
+}
+
+
+.suggestionsdropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 2px solid black;
+  border-radius: 6px;
+  margin-top: 4px;
+  padding: 0;
+  list-style: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 30; /* Higher than filters */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.suggestion-item {
+  list-style: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #222;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.suggestion-item:hover,
+.suggestion-item.highlighted {
+  background: #13714C;
+  color: white;
+}
+.suggestiontags span {
+  font-size: 10px;
+  padding: 2px;
+}
+.suggestion-item:hover, .suggestion-item.highlighted {
+  background: #13714C;
+  color: white;
+}
+
+.user-nav {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #13714C;
+  color: white;
+  width: 100%;
+  height: 50px;
+  box-sizing: border-box;
+  justify-content: space-between;
+}
+
+.user-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-nav-right {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.notification-link {
+  display: flex;
+  align-items: center;
+}
+
+.notification-icon {
+  width: 40px;
+  height: 40px;
+
+}
 
 .header-report{
   display: flex;
@@ -175,31 +461,6 @@ nav a:hover {
   padding: 0%;
 }
 
-
-.reportsdetails{
-  margin-left:60px;
-  margin-top:36px;
-  width:864px;
-  border:2px solid black;
-  background: white;
-}
-.reportsdetailsblock {
-
-  background-image: none;
-  background-size: cover;
-  background-position: center;
-  padding: 32px;
-  position: relative;
-}
-
-.reportsdetailsblock p{
-
-}
-.reportsdetailsblock ul{
-
-}
-
-
 .reportsdetailscontent{
   display: flex;
   flex-direction: column;
@@ -214,7 +475,6 @@ nav a:hover {
   height: 87%;
   max-height: 100%; /* Ensures it doesn't exceed the container's height */
 }
-
 
 .form-row {
   display: flex;
@@ -243,10 +503,9 @@ nav a:hover {
   margin: 0; /* Remove margin shifts */
   margin-left: -25px;
   margin-right: 35px;
-    outline: none;
+  outline: none;
   box-shadow: none;
 }
-
 
 .form-message{
   display: flex;
@@ -255,6 +514,7 @@ nav a:hover {
   width: 750px;
   margin-left: -30px;
 
+
 }
 
 .form-message textarea {
@@ -262,7 +522,7 @@ nav a:hover {
   height: 230px;
   font-size: 16px;
   padding: 8px;
-border: none;
+  border: none;
   border-radius: 6px;
   resize: vertical;
   background: none;
@@ -292,156 +552,13 @@ border: none;
   border: 2px solid #f0f0f0; /* Creates space around thumb */
 }
 
-.reportsdetailsgrid {
-  /* for text fields message and subject */
+/* Add or update this block for .form-buttons */
+.form-buttons {
   display: flex;
-  flex-direction: column;
-  gap: 18px;
-  position: relative;
-  padding: 0 24px ;
-  margin-top: 15px;
-  margin-left: 0px;
- border-bottom-left-radius: 25px;
- border-bottom-right-radius: 25px;
-  width: 94%; /* Makes inner content determine width */
-  height: 87%;
-  max-height: 100%; /* Ensures it doesn't exceed the container's height */
-}
-
-.reportsdetailsgrid a{
-  width: 120px;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  margin: 32px 0 0 0;
-  align-self: flex-end;
-}
-.reportsdetailsgrid label {
-  font-weight: 500;
-  font-size: 1rem;
-  color: black;
-  margin-top: -20px;
-  margin-bottom: 10px;
-}
-
-
-.submitarrow img{
-    width: 80px;
-    height: 40px;
-    position: absolute;
-    right: 0;
-    bottom:0;
-    margin: 16px 16px 16px 16px;
-    align-self: flex-end;
-    display: flex;
-    align-items: center;
-    justify-content: "center";
-    gap: 8px;
-}
-
-.joboption {
-    background-color: #13714C;
-    width: 100%;
-    border-radius: 0 0 25px 25px;
-    height: 40px;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 0;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 0;
-}
-.userjobdetails {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4); /* Semi-transparent overlay */
-  display: flex;
+  justify-content: flex-end;
   align-items: center;
-  justify-content: center;
-  z-index: 10; /* High z-index to appear above all content */
-}
-
-.userjobdetailsblock {
-  background: #13714C;
-  color: white;
-  border-radius: 12px;
-  padding: 24px;
-  width: 600px; /* Wider for better content display */
-  max-height: 80vh; /* Limit height to 80% of viewport */
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-  z-index: 11; /* Above .userjobdetails */
-  overflow-y: auto; /* Scrollable if content overflows */
+  gap: 12px;
+  margin-bottom: 40px;      /* Increase this value as needed */
   position: relative;
+  z-index: 2;
 }
-.joboption a {
-    color: white;
-    text-decoration: none;
-    font-size: 10px;
-    padding: 5px;
-    display: flex;
-    justify-content: center;
-    flex-direction: row-reverse;
-    text-align: center;
-    position: relative;
-    margin: 10px;
-    background-color: white;
-    border: 1px solid black;
-    color: black;
-    cursor: pointer;
-    border-radius: 25px;
-}
-.joboption a:hover {
-    background-color: #A2E494;
-    color: black;
-    border: 1px solid black;
-    border-radius: 25px;
-}
-
-  .jobcard {
-    width: 240px;
-    height: 256px;
-    border: 1px solid black;
-    margin: 25px;
-    font-size: 16px;
-    background-color: #A2E494;
-    overflow: hidden;
-    border-radius: 25px;
-    display: flex;
-    flex-direction: column;
-    position: relative; 
-    z-index: 1; 
-  }
-
-  .submitarrow{
-    width: 120px;
-    position: "absolute"; 
-    right: 0; 
-    bottom: 0; 
-    margin: 32px 0 0 0; 
-    align-self: flex-end;
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 8px;
-  }
-
-.userjobdetailapply{
-  margin-top: -10px;
-  justify-content: flex-end; /* Aligns buttons to the end */
-  background: #A2E494;
-   color: #13714C;
-   border: none;
-   border-radius: 10px;
-   padding: 8px 24px;
-   font-weight: 600;
-   cursor: pointer;
-
-}
-
-  
