@@ -492,7 +492,50 @@ app.post('/send-message', async (req, res) => {
       response: err.response,
       stack: err.stack,
     });
-    res.status(500).json({ message: `Failed to send message: ${err.message}` });
+    res.status(500).json({ message: 'Failed to send message' });
+  }
+});
+
+// Upload resume endpoint
+app.post('/upload-resume', upload.single('resume'), async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email || !req.file) {
+      if (req.file) fs.unlinkSync(req.file.path);
+      return res.status(400).json({ message: 'Email and PDF resume file are required' });
+    }
+
+    const applicant = await Applicants.findOne({ email });
+    if (!applicant) {
+      fs.unlinkSync(req.file.path);
+      return res.status(404).json({ message: 'Applicant not found' });
+    }
+
+    // Delete previous resume file if exists
+    if (applicant.resume.filePath) {
+      const oldPath = path.join(__dirname, '..', 'frontend', 'public', applicant.resume.filePath);
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+    }
+
+    applicant.resume = {
+      filePath: `/Uploads/${req.file.filename}`,
+      fileType: 'pdf',
+      originalFileName: req.file.originalname // Save original filename
+    };
+    await applicant.save();
+
+    res.status(200).json({ message: 'Resume uploaded successfully', resume: applicant.resume });
+  } catch (err) {
+    console.error('Error uploading resume:', err);
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    if (err.message === 'Only PDF files are allowed') {
+      return res.status(400).json({ message: 'Only PDF files are allowed' });
+    }
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -768,20 +811,17 @@ app.put('/update-applicant-status', async (req, res) => {
       return res.status(404).json({ message: 'Applicant not found' });
     }
 
-    const applicant = await Applicants.findOne({ email });
-    if (applicant && !jobApplicant.fullName) {
-      jobApplicant.fullName = applicant.fullName || 'Unknown Applicant';
-    }
-
     jobApplicant.status = status;
     await jobApplicant.save();
 
+    // Create notification
     const notification = new Notifications({
       email,
       message: `Your application status has been updated to: ${status}`,
     });
     await notification.save();
 
+    // Send email notification
     await transporter.sendMail({
       from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
       to: email,
