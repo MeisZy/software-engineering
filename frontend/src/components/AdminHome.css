@@ -519,4 +519,110 @@ nav {
   margin-left: auto;
   position: relative;
 }
+.table-container {
+  margin-top: -18px;
+  display: flex;
+  flex-direction: column;
+  max-height: 62vh;
+  box-sizing: border-box;
+  border-radius: 12px;
+}
 
+.userlogs-container {
+  background-color: #13714C;
+  border-radius: 25px;
+  width: 100vh; /* Makes width depend on the content inside */
+  height: 70%;
+  max-height: 100vh;
+  padding: 16px; /* Optional: Add padding if needed */
+}
+
+.userlogs-content {
+  background-color: white;
+  border-radius: 25px;
+  margin-top: -16px;
+  margin-left: -16px;
+  width: 101%; /* Makes inner content determine width */
+  height: 101%;
+  max-height: 103%; /* Ensures it doesn't exceed the container's height */
+  box-sizing: border-box;
+}
+
+.tbody-container {
+  max-height: 58vh; /* Adjust to fit within userlogs-content */
+  overflow-y: auto; /* Enable vertical scrolling */
+  flex-grow: 1;
+  /* Ensure the container doesn’t clip the scrollbar */
+  padding-right: 2px; /* Small padding to prevent clipping */
+  border-bottom-left-radius: 25px;
+}
+
+/* Chrome, Edge, Safari */
+.tbody-container::-webkit-scrollbar {
+  width: 16px; /* Slightly increased for visibility of rounded corners */
+  height: 50px;
+}
+
+.tbody-container::-webkit-scrollbar-track {
+  background: #A2E494; /* Light green track */
+  border-bottom-right-radius: 12px; /* Match track radius */
+  border-bottom-left-radius: 12px; /* Match track radius */
+margin-left: -3px; /* Prevent clipping of the scrollbar */
+
+
+}
+
+.tbody-container::-webkit-scrollbar-thumb {
+  background-color: #13714C; /* Dark green thumb */
+  border-radius: 10px; /* Rounded corners for the thumb */
+  border: 2px solid #A2E494; /* Border to blend with track */
+}
+
+.userlogs-content th,
+.userlogs-content td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+  font-size: 20px;
+}
+
+.userlogs-content th {
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+table {
+  table-layout: fixed;
+  width: 100%;
+  border-radius: 12px;
+}
+.userLogsHeader {
+  display: flex;
+  justify-content: space-between; /* Center the text horizontally */
+  align-items: center; /* Center the text vertically */
+  padding: 16px 0; /* Equal top and bottom padding */
+  background-color: #A2E494;
+  border-top-left-radius: 25px;
+  margin: 0 0 16px 0;
+}
+
+.userLogsHeader h3 {
+  font-size: 25px;
+  margin-left: 12px; /* Remove default margins from h3 */
+}
+
+th:nth-child(1),
+td:nth-child(1) {
+  width: 30%; /* Date column */
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+  width: 30%; /* Full Name column */
+}
+
+th:nth-child(3),
+td:nth-child(3) {
+  width: 40%; /* Activity column */
+}

@@ -508,6 +508,7 @@ function AdminHome() {
               </div>
             </div>
           )}
+          
           {showUserLogs && (
             <div
               className="userlogs-container"
@@ -525,69 +526,69 @@ function AdminHome() {
               }}
               onClick={() => setShowUserLogs(false)}
             >
-              <div
-                className="userlogs-content"
-                style={{
-                  background: 'white',
-                  padding: '24px',
-                  borderRadius: '8px',
-                  maxWidth: '800px',
-                  width: '90%',
-                  maxHeight: '80vh',
-                  overflowY: 'auto',
-                }}
-                onClick={e => e.stopPropagation()}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h2>User Logs</h2>
-                  <button
-                    onClick={() => setShowUserLogs(false)}
-                    style={{
-                      fontSize: '1.5rem',
-                      fontWeight: 'bold',
-                      cursor: 'pointer',
-                      border: 'none',
-                      background: 'none',
-                    }}
-                  >
-                    ×
-                  </button>
+              <div className="userlogs-container">
+                <div className="userlogs-content" onClick={e => e.stopPropagation()}>
+                  <div className="userLogsHeader">
+                    <h3>User Logs</h3>
+                    <button
+                      className="close-button"
+                      onClick={() => setShowUserLogs(false)}
+                      style={{
+                        fontSize: '30px',
+                        marginRight: '19px',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        border: 'none',
+                        background: 'none',
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                  {logsError && <div style={{ color: 'red', marginBottom: '16px' }}>{logsError}</div>}
+                  {userLogs.length === 0 ? (
+                    <div style={{ padding: '16px', color: '#888' }}>No user logs available.</div>
+                  ) : (
+                    <div className="table-container">
+                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Full Name</th>
+                            <th>Activity</th>
+                          </tr>
+                        </thead>
+                      </table>
+                      <div className="tbody-container">
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                          <tbody>
+                            {userLogs.map(log => (
+                              <tr key={log._id}>
+                                <td>
+                                  {new Date(log.date).toLocaleString('en-US', {
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    second: '2-digit',
+                                  })}
+                                </td>
+                                <td>{log.fullName}</td>
+                                <td>{log.activity}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                {logsError && <div style={{ color: 'red', marginBottom: '16px' }}>{logsError}</div>}
-                {userLogs.length === 0 ? (
-                  <div style={{ padding: '16px', color: '#888' }}>No user logs available.</div>
-                ) : (
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr style={{ background: '#f4f4f4' }}>
-                        <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Date</th>
-                        <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Full Name</th>
-                        <th style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'left' }}>Activity</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {userLogs.map(log => (
-                        <tr key={log._id}>
-                          <td style={{ padding: '8px', border: '1px solid #ddd' }}>
-                            {new Date(log.date).toLocaleString('en-US', {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: '2-digit',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                              second: '2-digit',
-                            })}
-                          </td>
-                          <td style={{ padding: '8px', border: '1px solid #ddd' }}>{log.fullName}</td>
-                          <td style={{ padding: '8px', border: '1px solid #ddd' }}>{log.activity}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
               </div>
             </div>
           )}
+
+
           {openApplicantsIdx !== null && (
             <div className="applicantslistcontainer" onClick={() => setOpenApplicantsIdx(null)}>
               <div
