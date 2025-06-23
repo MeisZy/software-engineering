@@ -60,9 +60,9 @@ const Profile = () => {
 
     try {
       const [profileRes, applicantRes] = await Promise.all([
-        axios.get(`http://localhost:5000/applied-jobs/${encodeURIComponent(userEmail)}`),
-        axios.get(`http://localhost:5000/applicants/${encodeURIComponent(userEmail)}`)
-      ]);
+  axios.get(`http://localhost:5000/applied-jobs/${encodeURIComponent(userEmail)}`),
+  axios.get(`http://localhost:5000/applicants/${encodeURIComponent(userEmail)}`)
+]);
 
       console.log("Profile response:", profileRes.data);
       console.log("Applicant response:", applicantRes.data);

@@ -261,7 +261,7 @@ function AdminHome() {
     <a onClick={handleSetCriteria}>Manage Jobs</a>
     <a onClick={() => setShowMessageForm(true)}>Send Message</a>
   </div>
-  <div className="admin-nav-right">
+    <div className="admin-nav-right">
     <div style={{ position: 'relative', display: 'inline-block' }}>
       <img
         src={Notification}
@@ -270,15 +270,7 @@ function AdminHome() {
         style={{ cursor: 'pointer' }}
         onClick={() => setShowNotifications(!showNotifications)}
       />
-      {notifications.filter(n => !n.isRead).length > 0 && (
-        <span className="notification-count" style={{
-          position: 'absolute',
-          top: '-6px',
-          right: '-6px'
-        }}>
-          {notifications.filter(n => !n.isRead).length}
-        </span>
-      )}
+      {/* Notification counter removed */}
     </div>
     <a className="logout" onClick={handleLogout}>Logout</a>
   </div>
@@ -474,21 +466,7 @@ function AdminHome() {
                             })}
                           </span>
                         </div>
-                        {!notification.isRead && (
-                          <button
-                            onClick={() => handleMarkAsRead(notification._id)}
-                            style={{
-                              background: '#A2E494',
-                              color: '#13714C',
-                              border: 'none',
-                              borderRadius: '4px',
-                              padding: '4px 8px',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            Mark as Read
-                          </button>
-                        )}
+                        {/* Mark as Read button removed */}
                       </li>
                     ))}
                   </ul>
