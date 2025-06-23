@@ -140,6 +140,17 @@ function AdminHome() {
     }
   };
 
+const handleDeleteApplicant = async (applicantId) => {
+  try {
+    await axios.delete(`http://localhost:5000/applicants/${applicantId}`);
+    setApplicants(prevApplicants => prevApplicants.filter(applicant => applicant._id !== applicantId));
+  } catch (error) {
+    console.error('Error deleting applicant:', error);
+    setError('Failed to delete applicant. Please try again.');
+    setTimeout(() => setError(''), 3000);
+  }
+};
+
   const handleLogout = () => navigate('/');
   const handleSetCriteria = () => navigate('/setcriteria');
   const handleFAQs = () => navigate('/questions');
@@ -616,37 +627,40 @@ function AdminHome() {
                 <div className="applicantsgrid">
                   <div className='applicantinstance'>
                     <ul>
-                      {applicants
-                        .filter(applicant => applicant.positionAppliedFor.includes(filteredJobOpenings[openApplicantsIdx]?.title))
-                        .map((applicant, idx) => (
-                          <li key={applicant.email} style={{ marginBottom: "16px", listStyle: "none" }}>
-                            <b>{applicant.fullName}</b>
-                            <a className="viewdetails" onClick={() => setOpenApplicantDetailIdx(idx)}>
-                              View Details
-                            </a>
-                            {openApplicantDetailIdx === idx && (
-                              <div className='applicantdetailwrap'>
-                                <span>Email: {applicant.email}</span>
-                                <span>Mobile: {applicant.mobileNumber}</span>
-                                <span>Jobs Applied For: {applicant.positionAppliedFor.join(', ')}</span>
-                                <span>Birthdate: {new Date(applicant.birthdate).toISOString().split('T')[0]}</span>
-                                <span>Gender: {applicant.gender}</span>
-                                <span>City: {applicant.city}</span>
-                                <span>State/Province: {applicant.stateProvince}</span>
-                                <span>Status: {applicant.status}</span>
-                                <span>Stage: {applicant.applicationStage}</span>
-                                <span>Skills: {applicant.resume.join(', ')}</span>
-                                <button
-                                  style={{ marginTop: "8px", fontSize: "12px", width: "100px" }}
-                                  onClick={() => setOpenApplicantDetailIdx(null)}
-                                  type="button"
-                                >
-                                  Close
-                                </button>
-                              </div>
-                            )}
-                          </li>
-                        ))}
+{applicants
+  .filter(applicant => applicant.positionAppliedFor.includes(filteredJobOpenings[openApplicantsIdx]?.title))
+  .map((applicant, idx) => (
+    <li key={applicant._id} style={{ marginBottom: "16px", listStyle: "none" }}>
+      <b>{applicant.fullName}</b>
+      <a className="viewdetails" onClick={() => setOpenApplicantDetailIdx(idx)}>
+        View Details
+      </a>
+      <button onClick={() => handleDeleteApplicant(applicant._id)} style={{ marginLeft: '8px' }}>
+        Delete
+      </button>
+      {openApplicantDetailIdx === idx && (
+        <div className='applicantdetailwrap'>
+          <span>Email: {applicant.email}</span>
+          <span>Mobile: {applicant.mobileNumber}</span>
+          <span>Jobs Applied For: {applicant.positionAppliedFor.join(', ')}</span>
+          <span>Birthdate: {new Date(applicant.birthdate).toISOString().split('T')[0]}</span>
+          <span>Gender: {applicant.gender}</span>
+          <span>City: {applicant.city}</span>
+          <span>State/Province: {applicant.stateProvince}</span>
+          <span>Status: {applicant.status}</span>
+          <span>Stage: {applicant.applicationStage}</span>
+          <span>Skills: {applicant.resume.join(', ')}</span>
+          <button
+            style={{ marginTop: "8px", fontSize: "12px", width: "100px" }}
+            onClick={() => setOpenApplicantDetailIdx(null)}
+            type="button"
+          >
+            Close
+          </button>
+        </div>
+      )}
+    </li>
+))}
                     </ul>
                   </div>
                 </div>

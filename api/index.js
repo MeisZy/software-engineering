@@ -908,6 +908,24 @@ app.put('/update-applicant-status', async (req, res) => {
 });
 
 // Delete applicant endpoint
+app.delete('/applicants/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid applicant ID' });
+    }
+    const applicant = await JobApplicants.findByIdAndDelete(id);
+    if (!applicant) {
+      return res.status(404).json({ message: 'Applicant not found' });
+    }
+    res.status(200).json({ message: 'Applicant deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting applicant:', error);
+    res.status(500).json({ message: 'Server error while deleting applicant' });
+  }
+});
+
+// Delete applicant endpoint
 app.delete('/delete-applicant', async (req, res) => {
   try {
     const { email } = req.body;
@@ -1042,4 +1060,5 @@ app.get('/applied-jobs/:email', async (req, res) => {
 // Start server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+  console.log(process.env.VITE_OAUTH_CLIENT_ID)
 });
