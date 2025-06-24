@@ -397,36 +397,37 @@ const handleDeleteApplicant = async (applicantId) => {
               {messageStatus}
             </div>
           )}
-          {loading ? (
-            <div style={{ padding: '32px', color: '#888' }}>Loading data...</div>
-          ) : (
-            <div className='jobscontainer'>
-              {filteredJobOpenings.length === 0 ? (
-                <div style={{ padding: '32px', color: '#888' }}>No jobs match your search or filters.</div>
-              ) : (
-                filteredJobOpenings.map((job, idx) => (
-                  <div className='jobscardwrapper' key={job._id}>
-                    <div className="jobcard">
-                      <h2>{job.title}</h2>
-                      <div className='tags'>
-                        <a>{job.workSchedule}</a>
-                        <a>{job.employmentType}</a>
-                        <a>{job.workSetup}</a>
-                      </div>
-                      <div className='joboption'>
-                        <a href="#" onClick={e => { e.preventDefault(); setOpenApplicantsIdx(idx); }}>
-                          View Applicants
-                        </a>
-                        <a href="#" onClick={e => { e.preventDefault(); setOpenDetailIdx(idx); }}>
-                          Details
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
+{loading ? (
+  <div style={{ padding: '32px', color: '#888' }}>Loading data...</div>
+) : (
+  <div className='jobscontainer'>
+    {filteredJobOpenings.length === 0 ? (
+      <div style={{ padding: '32px', color: '#888' }}>No jobs match your search or filters.</div>
+    ) : (
+      filteredJobOpenings.map((job, idx) => (
+        <div className='jobscardwrapper' key={job._id}>
+          <div className="jobcard">
+            <h2>{job.title}</h2>
+            <div className='tags'>
+              <a>{job.workSchedule}</a>
+              <a>{job.employmentType}</a>
+              <a>{job.workSetup}</a>
             </div>
-          )}
+            <div className='joboption'>
+              <a href="#" onClick={e => { e.preventDefault(); setOpenApplicantsIdx(idx); }}>
+                View Applicants
+              </a>
+              <a href="#" onClick={e => { e.preventDefault(); setOpenDetailIdx(idx); }}>
+                Details
+              </a>
+            </div>
+          </div>
+        </div>
+      ))
+    )}
+  </div>
+)}
+
           {showNotifications && (
             <div
               className="notifications-container"
@@ -668,65 +669,73 @@ const handleDeleteApplicant = async (applicantId) => {
             </div>
           )}
           {openDetailIdx !== null && (
-            <div className="jobdetails" onClick={() => setOpenDetailIdx(null)}>
-              <div className="jobdetailsdarkgreen">
-                <div className="jobdetailslightgreen"></div>
-              </div>
-              <div
-                className="jobdetailsblock"
-                onClick={e => e.stopPropagation()}
-                style={{
-                  backgroundImage: `url(${Details})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gridColumn: '1 / span 2' }}>
-                  <h3 style={{ marginBottom: 0 }}>
-                    {filteredJobOpenings[openDetailIdx]?.title || 'Job Title'}
-                  </h3>
-                  <a className='jobdetailsapply' onClick={() => setOpenDetailIdx(null)} aria-label="Close">
-                    ×
-                  </a>
-                </div>
-                <div className="jobdetailsgrid">
-                  <div>
-                    <p><b>Department:</b> {filteredJobOpenings[openDetailIdx]?.department || 'N/A'}</p>
-                    <p><b>Work Schedule:</b> {filteredJobOpenings[openDetailIdx]?.workSchedule}</p>
-                    <p><b>Work Setup:</b> {filteredJobOpenings[openDetailIdx]?.workSetup}</p>
-                    <p><b>Employment Type:</b> {filteredJobOpenings[openDetailIdx]?.employmentType}</p>
-                    <p><b>Description:</b> {filteredJobOpenings[openDetailIdx]?.description.join(', ')}</p>
-                    <p><b>Key Responsibilities:</b></p>
-                    <ul>
-                      {filteredJobOpenings[openDetailIdx]?.keyResponsibilities.map((item, i) => (
-                        <li key={i}>{item}</li>
-                      )) || <li>N/A</li>}
-                    </ul>
-                  </div>
-                  <div>
-                    <p><b>Qualifications:</b></p>
-                    <ul>
-                      {filteredJobOpenings[openDetailIdx]?.qualifications.map((item, i) => (
-                        <li key={i}>{item}</li>
-                      )) || <li>N/A</li>}
-                    </ul>
-                    <p><b>What we Offer:</b></p>
-                    <ul>
-                      {filteredJobOpenings[openDetailIdx]?.whatWeOffer.map((item, i) => (
-                        <li key={i}>{item}</li>
-                      )) || <li>N/A</li>}
-                    </ul>
-                    <button
-                      onClick={() => setOpenDetailIdx(null)}
-                      style={{ marginTop: "32px" }}
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+  <div className="jobdetails" onClick={() => setOpenDetailIdx(null)}>
+    <div className="jobdetailsdarkgreen">
+      <div className="jobdetailslightgreen"></div>
+    </div>
+    <div
+      className="jobdetailsblock"
+      onClick={e => e.stopPropagation()}
+      style={{
+        backgroundImage: `url(${Details})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gridColumn: '1 / span 2' }}>
+        <h3 style={{ marginBottom: 0 }}>
+          {filteredJobOpenings[openDetailIdx]?.title || 'Job Title'}
+        </h3>
+        <a className='jobdetailsapply' onClick={() => setOpenDetailIdx(null)} aria-label="Close">
+          ×
+        </a>
+      </div>
+      <div className="jobdetailsgrid">
+        <div>
+          <p><b>Department:</b> {filteredJobOpenings[openDetailIdx]?.department || 'N/A'}</p>
+          <p><b>Work Schedule:</b> {filteredJobOpenings[openDetailIdx]?.workSchedule}</p>
+          <p><b>Work Setup:</b> {filteredJobOpenings[openDetailIdx]?.workSetup}</p>
+          <p><b>Employment Type:</b> {filteredJobOpenings[openDetailIdx]?.employmentType}</p>
+          <p><b>Description:</b> {filteredJobOpenings[openDetailIdx]?.description.join(', ')}</p>
+          <p><b>Key Responsibilities:</b></p>
+          <ul>
+            {filteredJobOpenings[openDetailIdx]?.keyResponsibilities.map((item, i) => (
+              <li key={i}>{item}</li>
+            )) || <li>N/A</li>}
+          </ul>
+        </div>
+        <div>
+          <p><b>Qualifications:</b></p>
+          <ul>
+            {filteredJobOpenings[openDetailIdx]?.qualifications.map((item, i) => (
+              <li key={i}>{item}</li>
+            )) || <li>N/A</li>}
+          </ul>
+          <p><b>What we Offer:</b></p>
+          <ul>
+            {filteredJobOpenings[openDetailIdx]?.whatWeOffer.map((item, i) => (
+              <li key={i}>{item}</li>
+            )) || <li>N/A</li>}
+          </ul>
+          <p><b>Threshold:</b> {filteredJobOpenings[openDetailIdx]?.threshold || 'N/A'}</p>
+          <p><b>Keywords:</b> {filteredJobOpenings[openDetailIdx]?.keywords.join(', ') || 'N/A'}</p>
+          <p><b>Graded Qualifications:</b></p>
+          <ul>
+            {filteredJobOpenings[openDetailIdx]?.gradedQualifications.map((qual, index) => (
+              <li key={index}>{qual.attribute}: {qual.points}</li>
+            )) || <li>N/A</li>}
+          </ul>
+          <button
+            onClick={() => setOpenDetailIdx(null)}
+            style={{ marginTop: "32px" }}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
           {showMessageForm && (
             <div
               className="messagedetailsdarkgreen"
