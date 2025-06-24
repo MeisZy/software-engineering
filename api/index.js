@@ -648,55 +648,41 @@ app.post('/apply', async (req, res) => {
   try {
     const { email, jobTitle } = req.body;
 
-    if (!email || !jobTitle) {
-      return res.status(400).json({ message: 'Email and job title are required' });
-    }
-
+    // Fetch the applicant details
     const applicant = await Applicants.findOne({ email });
     if (!applicant) {
       return res.status(404).json({ message: 'Applicant not found' });
     }
 
-    if (!applicant.fullName) {
-      return res.status(400).json({ message: 'Applicant fullName is missing' });
-    }
-
+    // Fetch the job details
     const job = await Jobs.findOne({ title: jobTitle });
     if (!job) {
       return res.status(404).json({ message: 'Job not found' });
     }
 
+    // Calculate score based on extracted skills and job requirements
+    const score = applicant.extractedSkills ? calculateScore(applicant.extractedSkills, job) : 0;
+    const status = score >= job.threshold ? 'To Next Interview' : 'Rejected';
+
+    // Check if the applicant has already applied for this job
     let jobApplicant = await JobApplicants.findOne({ email });
     if (jobApplicant && jobApplicant.positionAppliedFor.includes(jobTitle)) {
       return res.status(400).json({ message: 'You have already applied for this job' });
     }
 
-    // Calculate score
-    const score = applicant.extractedSkills ? calculateScore(applicant.extractedSkills, job) : 0;
-    const status = score >= job.threshold ? 'To Next Interview' : 'Rejected';
-
+    // Update or create job application record
     if (jobApplicant) {
       jobApplicant.positionAppliedFor.push(jobTitle);
       jobApplicant.scores = jobApplicant.scores || {};
       jobApplicant.scores[jobTitle] = score;
-      if (!jobApplicant.fullName) {
-        jobApplicant.fullName = applicant.fullName;
-      }
       jobApplicant.status = status;
       await jobApplicant.save();
     } else {
       jobApplicant = new JobApplicants({
         fullName: applicant.fullName,
-        firstName: applicant.firstName || '',
-        middleName: applicant.middleName || '',
-        lastName: applicant.lastName || '',
         email: applicant.email,
         mobileNumber: applicant.mobileNumber.replace(/[^\d]/g, '').slice(-10),
         positionAppliedFor: [jobTitle],
-        birthdate: applicant.birthdate,
-        gender: applicant.gender,
-        city: applicant.city,
-        stateProvince: applicant.stateProvince,
         status,
         scores: { [jobTitle]: score },
         applicationStage: 'None'
@@ -704,30 +690,17 @@ app.post('/apply', async (req, res) => {
       await jobApplicant.save();
     }
 
-    // Send rejection email if below threshold
-    if (status === 'Rejected') {
-      const notification = new Notifications({
-        email,
-        message: `Your application for ${jobTitle} has been rejected due to insufficient qualifications.`,
-      });
-      await notification.save();
-
-      await transporter.sendMail({
-        from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
-        to: email,
-        subject: 'Application Status Update',
-        html: `
-          <h3>Application Status Update</h3>
-          <p>Dear ${applicant.fullName || 'Applicant'},</p>
-          <p>Your application for <strong>${jobTitle}</strong> has been reviewed.</p>
-          <p>Unfortunately, your qualifications do not meet the requirements for this position (Score: ${score}/${job.threshold}).</p>
-          <p>We appreciate your interest and encourage you to apply for other roles.</p>
-          <hr />
-          <p>Best regards,</p>
-          <p>The Collectius Team</p>
-        `,
-      });
-    }
+    // Send email notification to the applicant
+    await transporter.sendMail({
+      from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
+      to: email, // Current applicant's email
+      subject: 'Application Status Update',
+      html: `
+        <h3>Application Status Update</h3>
+        <p>Dear ${applicant.fullName || 'Applicant'},</p>
+        <p>Your application for <strong>${jobTitle}</strong> has been ${status}.</p>
+      `,
+    });
 
     res.status(201).json({ message: 'Application submitted successfully', score, status });
   } catch (error) {
@@ -1060,5 +1033,4 @@ app.get('/applied-jobs/:email', async (req, res) => {
 // Start server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
-  console.log(process.env.VITE_OAUTH_CLIENT_ID)
 });
