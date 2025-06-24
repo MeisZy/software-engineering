@@ -14,13 +14,11 @@ const Profile = () => {
   const navigate = useNavigate();
   const userEmail = state?.email || localStorage.getItem("userEmail");
 
-  // Fetch profile picture from localStorage on component mount
   useEffect(() => {
     const storedPic = localStorage.getItem("profilePic");
     setProfilePic(storedPic || null);
   }, []);
 
-  // Helper function to calculate age
   const getAge = (birthdate) => {
     if (!birthdate) return "N/A";
     const today = new Date();
@@ -33,24 +31,11 @@ const Profile = () => {
     return age;
   };
 
-  // Helper function to determine email display
   const getEmailDisplay = () => {
     if (!userEmail) return "Please log in";
-
-    const hasFirstName = profileData?.firstName?.trim();
-    const hasMiddleName = profileData?.middleName?.trim();
-    const hasLastName = profileData?.lastName?.trim();
-
-    if (!hasFirstName && !hasMiddleName && !hasLastName) {
-      if (userEmail.toLowerCase().endsWith("@gmail.com")) {
-        return userEmail.split("@")[0];
-      }
-    }
-
     return userEmail;
   };
 
-  // Fetch profile and applicant data
   const fetchData = async () => {
     if (!userEmail) {
       console.error("No userEmail found, redirecting to login");
@@ -63,13 +48,6 @@ const Profile = () => {
         axios.get(`http://localhost:5000/applied-jobs/${encodeURIComponent(userEmail)}`),
         axios.get(`http://localhost:5000/applicants/${encodeURIComponent(userEmail)}`)
       ]);
-
-      console.log("Profile response:", profileRes.data);
-      console.log("Applicant response:", applicantRes.data);
-      console.log("Resume data:", applicantRes.data?.resume);
-      console.log("Expected file path:", applicantRes.data?.resume?.filePath ? `http://localhost:5173${applicantRes.data.resume.filePath}` : "No file path");
-      console.log("Extracted skills:", applicantRes.data?.extractedSkills);
-
       setProfileData(profileRes.data || null);
       setApplicantData(applicantRes.data || null);
       setUploadError(null);
@@ -84,31 +62,21 @@ const Profile = () => {
     fetchData();
   }, [userEmail, navigate]);
 
-  // Verify file accessibility
   useEffect(() => {
     if (applicantData?.resume?.filePath) {
       const url = `http://localhost:5173${applicantData.resume.filePath}`;
-      console.log("Verifying file at:", url);
-
       fetch(url, { method: "HEAD" })
         .then((res) => {
-          console.log(`File accessibility check: HTTP ${res.status} ${res.statusText}`);
           setFileAccessible(res.ok);
-          if (!res.ok) {
-            console.error(`File not accessible: HTTP ${res.status} ${res.statusText}`);
-          }
         })
-        .catch((err) => {
-          console.error("File accessibility check failed:", err);
+        .catch(() => {
           setFileAccessible(false);
         });
     } else {
-      console.log("No resume file path, setting fileAccessible to null");
       setFileAccessible(null);
     }
   }, [applicantData?.resume?.filePath]);
 
-  // Handle file upload
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) {
@@ -126,22 +94,15 @@ const Profile = () => {
     formData.append("email", userEmail);
 
     try {
-      const res = await axios.post("http://localhost:5000/upload-resume", formData);
-      console.log("Upload response:", res.data);
-      console.log("Uploaded file path:", res.data.resume?.filePath);
-      console.log("Uploaded original filename:", res.data.resume?.originalFileName);
-
+      await axios.post("http://localhost:5000/upload-resume", formData);
       setUploadError(null);
       await fetchData();
     } catch (err) {
-      console.error("Upload error:", err);
       setUploadError(err.response?.data?.message || "Failed to upload file. Please try again.");
     }
   };
 
-  // Manual refresh data
   const handleRefresh = () => {
-    console.log("Refreshing data for email:", userEmail);
     fetchData();
   };
 
