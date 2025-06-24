@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Profile.css';
+import Navbar from './Navbar.jsx';
 
 function Profile() {
   const [applicantData, setApplicantData] = useState(null);
@@ -71,6 +72,8 @@ function Profile() {
   };
 
   return (
+    <>
+    <Navbar/>
     <div className="profile-page">
       <div className="profile-card">
         <div className="profile-main">
@@ -132,6 +135,7 @@ function Profile() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
