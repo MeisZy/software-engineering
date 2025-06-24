@@ -47,7 +47,6 @@ function SetCriteria() {
   const [keywords, setKeywords] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [gradedQualifications, setGradedQualifications] = useState([{ attribute: '', points: 0 }]);
-  const [threshold, setThreshold] = useState(10); // New state for threshold
   const [jobData, setJobData] = useState({
     title: '',
     department: '',
@@ -188,16 +187,6 @@ function SetCriteria() {
     setGradedQualifications(prev => prev.filter((_, i) => i !== idx));
   };
 
-  const handleThresholdChange = (value) => {
-    const numValue = Number(value);
-    if (numValue >= 0 && numValue <= 15) {
-      setThreshold(numValue);
-      setError('');
-    } else {
-      setError('Threshold must be between 0 and 15');
-    }
-  };
-
   const validateJobData = () => {
     if (!jobData.title) return 'Job title is required';
     if (!jobData.department) return 'Department is required';
@@ -208,10 +197,8 @@ function SetCriteria() {
     if (!keyResponsibilities.some(resp => resp.trim())) return 'At least one key responsibility is required';
     if (!qualifications.some(qual => qual.trim())) return 'At least one qualification is required';
     if (!offers.some(offer => offer.trim())) return 'At least one offer is required';
-    if (!keywords || keywords.length === 0) return 'At least one keyword is required';
     const totalScore = gradedQualifications.reduce((sum, qual) => sum + (qual.points || 0), 0);
     if (totalScore > 20) return 'Total graded qualifications score cannot exceed 20 points';
-    if (threshold < 0 || threshold > 15) return 'Threshold must be between 0 and 15';
     return '';
   };
 
@@ -240,7 +227,6 @@ function SetCriteria() {
         whatWeOffer: offers.filter(Boolean).map(item => item.trim()),
         keywords: keywords,
         gradedQualifications: gradedQualifications.filter(qual => qual.attribute && qual.points > 0),
-        threshold: threshold, // Include threshold in payload
       });
 
       alert('Job created successfully!');
@@ -260,7 +246,6 @@ function SetCriteria() {
       setKeywords([]);
       setInputValue('');
       setGradedQualifications([{ attribute: '', points: 0 }]);
-      setThreshold(10); // Reset threshold
       setError('');
       fetchJobs();
     } catch (error) {
@@ -268,17 +253,6 @@ function SetCriteria() {
       setError(error.response?.data?.message || 'Failed to create job. Please try again.');
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handleRemoveJob = async (jobId) => {
-    try {
-      await axios.delete(`http://localhost:5000/jobs/${jobId}`);
-      setJobs(prev => prev.filter(job => job._id !== jobId));
-      alert('Job deleted successfully!');
-    } catch (error) {
-      console.error('Error deleting job:', error);
-      setJobsError(error.response?.data?.message || 'Failed to delete job. Please try again.');
     }
   };
 
@@ -618,19 +592,6 @@ function SetCriteria() {
                     <div className='addbuttonwrap'>
                       <a onClick={handleAddGradedQualification}>+</a>
                     </div>
-                  </div>
-                  <div className="threshold-input">
-                    <h2 style={{ fontSize: '24px', color: 'white', marginBottom: '16px' }}>Score Threshold</h2>
-                    <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>Minimum score to pass (0–15)</label>
-                    <input
-                      type="number"
-                      value={threshold}
-                      onChange={(e) => handleThresholdChange(e.target.value)}
-                      min="0"
-                      max="15"
-                      placeholder="Enter threshold"
-                      style={{ width: '100px', height: '32px', fontSize: '16px', border: '2px solid black', borderRadius: '6px', textAlign: 'center', marginTop: '8px' }}
-                    />
                   </div>
                 </div>
               )}

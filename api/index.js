@@ -113,27 +113,20 @@ const calculateScore = (extractedSkills, job) => {
   let qualificationScore = 0;
 
   // Keyword matching (10 points max)
-  if (job.keywords && Array.isArray(job.keywords) && job.keywords.length > 0) {
-    const matchedKeywords = job.keywords.filter(keyword => 
-      extractedSkills.some(skill => skill.toLowerCase().includes(keyword.toLowerCase()))
-    );
-    keywordScore = (matchedKeywords.length / job.keywords.length) * 10;
-  } else {
-    keywordScore = 0;
-  }
+  const matchedKeywords = job.keywords.filter(keyword => 
+    extractedSkills.some(skill => skill.toLowerCase().includes(keyword.toLowerCase()))
+  );
+  keywordScore = (matchedKeywords.length / job.keywords.length) * 10;
 
   // Graded qualifications (20 points max)
-  if (job.gradedQualifications && Array.isArray(job.gradedQualifications) && job.gradedQualifications.length > 0) {
-    job.gradedQualifications.forEach(qual => {
-      if (extractedSkills.some(skill => skill.toLowerCase().includes(qual.attribute.toLowerCase()))) {
-        qualificationScore += qual.points || 0;
-      }
-    });
-  }
+  job.gradedQualifications.forEach(qual => {
+    if (extractedSkills.some(skill => skill.toLowerCase().includes(qual.attribute.toLowerCase()))) {
+      qualificationScore += qual.points;
+    }
+  });
 
-  // Average score
-  const finalScore = Number(((keywordScore + qualificationScore) / 2).toFixed(2));
-  return isNaN(finalScore) ? 0 : finalScore;
+  // Average score (keywords only, as years of experience not implemented)
+  return Number(((keywordScore + qualificationScore) / 2).toFixed(2));
 };
 
 // Status endpoint
@@ -230,6 +223,8 @@ app.post('/login', async (req, res) => {
 app.post('/google-login', async (req, res) => {
   try {
     const { email, fullName, picture } = req.body;
+
+    console.log('Google login request:', { email, fullName, picture });
 
     if (!email || !fullName) {
       return res.status(400).json({ message: 'Email and full name are required' });
@@ -579,16 +574,9 @@ app.post('/jobs', async (req, res) => {
       qualifications.length === 0 ||
       !whatWeOffer ||
       !Array.isArray(whatWeOffer) ||
-      whatWeOffer.length === 0 ||
-      !keywords ||
-      !Array.isArray(keywords) ||
-      keywords.length === 0
+      whatWeOffer.length === 0
     ) {
-      return res.status(400).json({ message: 'All fields are required, including at least one keyword' });
-    }
-
-    if (!Array.isArray(gradedQualifications)) {
-      return res.status(400).json({ message: 'Graded qualifications must be an array' });
+      return res.status(400).json({ message: 'All fields are required and must be valid arrays where applicable' });
     }
 
     const totalGradedScore = gradedQualifications.reduce((sum, qual) => sum + (qual.points || 0), 0);
@@ -596,8 +584,8 @@ app.post('/jobs', async (req, res) => {
       return res.status(400).json({ message: 'Total graded qualifications score cannot exceed 20 points' });
     }
 
-    if (typeof threshold !== 'number' || threshold < 0 || threshold > 15) {
-      return res.status(400).json({ message: 'Threshold must be a number between 0 and 15' });
+    if (threshold < 0 || threshold > 15) {
+      return res.status(400).json({ message: 'Threshold must be between 0 and 15' });
     }
 
     const newJob = new Jobs({
@@ -610,7 +598,7 @@ app.post('/jobs', async (req, res) => {
       keyResponsibilities,
       qualifications,
       whatWeOffer,
-      keywords,
+      keywords: keywords || [],
       gradedQualifications: gradedQualifications || [],
       threshold: threshold || 10,
     });
@@ -684,13 +672,13 @@ app.post('/apply', async (req, res) => {
     }
 
     // Calculate score
-    const score = applicant.extractedSkills && Array.isArray(applicant.extractedSkills) ? calculateScore(applicant.extractedSkills, job) : 0;
-    const status = score >= (job.threshold || 10) ? 'To Next Interview' : 'Rejected';
+    const score = applicant.extractedSkills ? calculateScore(applicant.extractedSkills, job) : 0;
+    const status = score >= job.threshold ? 'To Next Interview' : 'Rejected';
 
     if (jobApplicant) {
       jobApplicant.positionAppliedFor.push(jobTitle);
-      jobApplicant.scores = jobApplicant.scores || new Map();
-      jobApplicant.scores.set(jobTitle, score);
+      jobApplicant.scores = jobApplicant.scores || {};
+      jobApplicant.scores[jobTitle] = score;
       if (!jobApplicant.fullName) {
         jobApplicant.fullName = applicant.fullName;
       }
@@ -703,14 +691,14 @@ app.post('/apply', async (req, res) => {
         middleName: applicant.middleName || '',
         lastName: applicant.lastName || '',
         email: applicant.email,
-        mobileNumber: applicant.mobileNumber ? applicant.mobileNumber.replace(/[^\d]/g, '').slice(-10) : '0000000000',
+        mobileNumber: applicant.mobileNumber.replace(/[^\d]/g, '').slice(-10),
         positionAppliedFor: [jobTitle],
-        birthdate: applicant.birthdate || new Date('1970-01-01'),
-        gender: applicant.gender || 'F',
-        city: applicant.city || 'Unknown',
-        stateProvince: applicant.stateProvince || 'Unknown',
+        birthdate: applicant.birthdate,
+        gender: applicant.gender,
+        city: applicant.city,
+        stateProvince: applicant.stateProvince,
         status,
-        scores: new Map([[jobTitle, score]]),
+        scores: { [jobTitle]: score },
         applicationStage: 'None'
       });
       await jobApplicant.save();
@@ -732,7 +720,7 @@ app.post('/apply', async (req, res) => {
           <h3>Application Status Update</h3>
           <p>Dear ${applicant.fullName || 'Applicant'},</p>
           <p>Your application for <strong>${jobTitle}</strong> has been reviewed.</p>
-          <p>Unfortunately, your qualifications do not meet the requirements for this position (Score: ${score.toFixed(2)}/Threshold: ${job.threshold || 10}).</p>
+          <p>Unfortunately, your qualifications do not meet the requirements for this position (Score: ${score}/${job.threshold}).</p>
           <p>We appreciate your interest and encourage you to apply for other roles.</p>
           <hr />
           <p>Best regards,</p>
@@ -740,13 +728,6 @@ app.post('/apply', async (req, res) => {
         `,
       });
     }
-
-    // Create notification for admin
-    const adminNotification = new Notifications({
-      email: process.env.NODEMAILER_ADMIN,
-      message: `New application from ${applicant.fullName} for ${jobTitle} (Score: ${score.toFixed(2)}/Threshold: ${job.threshold || 10}, Status: ${status})`,
-    });
-    await adminNotification.save();
 
     res.status(201).json({ message: 'Application submitted successfully', score, status });
   } catch (error) {
@@ -765,7 +746,6 @@ app.post('/apply', async (req, res) => {
 app.get('/applicants', async (req, res) => {
   try {
     const applicants = await JobApplicants.find();
-    console.log(`Retrieved ${applicants.length} applicants`);
     res.status(200).json(applicants);
   } catch (err) {
     console.error('Error fetching applicants:', err);
@@ -860,13 +840,6 @@ app.post('/upload-resume', upload.single('resume'), async (req, res) => {
     applicant.extractedSkills = extractedSkills;
     await applicant.save();
 
-    // Notify admin of resume update
-    const adminNotification = new Notifications({
-      email: process.env.NODEMAILER_ADMIN,
-      message: `Resume updated for ${applicant.fullName} (${email})`,
-    });
-    await adminNotification.save();
-
     res.status(200).json({ message: 'Resume uploaded successfully', resume: applicant.resume });
   } catch (err) {
     console.error('Error uploading resume:', err);
@@ -934,7 +907,7 @@ app.put('/update-applicant-status', async (req, res) => {
   }
 });
 
-// Delete applicant endpoint (by ID)
+// Delete applicant endpoint
 app.delete('/applicants/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -952,7 +925,7 @@ app.delete('/applicants/:id', async (req, res) => {
   }
 });
 
-// Delete applicant endpoint (by email)
+// Delete applicant endpoint
 app.delete('/delete-applicant', async (req, res) => {
   try {
     const { email } = req.body;
@@ -999,16 +972,93 @@ app.put('/notifications/:id/read', async (req, res) => {
     if (!notification) {
       return res.status(404).json({ message: 'Notification not found' });
     }
-    notification.read = true;
+    notification.isRead = true;
     await notification.save();
-    res.status(200).json({ message: 'Notification marked as read', notification });
+    res.status(200).json({ message: 'Notification marked as read' });
   } catch (err) {
     console.error('Error marking notification as read:', err);
     res.status(500).json({ message: err.message });
   }
 });
 
+// Fix applicant status and fullName endpoint
+app.get('/fix-applicant-status', async (req, res) => {
+  try {
+    const applicants = await JobApplicants.find();
+    let updatedCount = 0;
+
+    for (const jobApplicant of applicants) {
+      let needsUpdate = false;
+
+      if (jobApplicant.status !== 'To Next Interview' && jobApplicant.status !== 'Rejected') {
+        jobApplicant.status = 'To Next Interview';
+        needsUpdate = true;
+      }
+
+      if (!jobApplicant.fullName) {
+        const applicant = await Applicants.findOne({ email: jobApplicant.email });
+        jobApplicant.fullName = applicant ? applicant.fullName : 'Unknown Applicant';
+        needsUpdate = true;
+      }
+
+      if (needsUpdate) {
+        await jobApplicant.save();
+        updatedCount++;
+      }
+    }
+
+    res.status(200).json({
+      message: `Updated ${updatedCount} applicant documents`,
+      totalProcessed: applicants.length,
+    });
+  } catch (error) {
+    console.error('Error fixing applicant status:', error);
+    res.status(500).json({ message: 'Failed to update status', error: error.message });
+  }
+});
+
+// Fetch applied jobs endpoint
+app.get('/applied-jobs/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    const jobApplicant = await JobApplicants.findOne({ email });
+    if (!jobApplicant) {
+      return res.status(200).json(null);
+    }
+    const appliedJobs = await Promise.all(
+      jobApplicant.positionAppliedFor.map(async (jobTitle) => {
+        const job = await Jobs.findOne({ title: jobTitle });
+        return job || { title: jobTitle, department: 'Unknown', workSchedule: 'Unknown', workSetup: 'Unknown', employmentType: 'Unknown' };
+      })
+    );
+    const response = {
+      fullName: jobApplicant.fullName,
+      firstName: jobApplicant.firstName,
+      middleName: jobApplicant.middleName,
+      lastName: jobApplicant.lastName,
+      email: jobApplicant.email,
+      mobileNumber: jobApplicant.mobileNumber,
+      birthdate: jobApplicant.birthdate,
+      gender: jobApplicant.gender,
+      city: jobApplicant.city,
+      stateProvince: jobApplicant.stateProvince,
+      status: jobApplicant.status,
+      positionAppliedFor: jobApplicant.positionAppliedFor,
+      scores: jobApplicant.scores,
+      appliedJobs,
+    };
+    res.status(200).json(response);
+  } catch (err) {
+    console.error('Error fetching applied jobs:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Start server
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server running on port ${port}`);
+  console.log(process.env.VITE_OAUTH_CLIENT_ID)
 });
