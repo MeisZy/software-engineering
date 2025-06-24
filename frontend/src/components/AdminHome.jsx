@@ -745,7 +745,7 @@ const handleDeleteApplicant = async (applicantId) => {
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
                 width: '600px',
-                height: '400px',
+                height: '401px',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
