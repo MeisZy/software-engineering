@@ -344,29 +344,25 @@ function SetCriteria() {
         <div className="criteria">
           <a onClick={() => setShowAddJob(true)}>Add Job</a>
           <a style={{ cursor: jobs.length ? 'pointer' : 'not-allowed' }} onClick={() => jobs.length && alert('Select a job to remove from the list below.')}>Remove Job</a>
-        </div>
-        <div className='jobslists'>
-          <div className='joblist'>
-            <div className='jobtitle'>Job Title</div>
-            <div className='jobdescription'>Department</div>
-            <div className='jobrequirements'>Employment Type</div>
-            <div className='jobactions'>Actions</div>
-          </div>
-          {jobsError && <div style={{ color: 'red', padding: '16px' }}>{jobsError}</div>}
-          {jobs.length === 0 ? (
-            <div style={{ padding: '16px', color: '#888' }}>No jobs available.</div>
-          ) : (
-            jobs.map(job => (
-              <div className='joblist' key={job._id}>
-                <div className='jobtitle'>{job.title}</div>
-                <div className='jobdescription'>{job.department}</div>
-                <div className='jobrequirements'>{job.employmentType}</div>
-                <div className='jobactions'>
-                  <a href="#" onClick={(e) => { e.preventDefault(); handleRemoveJob(job._id); }}>Delete</a>
+        </div>          
+        <div className='jobswrapper'>
+            {jobsError && <div style={{ color: 'red', padding: '16px' }}>{jobsError}</div>}
+            {jobs.length === 0 ? (
+              <div style={{ padding: '16px', color: '#888' }}>No jobs available.</div>
+            ) : (
+              jobs.map(job => (
+              <div className='jobinstancedarkgreen'>                
+                <div className='jobinstance' key={job._id}>
+                  <div className='jobtitle'><a>{job.title}</a></div>
+                  <div className='jobdescription'>{job.department}</div>
+                  <div className='jobrequirements'>{job.employmentType}</div>
                 </div>
+                  <div className='jobactions'>
+                    <a href="#" onClick={(e) => { e.preventDefault(); handleRemoveJob(job._id); }}>Delete</a>
+                  </div>
               </div>
-            ))
-          )}
+              ))
+            )}
         </div>
       </div>
       {showAddJob && (
