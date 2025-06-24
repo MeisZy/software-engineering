@@ -84,24 +84,32 @@ const Profile = () => {
     fetchData();
   }, [userEmail, navigate]);
 
-  // Verify file accessibility
+  // Verify file accessibility with retry
+  const checkFileAccessibility = async (url, retries = 3, delay = 1000) => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const res = await fetch(url, { method: "HEAD" });
+        console.log(`File accessibility check (attempt ${i + 1}): HTTP ${res.status} ${res.statusText}`);
+        if (res.ok) {
+          setFileAccessible(true);
+          return;
+        }
+      } catch (err) {
+        console.error(`File accessibility check (attempt ${i + 1}) failed:`, err);
+      }
+      if (i < retries - 1) {
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+    console.error("File not accessible after retries");
+    setFileAccessible(false);
+  };
+
   useEffect(() => {
     if (applicantData?.resume?.filePath) {
       const url = `http://localhost:5173${applicantData.resume.filePath}`;
       console.log("Verifying file at:", url);
-
-      fetch(url, { method: "HEAD" })
-        .then((res) => {
-          console.log(`File accessibility check: HTTP ${res.status} ${res.statusText}`);
-          setFileAccessible(res.ok);
-          if (!res.ok) {
-            console.error(`File not accessible: HTTP ${res.status} ${res.statusText}`);
-          }
-        })
-        .catch((err) => {
-          console.error("File accessibility check failed:", err);
-          setFileAccessible(false);
-        });
+      setTimeout(() => checkFileAccessibility(url), 500); // Delay to ensure file is available
     } else {
       console.log("No resume file path, setting fileAccessible to null");
       setFileAccessible(null);

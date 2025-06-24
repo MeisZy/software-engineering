@@ -1,114 +1,146 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './UserManagement.css';
 import axios from 'axios';
+import './UserManagement.css';
+import Placeholder from './images/pfp_placeholder.png';
 
-function UserManagement() {
+const UserManagement = () => {
+  const navigate = useNavigate();
+  const [userName, setUserName] = useState('');
+  const [profilePic, setProfilePic] = useState('');
   const [applicants, setApplicants] = useState([]);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchApplicants = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/applicants');
-        setApplicants(response.data);
-      } catch (err) {
-        console.error('Error fetching applicants:', err);
-        setError('Failed to load applicants.');
-      }
-    };
+    const storedUser = localStorage.getItem('userName');
+    const storedPic = localStorage.getItem('profilePic');
+    if (storedUser) {
+      setUserName(storedUser);
+      setProfilePic(storedPic || Placeholder);
+    } else {
+      navigate('/');
+    }
+  }, [navigate]);
+
+  const fetchApplicants = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const response = await axios.get('http://localhost:5000/applicants');
+      console.log('Applicants fetched:', response.data);
+      setApplicants(response.data || []);
+    } catch (err) {
+      console.error('Error fetching applicants:', err);
+      setError('Failed to load applicants. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchApplicants();
   }, []);
 
-  const handleStatusChange = async (email, newStatus) => {
+  const handleStatusChange = async (email, status) => {
     try {
-      const response = await axios.put('http://localhost:5000/update-applicant-status', {
-        email,
-        status: newStatus,
-      });
-      setApplicants((prev) =>
-        prev.map((applicant) =>
-          applicant.email === email ? { ...applicant, status: newStatus } : applicant
+      const response = await axios.put('http://localhost:5000/update-applicant-status', { email, status });
+      console.log('Status updated:', response.data);
+      setApplicants(prev =>
+        prev.map(applicant =>
+          applicant.email === email ? { ...applicant, status } : applicant
         )
       );
-      setError('');
     } catch (err) {
       console.error('Error updating status:', err);
-      setError(err.response?.data?.message || 'Failed to update applicant status.');
+      setError('Failed to update status. Please try again.');
     }
   };
 
-  const handleDelete = async (email) => {
+  const handleDeleteApplicant = async (id) => {
     try {
-      await axios.delete('http://localhost:5000/delete-applicant', {
-        data: { email },
-      });
-      setApplicants((prev) => prev.filter((applicant) => applicant.email !== email));
-      setError('');
+      await axios.delete(`http://localhost:5000/applicants/${id}`);
+      console.log(`Applicant ${id} deleted`);
+      setApplicants(prev => prev.filter(applicant => applicant._id !== id));
     } catch (err) {
       console.error('Error deleting applicant:', err);
-      setError('Failed to delete applicant.');
+      setError('Failed to delete applicant. Please try again.');
     }
   };
 
-  const handleBack = () => {
-    navigate('/adminmaintainance');
-  };
-
-  const handleDownloadAll = () => {
-    const jsonData = JSON.stringify(applicants, null, 2);
-    const blob = new Blob([jsonData], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'all_applicants.json';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+  const handleReturn = () => {
+    navigate('/adminhome');
   };
 
   return (
     <>
-      <nav>
-        <h1>Collectius</h1>
-      </nav>
-      <div className="usermanagementcomponents">
-        <div className="usermanagementleftcomp">
-          <li onClick={handleBack}>Back to Admin Maintenance</li>
+      <nav style={{
+        fontSize: '24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 32px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <img src={profilePic} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
+          <a>Manage Applicants</a>
         </div>
-        <div className="usermanagementrightcomp">
-          <div className="managementcontainer">
-            <div className="managementheader">
-              <a onClick={handleDownloadAll} style={{ cursor: 'pointer', color: '#13714C', textDecoration: 'none', fontWeight: '600' }}>
-                Download All Applicants
-              </a>
+        <a onClick={handleReturn} style={{ cursor: 'pointer' }}>Back</a>
+      </nav>
+      <div className="user-management">
+        <h2>Applicants</h2>
+        {error && <div style={{ color: 'red', padding: '16px' }}>{error}</div>}
+        {loading ? (
+          <div>Loading applicants...</div>
+        ) : applicants.length === 0 ? (
+          <div style={{ padding: '16px', color: '#888' }}>No applicants found.</div>
+        ) : (
+          <div className="applicant-list">
+            <div className="applicant-header">
+              <div>Name</div>
+              <div>Email</div>
+              <div>Position</div>
+              <div>Score</div>
+              <div>Status</div>
+              <div>Actions</div>
             </div>
-            {error && <div style={{ color: 'red', padding: '16px' }}>{error}</div>}
-            {applicants.length === 0 && !error && (
-              <div style={{ padding: '16px', color: '#888' }}>No applicants available.</div>
-            )}
-            {applicants.map((applicant) => (
-              <ul className="managementinstance" key={applicant._id}>
-                <label>{applicant.email}</label>
-                <p>Positions Applied: {applicant.positionAppliedFor.join(', ')}</p>
-                <p>Scores: {Object.entries(applicant.scores || {}).map(([job, score]) => `${job}: ${score}`).join(', ')}</p>
-                <select
-                  value={applicant.status}
-                  onChange={(e) => handleStatusChange(applicant.email, e.target.value)}
-                >
-                  <option value="To Next Interview">To Next Interview</option>
-                  <option value="Rejected">Rejected</option>
-                </select>
-                <a onClick={() => handleDelete(applicant.email)}>Delete</a>
-              </ul>
+            {applicants.map(applicant => (
+              <div className="applicant-row" key={applicant._id}>
+                <div>{applicant.fullName || 'N/A'}</div>
+                <div>{applicant.email}</div>
+                <div>{applicant.positionAppliedFor.join(', ') || 'N/A'}</div>
+                <div>
+                  {applicant.scores
+                    ? Array.from(applicant.scores.entries()).map(([job, score]) => `${job}: ${score}`).join(', ')
+                    : 'N/A'}
+                </div>
+                <div>
+                  <select
+                    value={applicant.status || 'To Next Interview'}
+                    onChange={(e) => handleStatusChange(applicant.email, e.target.value)}
+                  >
+                    <option value="To Next Interview">To Next Interview</option>
+                    <option value="Rejected">Rejected</option>
+                  </select>
+                </div>
+                <div>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleDeleteApplicant(applicant._id);
+                    }}
+                  >
+                    Delete
+                  </a>
+                </div>
+              </div>
             ))}
           </div>
-        </div>
+        )}
       </div>
     </>
   );
-}
+};
 
 export default UserManagement;
