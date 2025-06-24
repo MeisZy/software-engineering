@@ -65,6 +65,7 @@ function SetCriteria() {
     try {
       const response = await axios.get('http://localhost:5000/jobs');
       setJobs(response.data);
+      setJobsError('');
     } catch (err) {
       console.error('Error fetching jobs:', err);
       setJobsError('Failed to load jobs.');
@@ -82,6 +83,18 @@ function SetCriteria() {
       navigate('/');
     }
   }, [navigate]);
+
+  const handleRemoveJob = async (jobId) => {
+    try {
+      const response = await axios.delete(`http://localhost:5000/jobs/${jobId}`);
+      setJobs(prevJobs => prevJobs.filter(job => job._id !== jobId));
+      setJobsError('');
+      alert(response.data.message || 'Job deleted successfully');
+    } catch (err) {
+      console.error('Error deleting job:', err);
+      setJobsError(err.response?.data?.message || 'Failed to delete job.');
+    }
+  };
 
   const handleKeyDown = useCallback(
     (e) => {
