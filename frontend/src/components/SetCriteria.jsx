@@ -1,111 +1,169 @@
-import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useCallback } from 'react';
+import axios from 'axios';
+import Placeholder from '../components/images/pfp_placeholder.png';
 import Select from 'react-select';
 import './SetCriteria.css';
-import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
 
-const SetCriteria = () => {
+function SetCriteria() {
+  const workingSchedule = [
+    { label: 'Full Time', id: 'fulltime' },
+    { label: 'Part Time', id: 'parttime' },
+    { label: 'Internship / On-the-Job Training', id: 'internship' },
+  ];
+  const employmentType = [
+    { label: 'Full Day', id: 'fullday' },
+    { label: 'Rotational', id: 'rotational' },
+    { label: 'Shift Work', id: 'shiftwork' },
+    { label: 'Distance Work', id: 'distancework' },
+  ];
+  const workSetup = [
+    { label: 'Work From Home', id: 'workfromhome' },
+    { label: 'On - Site', id: 'onsite' },
+    { label: 'Hybrid', id: 'hybrid' },
+  ];
+
+  const workingScheduleOptions = workingSchedule.map(option => ({
+    value: option.id,
+    label: option.label,
+  }));
+  const employmentTypeOptions = employmentType.map(option => ({
+    value: option.id,
+    label: option.label,
+  }));
+  const workSetupOptions = workSetup.map(option => ({
+    value: option.id,
+    label: option.label,
+  }));
+
+  const navigate = useNavigate();
+  const [userName, setUserName] = useState('');
+  const [profilePic, setProfilePic] = useState('');
   const [showAddJob, setShowAddJob] = useState(false);
   const [criteriaPage, setCriteriaPage] = useState(1);
+  const [keyResponsibilities, setKeyResponsibilities] = useState(['']);
+  const [qualifications, setQualifications] = useState(['']);
+  const [offers, setOffers] = useState(['']);
+  const [keywords, setKeywords] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+  const [gradedQualifications, setGradedQualifications] = useState([{ attribute: '', points: 0 }]);
   const [jobData, setJobData] = useState({
     title: '',
     department: '',
+    employmentType: '',
     workSchedule: '',
     workSetup: '',
-    employmentType: '',
-    description: [''],
+    description: '',
   });
-  const [keyResponsibilities, setKeyResponsibilities] = useState(['']);
-  const [qualifications, setQualifications] = useState(['']);
-  const [whatWeOffer, setWhatWeOffer] = useState(['']);
-  const [inputValue, setInputValue] = useState('');
-  const [keywords, setKeywords] = useState([]);
-  const [gradedQualifications, setGradedQualifications] = useState([{ attribute: '', points: 0 }]);
-  const [threshold, setThreshold] = useState(10);
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [jobs, setJobs] = useState([]);
+  const [jobsError, setJobsError] = useState('');
 
-  const departmentOptions = [
-    { value: 'IT', label: 'IT' },
-    { value: 'HR', label: 'HR' },
-    { value: 'Finance', label: 'Finance' },
-    { value: 'Marketing', label: 'Marketing' },
-    { value: 'Operations', label: 'Operations' },
-  ];
-
-  const workScheduleOptions = [
-    { value: 'Full-time', label: 'Full-time' },
-    { value: 'Part-time', label: 'Part-time' },
-    { value: 'Contract', label: 'Contract' },
-  ];
-
-  const workSetupOptions = [
-    { value: 'On-site', label: 'On-site' },
-    { value: 'Hybrid', label: 'Hybrid' },
-    { value: 'Remote', label: 'Remote' },
-  ];
-
-  const employmentTypeOptions = [
-    { value: 'Permanent', label: 'Permanent' },
-    { value: 'Temporary', label: 'Temporary' },
-    { value: 'Freelance', label: 'Freelance' },
-  ];
+  const fetchJobs = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/jobs');
+      setJobs(response.data);
+    } catch (err) {
+      console.error('Error fetching jobs:', err);
+      setJobsError('Failed to load jobs.');
+    }
+  };
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/jobs');
-        setJobs(response.data);
-      } catch (err) {
-        console.error('Error fetching jobs:', err);
-        setError('Failed to load jobs.');
-      }
-    };
     fetchJobs();
-  }, []);
+    const storedUser = localStorage.getItem('userName');
+    const storedPic = localStorage.getItem('profilePic');
+    if (storedUser) {
+      setUserName(storedUser);
+      setProfilePic(storedPic);
+    } else {
+      navigate('/');
+    }
+  }, [navigate]);
 
-  const handleInputChange = (e, field) => {
-    setJobData({ ...jobData, [field]: e.target.value });
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (!showAddJob) return;
+      if (e.key === 'ArrowLeft') {
+        handlePrevPage();
+      } else if (e.key === 'ArrowRight') {
+        handleNextPage();
+      }
+    },
+    [showAddJob]
+  );
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
+  const handleReturn = () => {
+    navigate('/adminhome');
   };
 
-  const handleSelectChange = (selectedOption, field) => {
-    setJobData({ ...jobData, [field]: selectedOption ? selectedOption.value : '' });
+  const handlePrevPage = () => {
+    setCriteriaPage(prev => (prev - 1 < 1 ? 6 : prev - 1));
+    setError('');
   };
 
-  const handleAddItem = (setItems, items) => {
-    setItems([...items, '']);
+  const handleNextPage = () => {
+    setCriteriaPage(prev => (prev + 1 > 6 ? 1 : prev + 1));
+    setError('');
   };
 
-  const handleItemChange = (index, value, setItems, items) => {
-    const newItems = [...items];
-    newItems[index] = value;
-    setItems(newItems);
+  const handleAddResponsibility = () => {
+    setKeyResponsibilities(prev => ['', ...prev]);
   };
 
-  const handleRemoveItem = (index, setItems, items) => {
-    setItems(items.filter((_, i) => i !== index));
+  const handleAddQualifications = () => {
+    setQualifications(prev => ['', ...prev]);
   };
 
-  const handleAddGradedQualification = () => {
-    setGradedQualifications([...gradedQualifications, { attribute: '', points: 0 }]);
+  const handleAddOffer = () => {
+    setOffers(prev => ['', ...prev]);
   };
 
-  const handleGradedQualificationChange = (index, field, value) => {
-    const newQuals = [...gradedQualifications];
-    newQuals[index][field] = field === 'points' ? Math.min(20, Math.max(0, Number(value))) : value;
-    setGradedQualifications(newQuals);
+  const handleRemoveOffer = () => {
+    setOffers(prev => prev.slice(0, -1));
   };
 
-  const handleRemoveGradedQualification = (index) => {
-    setGradedQualifications(gradedQualifications.filter((_, i) => i !== index));
+  const handleResponsibilityChange = (idx, value) => {
+    setKeyResponsibilities(prev => {
+      const updated = [...prev];
+      updated[idx] = value;
+      return updated;
+    });
+  };
+
+  const handleQualificationChange = (idx, value) => {
+    setQualifications(prev => {
+      const updated = [...prev];
+      updated[idx] = value;
+      return updated;
+    });
+  };
+
+  const handleOfferChange = (idx, value) => {
+    setOffers(prev => {
+      const updated = [...prev];
+      updated[idx] = value;
+      return updated;
+    });
+  };
+
+  const handleInputChange = (field, value) => {
+    setJobData(prev => ({ ...prev, [field]: value }));
+    setError('');
   };
 
   const handleKeywordsKeyDown = (e) => {
     if (e.key === ' ' || e.key === ',') {
       e.preventDefault();
-      const trimmedValue = inputValue.trim();
-      if (trimmedValue && !keywords.includes(trimmedValue)) {
-        setKeywords([...keywords, trimmedValue]);
+      const newWord = inputValue.trim();
+      if (newWord && !keywords.includes(newWord)) {
+        setKeywords([...keywords, newWord]);
         setInputValue('');
       }
     }
@@ -115,382 +173,454 @@ const SetCriteria = () => {
     setKeywords(keywords.filter(word => word !== wordToRemove));
   };
 
+  const handleGradedQualificationChange = (idx, field, value) => {
+    const updatedQualifications = [...gradedQualifications];
+    updatedQualifications[idx] = { ...updatedQualifications[idx], [field]: value };
+    setGradedQualifications(updatedQualifications);
+  };
+
+  const handleAddGradedQualification = () => {
+    setGradedQualifications(prev => [...prev, { attribute: '', points: 0 }]);
+  };
+
+  const handleRemoveGradedQualification = (idx) => {
+    setGradedQualifications(prev => prev.filter((_, i) => i !== idx));
+  };
+
   const validateJobData = () => {
-    if (!jobData.title || !jobData.department || !jobData.workSchedule || !jobData.workSetup || !jobData.employmentType) {
-      setError('All fields are required.');
-      return false;
-    }
-    if (jobData.description.some(item => !item.trim()) || jobData.description.length === 0) {
-      setError('Description cannot be empty.');
-      return false;
-    }
-    if (keyResponsibilities.some(item => !item.trim()) || keyResponsibilities.length === 0) {
-      setError('Key responsibilities cannot be empty.');
-      return false;
-    }
-    if (qualifications.some(item => !item.trim()) || qualifications.length === 0) {
-      setError('Qualifications cannot be empty.');
-      return false;
-    }
-    if (whatWeOffer.some(item => !item.trim()) || whatWeOffer.length === 0) {
-      setError('What we offer cannot be empty.');
-      return false;
-    }
-    const totalPoints = gradedQualifications.reduce((sum, qual) => sum + (qual.points || 0), 0);
-    if (totalPoints > 20) {
-      setError('Total graded qualifications points cannot exceed 20.');
-      return false;
-    }
-    if (threshold < 0 || threshold > 15) {
-      setError('Threshold must be between 0 and 15.');
-      return false;
-    }
-    setError('');
-    return true;
+    if (!jobData.title) return 'Job title is required';
+    if (!jobData.department) return 'Department is required';
+    if (!jobData.workSchedule) return 'Work schedule is required';
+    if (!jobData.workSetup) return 'Work setup is required';
+    if (!jobData.employmentType) return 'Employment type is required';
+    if (!jobData.description) return 'Description is required';
+    if (!keyResponsibilities.some(resp => resp.trim())) return 'At least one key responsibility is required';
+    if (!qualifications.some(qual => qual.trim())) return 'At least one qualification is required';
+    if (!offers.some(offer => offer.trim())) return 'At least one offer is required';
+    const totalScore = gradedQualifications.reduce((sum, qual) => sum + (qual.points || 0), 0);
+    if (totalScore > 20) return 'Total graded qualifications score cannot exceed 20 points';
+    return '';
   };
 
   const handleSubmit = async () => {
-    if (!validateJobData()) return;
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    setError('');
+
+    const validationError = validateJobData();
+    if (validationError) {
+      setError(validationError);
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const response = await axios.post('http://localhost:5000/jobs', {
-        title: jobData.title,
-        department: jobData.department,
+        title: jobData.title.trim(),
+        department: jobData.department.trim(),
         workSchedule: jobData.workSchedule,
         workSetup: jobData.workSetup,
         employmentType: jobData.employmentType,
-        description: jobData.description,
-        keyResponsibilities,
-        qualifications,
-        whatWeOffer,
-        keywords,
-        gradedQualifications,
-        threshold,
+        description: [jobData.description.trim()],
+        keyResponsibilities: keyResponsibilities.filter(Boolean).map(item => item.trim()),
+        qualifications: qualifications.filter(Boolean).map(item => item.trim()),
+        whatWeOffer: offers.filter(Boolean).map(item => item.trim()),
+        keywords: keywords,
+        gradedQualifications: gradedQualifications.filter(qual => qual.attribute && qual.points > 0),
       });
-      setJobs([...jobs, response.data.job]);
+
+      alert('Job created successfully!');
       setShowAddJob(false);
       setCriteriaPage(1);
       setJobData({
         title: '',
         department: '',
+        employmentType: '',
         workSchedule: '',
         workSetup: '',
-        employmentType: '',
-        description: [''],
+        description: '',
       });
       setKeyResponsibilities(['']);
       setQualifications(['']);
-      setWhatWeOffer(['']);
+      setOffers(['']);
       setKeywords([]);
+      setInputValue('');
       setGradedQualifications([{ attribute: '', points: 0 }]);
-      setThreshold(10);
       setError('');
-    } catch (err) {
-      console.error('Error submitting job:', err);
-      setError(err.response?.data?.message || 'Failed to create job.');
+      fetchJobs();
+    } catch (error) {
+      console.error('Error creating job:', error);
+      setError(error.response?.data?.message || 'Failed to create job. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handlePrevPage = () => {
-    setCriteriaPage(prev => Math.max(1, prev - 1));
+  const customSelectStyles = {
+    control: (provided) => ({
+      ...provided,
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      width: '100%',
+      minWidth: '0',
+      maxWidth: '400px',
+      borderRadius: 0,
+      minHeight: '20px',
+      fontSize: '16px',
+      padding: '0',
+      border: '2px solid black',
+      boxShadow: 'none',
+      borderColor: '#ccc',
+    }),
+    valueContainer: (provided) => ({
+      ...provided,
+      padding: '0 8px',
+    }),
+    input: (provided) => ({
+      ...provided,
+      margin: 0,
+      padding: 0,
+      fontSize: '16px',
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isFocused || state.isSelected ? '#A2E494' : undefined,
+      color: state.isFocused || state.isSelected ? 'black' : '#222',
+      borderRadius: 0,
+      fontSize: '16px',
+      border: '1px solid black',
+      textAlign: 'center',
+    }),
+    menu: (provided) => ({
+      ...provided,
+      borderRadius: 0,
+      marginTop: 0,
+      zIndex: 10,
+      width: '216px',
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      fontSize: '16px',
+    }),
+    indicatorSeparator: () => ({
+      display: 'none',
+    }),
   };
-
-  const handleNextPage = () => {
-    setCriteriaPage(prev => Math.min(6, prev + 1));
-  };
-
-  const handleKeyDown = (e) => {
-    if (!showAddJob) return;
-    if (e.key === 'ArrowLeft' && criteriaPage > 1) {
-      handlePrevPage();
-    } else if (e.key === 'ArrowRight' && criteriaPage < 6) {
-      handleNextPage();
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [criteriaPage, showAddJob]);
-
-  const WordButton = ({ word, onRemove }) => (
-    <div className='wordbutton'>
-      {word}
-      <button onClick={() => onRemove(word)} style={{ marginLeft: '5px', color: 'red' }}>X</button>
-    </div>
-  );
 
   return (
-    <div className='setcriteriacontainer'>
-      <nav>
-        <h1>Collectius</h1>
-      </nav>
-      <div className='setcriteriacomponents'>
-        <div className='setcriteriamenu'>
-          <button onClick={() => setShowAddJob(true)}>Add New Job</button>
+    <>
+      <nav style={{
+        fontSize: '24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 32px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <img src={profilePic || Placeholder} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
+          <a>Manage Jobs</a>
         </div>
-        <div className='setcriteriajobs'>
-          {jobs.map(job => (
-            <div key={uuidv4()} className='jobinstance'>
-              <h3>{job.title}</h3>
-              <p>Department: {job.department}</p>
-              <p>Schedule: {job.workSchedule}</p>
-              <p>Setup: {job.workSetup}</p>
-              <p>Type: {job.employmentType}</p>
-            </div>
-          ))}
+        <a onClick={handleReturn} style={{ cursor: 'pointer' }}>Back</a>
+      </nav>
+      <div>
+        <div className="criteria">
+          <a onClick={() => setShowAddJob(true)}>Add Job</a>
+          <a style={{ cursor: jobs.length ? 'pointer' : 'not-allowed' }} onClick={() => jobs.length && alert('Select a job to remove from the list below.')}>Remove Job</a>
+        </div>
+        <div className='jobslists'>
+          <div className='joblist'>
+            <div className='jobtitle'>Job Title</div>
+            <div className='jobdescription'>Department</div>
+            <div className='jobrequirements'>Employment Type</div>
+            <div className='jobactions'>Actions</div>
+          </div>
+          {jobsError && <div style={{ color: 'red', padding: '16px' }}>{jobsError}</div>}
+          {jobs.length === 0 ? (
+            <div style={{ padding: '16px', color: '#888' }}>No jobs available.</div>
+          ) : (
+            jobs.map(job => (
+              <div className='joblist' key={job._id}>
+                <div className='jobtitle'>{job.title}</div>
+                <div className='jobdescription'>{job.department}</div>
+                <div className='jobrequirements'>{job.employmentType}</div>
+                <div className='jobactions'>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleRemoveJob(job._id); }}>Delete</a>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
       {showAddJob && (
-        <div className='addjobcontainer'>
-          {criteriaPage === 1 && (
-            <div className='page1'>
-              <h1>Add New Job</h1>
-              <label>Job Title</label>
-              <input
-                type='text'
-                value={jobData.title}
-                onChange={(e) => handleInputChange(e, 'title')}
-                placeholder='Enter job title'
-              />
-              <label>Department</label>
-              <Select
-                options={departmentOptions}
-                onChange={(option) => handleSelectChange(option, 'department')}
-                placeholder='Select department'
-              />
-              <label>Work Schedule</label>
-              <Select
-                options={workScheduleOptions}
-                onChange={(option) => handleSelectChange(option, 'workSchedule')}
-                placeholder='Select work schedule'
-              />
-              <label>Work Setup</label>
-              <Select
-                options={workSetupOptions}
-                onChange={(option) => handleSelectChange(option, 'workSetup')}
-                placeholder='Select work setup'
-              />
-              <label>Employment Type</label>
-              <Select
-                options={employmentTypeOptions}
-                onChange={(option) => handleSelectChange(option, 'employmentType')}
-                placeholder='Select employment type'
-              />
-              <label>Description</label>
-              {jobData.description.map((desc, index) => (
-                <div className='descriptioncontainer' key={index}>
-                  <input
-                    type='text'
-                    value={desc}
-                    onChange={(e) => {
-                      const newDesc = [...jobData.description];
-                      newDesc[index] = e.target.value;
-                      setJobData({ ...jobData, description: newDesc });
-                    }}
-                    placeholder='Enter description'
-                  />
-                  {index > 0 && (
-                    <div className='removebuttonwrap'>
-                      <a onClick={() => handleRemoveItem(index, setJobData, jobData.description, { ...jobData, description: jobData.description.filter((_, i) => i !== index) })}>
-                        Remove
-                      </a>
-                    </div>
-                  )}
-                </div>
-              ))}
-              <div className='addbuttonwrap'>
-                <a onClick={() => handleAddItem(setJobData, jobData.description, { ...jobData, description: [...jobData.description, ''] })}>
-                  +
-                </a>
-              </div>
-            </div>
-          )}
-          {criteriaPage === 2 && (
-            <div className='page2'>
-              <h1>Key Responsibilities</h1>
-              {keyResponsibilities.map((resp, index) => (
-                <div className='descriptioncontainer' key={index}>
-                  <input
-                    type='text'
-                    value={resp}
-                    onChange={(e) => handleItemChange(index, e.target.value, setKeyResponsibilities, keyResponsibilities)}
-                    placeholder='Enter responsibility'
-                  />
-                  {index > 0 && (
-                    <div className='removebuttonwrap'>
-                      <a onClick={() => handleRemoveItem(index, setKeyResponsibilities, keyResponsibilities)}>Remove</a>
-                    </div>
-                  )}
-                </div>
-              ))}
-              <div className='addbuttonwrap'>
-                <a onClick={() => handleAddItem(setKeyResponsibilities, keyResponsibilities)}>+</a>
-              </div>
-            </div>
-          )}
-          {criteriaPage === 3 && (
-            <div className='page3'>
-              <h1>Qualifications</h1>
-              {qualifications.map((qual, index) => (
-                <div className='descriptioncontainer' key={index}>
-                  <input
-                    type='text'
-                    value={qual}
-                    onChange={(e) => handleItemChange(index, e.target.value, setQualifications, qualifications)}
-                    placeholder='Enter qualification'
-                  />
-                  {index > 0 && (
-                    <div className='removebuttonwrap'>
-                      <a onClick={() => handleRemoveItem(index, setQualifications, qualifications)}>Remove</a>
-                    </div>
-                  )}
-                </div>
-              ))}
-              <div className='addbuttonwrap'>
-                <a onClick={() => handleAddItem(setQualifications, qualifications)}>+</a>
-              </div>
-            </div>
-          )}
-          {criteriaPage === 4 && (
-            <div className='page4'>
-              <h1>What We Offer</h1>
-              {whatWeOffer.map((offer, index) => (
-                <div className='descriptioncontainer' key={index}>
-                  <input
-                    type='text'
-                    value={offer}
-                    onChange={(e) => handleItemChange(index, e.target.value, setWhatWeOffer, whatWeOffer)}
-                    placeholder='Enter offer'
-                  />
-                  {index > 0 && (
-                    <div className='removebuttonwrap'>
-                      <a onClick={() => handleRemoveItem(index, setWhatWeOffer, whatWeOffer)}>Remove</a>
-                    </div>
-                  )}
-                </div>
-              ))}
-              <div className='addbuttonwrap'>
-                <a onClick={() => handleAddItem(setWhatWeOffer, whatWeOffer)}>+</a>
-              </div>
-            </div>
-          )}
-          {criteriaPage === 5 && (
-            <div className='page5'>
-              <h1>Preview Job Details</h1>
-              <h3>{jobData.title}</h3>
-              <p><strong>Department:</strong> {jobData.department}</p>
-              <p><strong>Work Schedule:</strong> {jobData.workSchedule}</p>
-              <p><strong>Work Setup:</strong> {jobData.workSetup}</p>
-              <p><strong>Employment Type:</strong> {jobData.employmentType}</p>
-              <p><strong>Description:</strong></p>
-              <ul>
-                {jobData.description.map((desc, index) => (
-                  <li key={index}>{desc}</li>
-                ))}
-              </ul>
-              <p><strong>Key Responsibilities:</strong></p>
-              <ul>
-                {keyResponsibilities.map((resp, index) => (
-                  <li key={index}>{resp}</li>
-                ))}
-              </ul>
-              <p><strong>Qualifications:</strong></p>
-              <ul>
-                {qualifications.map((qual, index) => (
-                  <li key={index}>{qual}</li>
-                ))}
-              </ul>
-              <p><strong>What We Offer:</strong></p>
-              <ul>
-                {whatWeOffer.map((offer, index) => (
-                  <li key={index}>{offer}</li>
-                ))}
-              </ul>
-              <p><strong>Keywords:</strong> {keywords.join(', ')}</p>
-              <p><strong>Graded Qualifications:</strong></p>
-              <ul>
-                {gradedQualifications.map((qual, index) => (
-                  <li key={index}>{qual.attribute}: {qual.points} points</li>
-                ))}
-              </ul>
-              <p><strong>Threshold:</strong> {threshold}</p>
-              <button onClick={handleSubmit}>Submit Job</button>
-              {error && <p style={{ color: 'red' }}>{error}</p>}
-            </div>
-          )}
-          {criteriaPage === 6 && (
-            <div className='page6'>
-              <h1>Customize Criteria</h1>
-              <div className="keywords-textarea">
-                <label>Which words to look out for in the applicant's resume?</label>
-                <div style={{ display: 'flex', padding: '10px', backgroundColor: 'white', flexWrap: 'wrap' }}>
-                  {keywords.map((word, index) => (
-                    <WordButton key={index} word={word} onRemove={removeKeyword} />
-                  ))}
-                </div>
-                <textarea
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={handleKeywordsKeyDown}
-                  placeholder="Enter keywords separated by space or comma"
-                />
-              </div>
-              <div className="graded-qualifications">
-                <h2>Graded Qualifications</h2>
-                <label>Attribute</label>
-                <label>Points (out of 20)</label>
-                {gradedQualifications.map((qual, idx) => (
-                  <div className="attribute-row" key={idx}>
+        <>
+          <div
+            style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', zIndex: 3 }}
+            onClick={() => setShowAddJob(false)}
+          />
+          <div className='criteriascreen'>
+            <div className='criteriascreencontent'>
+              {error && (
+                <div style={{ color: 'red', marginBottom: '16px' }}>{error}</div>
+              )}
+              {criteriaPage === 1 && (
+                <div className='page1'>
+                  <div className="rowcomponent">
+                    <label>Job Name</label>
                     <input
                       type="text"
-                      value={qual.attribute}
-                      onChange={(e) => handleGradedQualificationChange(idx, 'attribute', e.target.value)}
-                      placeholder="Attribute"
+                      placeholder="Job Name"
+                      value={jobData.title}
+                      onChange={(e) => handleInputChange('title', e.target.value)}
                     />
+                  </div>
+                  <div className="rowcomponent">
+                    <label>Department</label>
                     <input
-                      type="number"
-                      value={qual.points}
-                      onChange={(e) => handleGradedQualificationChange(idx, 'points', e.target.value)}
-                      min="0"
-                      max="20"
-                      placeholder="Points"
+                      type="text"
+                      placeholder="Department"
+                      value={jobData.department}
+                      onChange={(e) => handleInputChange('department', e.target.value)}
                     />
-                    {idx > 0 && (
+                  </div>
+                  <div className="rowcomponent">
+                    <label>Employment Type</label>
+                    <Select
+                      options={employmentTypeOptions}
+                      styles={customSelectStyles}
+                      placeholder="Select Employment Type"
+                      onChange={(option) => handleInputChange('employmentType', option.label)}
+                    />
+                  </div>
+                  <div className="rowcomponent">
+                    <label>Work Schedule</label>
+                    <Select
+                      options={workingScheduleOptions}
+                      styles={customSelectStyles}
+                      placeholder="Select Work Schedule"
+                      onChange={(option) => handleInputChange('workSchedule', option.label)}
+                    />
+                  </div>
+                  <div className="rowcomponent">
+                    <label>Work Setup</label>
+                    <Select
+                      options={workSetupOptions}
+                      styles={customSelectStyles}
+                      placeholder="Select Work Setup"
+                      onChange={(option) => handleInputChange('workSetup', option.label)}
+                    />
+                  </div>
+                  <label>Description</label>
+                  <textarea
+                    value={jobData.description}
+                    onChange={(e) => handleInputChange('description', e.target.value)}
+                  />
+                </div>
+              )}
+              {criteriaPage === 2 && (
+                <div className='page2'>
+                  <div className='page2header'>
+                    <h1 style={{ color: 'white' }}>Key Responsibilities</h1>
+                  </div>
+                  {keyResponsibilities.map((resp, idx) => (
+                    <div className='keyresponsibilities' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+                      <input
+                        value={resp}
+                        onChange={(e) => handleResponsibilityChange(idx, e.target.value)}
+                      />
+                    </div>
+                  ))}
+                  <div className='addremovewrap'>
+                    <div className='addbuttonwrap'>
+                      <a onClick={handleAddResponsibility}>+</a>
+                    </div>
+                    {keyResponsibilities.length > 1 && (
                       <div className='removebuttonwrap'>
-                        <a onClick={() => handleRemoveGradedQualification(idx)}>-</a>
+                        <a onClick={() => setKeyResponsibilities(prev => prev.slice(0, -1))}>-</a>
                       </div>
                     )}
                   </div>
-                ))}
-                <div className='addbuttonwrap'>
-                  <a onClick={handleAddGradedQualification}>+</a>
                 </div>
-                <label>Score Threshold (0-15)</label>
-                <input
-                  type="number"
-                  value={threshold}
-                  onChange={(e) => setThreshold(Math.min(15, Math.max(0, Number(e.target.value))))}
-                  min="0"
-                  max="15"
-                  placeholder="Enter threshold"
-                />
-              </div>
+              )}
+              {criteriaPage === 3 && (
+                <div className='page3'>
+                  <div>
+                    <h1>Qualifications</h1>
+                  </div>
+                  {qualifications.map((qual, idx) => (
+                    <div className='qualifications' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+                      <input
+                        value={qual}
+                        onChange={(e) => handleQualificationChange(idx, e.target.value)}
+                      />
+                    </div>
+                  ))}
+                  <div className='addremovewrap'>
+                    <div className='addbuttonwrap'>
+                      <a onClick={handleAddQualifications}>+</a>
+                    </div>
+                    {qualifications.length > 1 && (
+                      <div className='removebuttonwrap'>
+                        <a onClick={() => setQualifications(prev => prev.slice(0, -1))}>-</a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              {criteriaPage === 4 && (
+                <div className='page4'>
+                  <div>
+                    <h1>What we Offer:</h1>
+                  </div>
+                  {offers.map((offer, idx) => (
+                    <div className='offers' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+                      <input
+                        value={offer}
+                        onChange={(e) => handleOfferChange(idx, e.target.value)}
+                      />
+                    </div>
+                  ))}
+                  <div className='addremovewrap'>
+                    <div className='addbuttonwrap'>
+                      <a onClick={handleAddOffer}>+</a>
+                    </div>
+                    {offers.length > 1 && (
+                      <div className='removebuttonwrap'>
+                        <a onClick={handleRemoveOffer}>-</a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              {criteriaPage === 5 && (
+                <div className='page5'>
+                  <div className="criteriajobcard">
+                    <h2 style={{ margin: '20px 20px 16px 20px' }}>
+                      {jobData.title || 'Job Title'}
+                    </h2>
+                    <div className='tags' style={{ marginBottom: '16px' }}>
+                      <a>{jobData.department || 'Department'}</a>
+                      <a>{jobData.employmentType || 'Employment Type'}</a>
+                      <a>{jobData.workSchedule || 'Work Schedule'}</a>
+                      <a>{jobData.workSetup || 'Work Setup'}</a>
+                    </div>
+                    <div style={{ marginBottom: '16px' }}>
+                      <b>Description:</b>
+                      <div>{jobData.description || 'No description'}</div>
+                    </div>
+                    <div style={{ marginBottom: '16px' }}>
+                      <b>Key Responsibilities:</b>
+                      <ul>
+                        {keyResponsibilities.filter(Boolean).map((item, i) => (
+                          <li key={i}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div style={{ marginBottom: '16px' }}>
+                      <b>Qualifications:</b>
+                      <ul>
+                        {qualifications.filter(Boolean).map((item, i) => (
+                          <li key={i}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <b>What we Offer:</b>
+                      <ul>
+                        {offers.filter(Boolean).map((item, i) => (
+                          <li key={i}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <button
+                      onClick={handleSubmit}
+                      style={{ marginTop: '16px' }}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'Submitting...' : 'Submit Job'}
+                    </button>
+                  </div>
+                </div>
+              )}
+              {criteriaPage === 6 && (
+                <div className='page6'>
+                  <h1>Customize Criteria</h1>
+                  <div className="keywords-textarea">
+                    <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>Which words to look out for in the applicant's resume?</label>
+                    <div style={{ display: 'flex', padding: '10px', backgroundColor: 'white', flexWrap: 'wrap' }}>
+                      {keywords.map((word, index) => (
+                        <WordButton key={index} word={word} onRemove={removeKeyword} />
+                      ))}
+                    </div>
+                    <textarea
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onKeyDown={handleKeywordsKeyDown}
+                      placeholder="Enter keywords separated by space or comma"
+                      style={{ width: '100%', height: '100px', fontSize: '16px', padding: '8px', border: '2px solid black', borderRadius: '6px', background: 'white', resize: 'vertical' }}
+                    />
+                  </div>
+                  <div className="graded-qualifications">
+                    <h2 style={{ fontSize: '24px', color: 'white', marginBottom: '16px' }}>Graded Qualifications</h2>
+                    <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>Attribute</label>
+                    <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>Points (out of 20)</label>
+                    {gradedQualifications.map((qual, idx) => (
+                      <div className="attribute-row" key={idx}>
+                        <input
+                          type="text"
+                          value={qual.attribute}
+                          onChange={(e) => handleGradedQualificationChange(idx, 'attribute', e.target.value)}
+                          placeholder="Attribute"
+                          style={{ flex: 1, height: '32px', fontSize: '16px', border: '2px solid black', borderRadius: '6px' }}
+                        />
+                        <input
+                          type="number"
+                          value={qual.points}
+                          onChange={(e) => handleGradedQualificationChange(idx, 'points', Math.min(20, Math.max(0, e.target.value)))}
+                          min="0"
+                          max="20"
+                          placeholder="Points"
+                          style={{ width: '80px', height: '32px', fontSize: '16px', border: '2px solid black', borderRadius: '6px', textAlign: 'center' }}
+                        />
+                        {idx > 0 && (
+                          <div className='removebuttonwrap'>
+                            <a onClick={() => handleRemoveGradedQualification(idx)}>-</a>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    <div className='addbuttonwrap'>
+                      <a onClick={handleAddGradedQualification}>+</a>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-          <div className='navigationbuttons'>
-            <button onClick={handlePrevPage} disabled={criteriaPage === 1}>
-              Previous
-            </button>
-            <button onClick={handleNextPage} disabled={criteriaPage === 6}>
-              Next
-            </button>
+            <div className="criterianavigate">
+              <ul><a onClick={handlePrevPage} className='left'></a></ul>
+              <ul><a onClick={handleNextPage} className='right'></a></ul>
+            </div>
           </div>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-        </div>
+        </>
       )}
-    </div>
+    </>
   );
-};
+}
+
+const WordButton = ({ word, onRemove }) => (
+  <button
+    onClick={() => onRemove(word)}
+    style={{
+      backgroundColor: '#A2E494',
+      border: '2px solid black',
+      margin: '4px',
+      padding: '4px 8px',
+      borderRadius: '6px',
+      cursor: 'pointer',
+    }}
+  >
+    X {word}
+  </button>
+);
 
 export default SetCriteria;
