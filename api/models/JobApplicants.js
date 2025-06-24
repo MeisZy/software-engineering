@@ -14,7 +14,7 @@ const jobApplicantSchema = new mongoose.Schema({
   stateProvince: String,
   status: String,
   applicationStage: String,
-  scores: { type: Map, of: Number }, // Store scores for each job
+  resumeSkills: [String], // Store parsed resume skills keywords
 });
 
 module.exports = mongoose.model('JobApplicants', jobApplicantSchema);

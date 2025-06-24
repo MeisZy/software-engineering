@@ -47,6 +47,7 @@ function SetCriteria() {
   const [keywords, setKeywords] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [gradedQualifications, setGradedQualifications] = useState([{ attribute: '', points: 0 }]);
+  const [threshold, setThreshold] = useState('');
   const [jobData, setJobData] = useState({
     title: '',
     department: '',
@@ -199,6 +200,7 @@ function SetCriteria() {
     if (!offers.some(offer => offer.trim())) return 'At least one offer is required';
     const totalScore = gradedQualifications.reduce((sum, qual) => sum + (qual.points || 0), 0);
     if (totalScore > 20) return 'Total graded qualifications score cannot exceed 20 points';
+    if (!threshold || threshold < 0 || threshold > 15) return 'Threshold must be between 0 and 15';
     return '';
   };
 
@@ -227,6 +229,7 @@ function SetCriteria() {
         whatWeOffer: offers.filter(Boolean).map(item => item.trim()),
         keywords: keywords,
         gradedQualifications: gradedQualifications.filter(qual => qual.attribute && qual.points > 0),
+        threshold,
       });
 
       alert('Job created successfully!');
@@ -246,6 +249,7 @@ function SetCriteria() {
       setKeywords([]);
       setInputValue('');
       setGradedQualifications([{ attribute: '', points: 0 }]);
+      setThreshold('');
       setError('');
       fetchJobs();
     } catch (error) {
@@ -592,6 +596,20 @@ function SetCriteria() {
                     <div className='addbuttonwrap'>
                       <a onClick={handleAddGradedQualification}>+</a>
                     </div>
+                  </div>
+                  <div className='threshold'>
+                    <label>Threshold</label>
+                    <input
+                      type='number'
+                      value={threshold}
+                      onChange={(e) => setThreshold(e.target.value)}
+                      placeholder='Enter threshold score (0-15)'
+                      style={{ width: '100%', height: '32px', fontSize: '16px', border: '2px solid black', borderRadius: '6px' }}
+                    />
+                  </div>
+                  <div className='button-container'>
+                    <button onClick={handlePrevPage}>Previous</button>
+                    <button onClick={handleSubmit}>Submit</button>
                   </div>
                 </div>
               )}
