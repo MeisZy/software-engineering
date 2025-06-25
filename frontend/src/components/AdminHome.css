@@ -141,6 +141,98 @@ nav {
 
   }
 
+.interviewslabel{
+  top:0;
+  left:0;
+  width:360px;
+  background-color: #13714C;
+  border:3px solid black;
+
+}
+.interviewslabel{
+  width:256px;
+  height:56px;
+}
+.interviewslabel h1{
+  margin-top:16px;
+  font-size:24px;
+  text-align: center;
+  font-weight:600;
+}
+
+.interviewscover {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 800px;
+  height: 512px;
+  z-index: 10;
+  background-color: #13714C;
+  transform: translate(-50%, -50%);
+  /* Remove centering of child, allow absolute positioning inside */
+  overflow: hidden;
+  border:2px solid black;
+}
+
+.interviewswrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 768px;
+  height: 480px;
+  box-sizing: border-box;
+  background-color: #A2E494;
+  border: 2px solid black;
+  margin: 0;
+  padding: 0;
+}
+
+.interviews-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #13714C;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+  line-height: 1;
+  padding: 0;
+}
+
+
+.interviewsproper {
+  width: 90%;
+  height:288px;
+  background-color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border:2px solid black;
+}
+
+.interviewsproper h2{
+  font-size:24px;
+  margin:20px;
+}
+
+
+
+  .userjobdetailsbutton button{
+    background: #A2E494;
+    color: #13714C;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
   .custom-checkbox input[type="checkbox"] {
     opacity: 0;
     width: 0;
@@ -633,16 +725,27 @@ td:nth-child(3) {
   transform: translate(-50%, -50%);
   width: 600px;
   height: 640px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   z-index: 5;
   background-color: #13714C;
+  border-radius:20px;
+  border:2px solid black;
 }
 
 .messagedetailslightgreen{
-  width:588px;
-  height:388px;
+  width:580px;
+  height:620px;
   background-color: #A2E494;
+  border-radius:20px;
+  border:2px solid black;
+}
+.messagedetailslightgreen h3{
+  font-weight:400;
 }
 
+.messagedetailsgrid label{
+  font-size:16px;
+}
+
+.messagedetailsgrid{
+  gap:20px;
+}

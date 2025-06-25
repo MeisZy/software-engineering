@@ -33,6 +33,7 @@ function AdminHome() {
   const [showUserLogs, setShowUserLogs] = useState(false);
   const [userLogs, setUserLogs] = useState([]);
   const [logsError, setLogsError] = useState('');
+  const [seeInterviews, setseeInterviews] = useState(false)
 
   const workingSchedule = [
     { label: 'Full Time', id: 'fulltime' },
@@ -84,7 +85,6 @@ function AdminHome() {
         ]);
         setJobs(jobsResponse.data);
         setApplicants(applicantsResponse.data);
-        // Generate notifications from applicants' job applications
         const applicationNotifications = applicantsResponse.data.flatMap(applicant =>
           applicant.positionAppliedFor.map(jobTitle => ({
             _id: `${applicant._id}-${jobTitle}`,
@@ -287,6 +287,7 @@ const handleDeleteApplicant = async (applicantId) => {
         </div>
         <div className="admin-nav-center">
           <a onClick={handleMaintainance}>Settings</a>
+          <a onClick={() => setseeInterviews(true)}>Interviews</a>
           <a onClick={handleFAQs}>FAQs</a>
           <a onClick={handleSetCriteria}>Manage Jobs</a>
           <a onClick={() => setShowMessageForm(true)}>Send Message</a>
@@ -600,7 +601,6 @@ const handleDeleteApplicant = async (applicantId) => {
             </div>
           )}
 
-
           {openApplicantsIdx !== null && (
             <div className="applicantslistcontainer" onClick={() => setOpenApplicantsIdx(null)}>
               <div
@@ -639,6 +639,7 @@ const handleDeleteApplicant = async (applicantId) => {
       <button onClick={() => handleDeleteApplicant(applicant._id)} style={{ marginLeft: '8px' }}>
         Delete
       </button>
+
       {openApplicantDetailIdx === idx && (
         <div className='applicantdetailwrap'>
           <span>Email: {applicant.email}</span>
@@ -736,6 +737,7 @@ const handleDeleteApplicant = async (applicantId) => {
     </div>
   </div>
 )}
+
           {showMessageForm && (
             <div className="messagedetailsdarkgreen">
               <div className="messagedetailslightgreen" >
@@ -803,15 +805,7 @@ const handleDeleteApplicant = async (applicantId) => {
                     </button>
                     <button
                       type="submit"
-                      className="userjobdetailsbutton"
-                      style={{
-                        background: '#A2E494',
-                        color: '#13714C',
-                        border: 'none',
-                        padding: '8px 16px',
-                        borderRadius: '6px',
-                        cursor: 'pointer'
-                      }}
+                      className="userjobdetailsbutton" style={{borderRadius: '6px'}}
                     >
                       Send
                     </button>
@@ -820,6 +814,28 @@ const handleDeleteApplicant = async (applicantId) => {
               </div>
             </div>
           )}
+        {seeInterviews&&(
+          <>
+            <div className='interviewscover'>
+              <div className='interviewswrapper'>
+                <button
+                  className="interviews-close-btn"
+                  onClick={() => setseeInterviews(false)}
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+                <div className='interviewslabel'>
+                  <h1>Interviews</h1>
+                </div>
+                <div className='interviewsproper'>
+                    <h2>Interview</h2>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
         </div>
       </div>
     </>
