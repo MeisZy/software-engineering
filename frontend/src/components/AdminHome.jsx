@@ -737,21 +737,8 @@ const handleDeleteApplicant = async (applicantId) => {
   </div>
 )}
           {showMessageForm && (
-            <div
-              className="messagedetailsdarkgreen"
-              style={{
-                position: 'fixed',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '600px',
-                height: '401px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <div className="messagedetailslightgreen" style={{ width: '588px', height: '388px' }}>
+            <div className="messagedetailsdarkgreen">
+              <div className="messagedetailslightgreen" >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                   <h3 style={{ padding: '16px 24px', margin: 0 }}>Send Email</h3>
                   <a
