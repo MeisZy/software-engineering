@@ -466,27 +466,53 @@ function UserHome() {
                     </div>
                     {openDetailIdx === idx && (
                       <div className="userjobdetails" onClick={() => setOpenDetailIdx(null)}>
+                          <div className="userjobdetailswrapper">
                         <div className="userjobdetailsblock" onClick={e => e.stopPropagation()}>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <h3 style={{ marginBottom: 0 }}>
+                          <div className='userjobdetailsinner'>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'flex-start',
+                              justifyContent: 'flex-start',
+                              width: '100%',
+                              margin: 0,
+                              padding: 0,
+                              position: 'relative'
+                            }}
+                          >
+                            <h3
+                              style={{
+                                margin: 0,
+                                padding: 0,
+                                textAlign: 'left',
+                                alignSelf: 'flex-start',
+                                flex: 1
+                              }}
+                            >
                               {job.title}
                             </h3>
+                          </div>
                             <a
+                              onClick={() => setOpenDetailIdx(null)}
+                              aria-label="Close"
                               style={{
+                                position: 'absolute',
+                                top: "10px",
+                                right: "8px",
                                 fontSize: '2rem',
                                 fontWeight: 'bold',
                                 color: 'white',
                                 textDecoration: 'none',
                                 cursor: 'pointer',
-                                marginLeft: '24px',
                                 lineHeight: '1',
+                                margin: 0,
+                                padding: 0,
+                                background: 'none',
+                                border: 'none'
                               }}
-                              onClick={() => setOpenDetailIdx(null)}
-                              aria-label="Close"
                             >
                               ×
                             </a>
-                          </div>
                           <div className="userjobdetailsgrid" style={{ marginTop: "16px" }}>
                             <p><b>Department:</b> {job.department}</p>
                             <p><b>Work Schedule:</b> {job.workSchedule}</p>
@@ -496,56 +522,33 @@ function UserHome() {
                             <p><b>Key Responsibilities:</b></p>
                             <ul>
                               {job.keyResponsibilities.map((item, i) => (
-                                <li key={i}>{item}</li>
+                              <p key={i}>{item}</p>
                               ))}
-                            </ul>
+                              </ul>
                             <p><b>Qualifications:</b></p>
                             <ul>
                               {job.qualifications.map((item, i) => (
-                                <li key={i}>{item}</li>
+                              <p key={i}>{item}</p>
                               ))}
-                            </ul>
+                              </ul>
                             <p><b>What we Offer:</b></p>
                             <ul>
                               {job.whatWeOffer.map((item, i) => (
-                                <li key={i}>{item}</li>
+                              <p key={i}>{item}</p>
                               ))}
-                            </ul>
-                            <button
-                              className='userjobdetailexit'
-                              onClick={() => setOpenDetailIdx(null)}
-                              style={{
-                                marginTop: "24px",
-                                background: "white",
-                                color: "#13714C",
-                                border: "none",
-                                borderRadius: "6px",
-                                padding: "8px 24px",
-                                fontWeight: 600,
-                                cursor: "pointer",
-                                marginRight: "8px"
-                              }}
-                            >
-                              Close
-                            </button>
-                            <button
-                              className='userjobdetailapply'
-                              onClick={() => handleApply(job.title)}
-                              style={{
-                                marginTop: "24px",
-                                background: "#A2E494",
-                                color: "#13714C",
-                                border: "none",
-                                borderRadius: "6px",
-                                padding: "8px 24px",
-                                fontWeight: 600,
-                                cursor: "pointer"
-                              }}
-                            >
-                              Apply
-                            </button>
+                              </ul>
+                            <div className='userjobdetailbuttons'>
+                                <button className='userjobdetailexit' onClick={() => setOpenDetailIdx(null)}>
+                                  Close
+                                </button>
+                                <button className='userjobdetailapply' onClick={() => handleApply(job.title)}>
+                                  Apply
+                                </button>
+                            </div>
                           </div>
-                        </div>
+                          </div>
+                            </div>
+                          </div>
                       </div>
                     )}
                   </div>

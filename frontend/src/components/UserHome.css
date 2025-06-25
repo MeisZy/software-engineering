@@ -256,6 +256,19 @@ nav a:hover {
   padding: 0;
 }
 
+.userjobdetailsinner h3 {
+  background-color:#A2E494;
+  color:black;
+  border:2px solid black;
+  padding:12px;
+}
+.userjobdetailsgrid {
+  display: flex;
+  flex-direction: column;
+  min-height: 340px; /* adjust as needed for your modal height */
+  position: relative;
+  padding-bottom: 64px; /* space for the buttons */
+}
 .userjobdetails {
   position: fixed;
   top: 0;
@@ -274,12 +287,21 @@ nav a:hover {
   color: white;
   border-radius: 12px;
   padding: 24px;
-  width: 600px;
-  max-height: 80vh;
+  width: 640px;
+  height: 80vh;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
   z-index: 11;
+    border: 2px solid black;
   overflow-y: auto;
   position: relative;
+}
+
+.userjobdetailswrapper{
+  width:700px;
+  height:88vh;
+  background-color: #A2E494;
+  border: 2px solid black;
+  border-radius:16px;
 }
 
 .joboption a {
@@ -561,4 +583,17 @@ nav a:hover {
   margin-bottom: 40px;      /* Increase this value as needed */
   position: relative;
   z-index: 2;
+}
+
+.userjobdetailbuttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin: 0 16px 16px 0; /* right and bottom spacing */
+  z-index: 2;
+  background: transparent;
 }

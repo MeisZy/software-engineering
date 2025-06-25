@@ -20,21 +20,7 @@ function Registration() {
   });
   const [message, setMessage] = useState('');
   const [debugInputs, setDebugInputs] = useState(null);
-  const [mongoStatus, setMongoStatus] = useState('Checking...');
 
-  // Check MongoDB server status on mount
-  useEffect(() => {
-    const checkStatus = async () => {
-      try {
-        const res = await axios.get('http://localhost:5000/status');
-        setMongoStatus(res.data.status === 'ok' ? '🟢 Server is Online' : '🔴 MongoDB Disconnected');
-      } catch {
-        setMongoStatus('🔴 MongoDB Disconnected');
-      }
-    };
-
-    checkStatus();
-  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -42,7 +28,6 @@ function Registration() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setDebugInputs({ ...formData }); // Print all inputs for debugging
     try {
       const payload = {
         firstName: formData.firstName,
@@ -60,7 +45,6 @@ function Registration() {
         confirmPassword: formData.confirmPassword,
       };
       await axios.post('http://localhost:5000/add', payload);
-      setMessage('Registration successful!');
       setFormData({
         firstName: '',
         middleName: '',
@@ -86,9 +70,6 @@ function Registration() {
       <nav className="nav">
         <div className="sorter">
           <a>Collectius</a>
-        </div>
-        <div style={{ marginLeft: "auto", fontWeight: 600, fontSize: "1rem" }}>
-          {mongoStatus}
         </div>
       </nav>
       <form className="registrationform" onSubmit={handleSubmit}>
