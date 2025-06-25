@@ -358,14 +358,13 @@ textarea{
     align-items: center;
     flex-direction:row;
     width:100%;
-    border:1px solid black;
 }
 
 .jobinstancedarkgreen {
   border: 1px solid black;
   background-color: #13714C;
   margin: 25px;
-  width: 240px;
+  width: 300px;
   height: 256px;
   border-radius: 25px;
   display: flex;
@@ -388,8 +387,27 @@ textarea{
   box-sizing: border-box;
 }
 
-.jobtitle a {
-  font-size: 16px;
+.jobinstance-row {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.jobinstance p {
+  background-color: #13714C;
+  margin: 3px 6px 3px 0;
+  border: 2px solid black;
+  padding: 2px 8px;
+  color: white;
+  border-radius: 5px;
+  font-size: 12px;
+  display: inline-block;
+  white-space: nowrap;
+}
+.jobtitle{
+  font-size: 20px;
   font-weight: 500;
   color: #222;
   margin-bottom: 10px;
@@ -400,7 +418,6 @@ textarea{
   overflow-wrap: break-word;
 }
 
-.jobdescription,
 .jobrequirements {
   font-size: 14px;
   color: #444;
@@ -424,18 +441,48 @@ textarea{
 }
 
 .jobactions a {
-  color: white;
+  color: black;
   text-decoration: none;
   font-size: 16px;
   padding: 5px 16px;
-  background-color: #13714C;
+  background-color: white;
   border: 1px solid black;
   border-radius: 25px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
+  margin-right:5px;
+  margin-bottom:10px;
 }
 
 .jobactions a:hover {
   background-color: #A2E494;
   color: black;
+}
+
+.jobdetailscontent {
+    background-color: #A2E494;
+    border-radius: 20px;
+    padding: 32px;
+    width: 720px;
+    height: 732px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.jobdetailscontent h2 {
+    background-color: #13714C;
+    color: white;
+    margin: 0 0 16px 0;
+    padding: 16px 24px;
+    border-radius:20px;
+}
+
+.jobdetailscontentdarkgreen{
+    width:832px;
+    height:832px;
+    border-radius:20px;
+    background-color:#13714C
 }
