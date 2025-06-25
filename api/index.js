@@ -698,7 +698,7 @@ app.post('/apply', async (req, res) => {
       html: `
         <h3>Application Status Update</h3>
         <p>Dear ${applicant.fullName || 'Applicant'},</p>
-        <p>Your application for <strong>${jobTitle}</strong> has been ${status}.</p>
+        <p>Your application was <strong>${jobTitle}</strong> ${status}.</p>
       `,
     });
 

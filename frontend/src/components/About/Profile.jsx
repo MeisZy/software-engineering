@@ -140,3 +140,35 @@ function Profile() {
 }
 
 export default Profile;
+
+function ResumeUpload({ email }) {
+  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState('');
+
+  const handleFileChange = (e) => setFile(e.target.files[0]);
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    if (!file) return setMessage('Please select a file.');
+    const formData = new FormData();
+    formData.append('resume', file);
+    formData.append('email', email); // must match registration email
+
+    try {
+      await axios.post('http://localhost:5000/upload-resume', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setMessage('Resume uploaded and parsed!');
+    } catch (err) {
+      setMessage('Upload failed.');
+    }
+  };
+
+  return (
+    <form onSubmit={handleUpload}>
+      <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileChange} />
+      <button type="submit">Upload Resume</button>
+      {message && <p>{message}</p>}
+    </form>
+  );
+}

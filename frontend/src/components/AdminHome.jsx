@@ -430,97 +430,106 @@ const handleDeleteApplicant = async (applicantId) => {
 )}
 
           {showNotifications && (
-            <div
-              className="notifications-container"
+  <div
+    className="notifications-container"
+    onClick={() => setShowNotifications(false)}
+    style={{
+      position: 'fixed',
+      top: '50%',
+      left: '50%',
+      width: '800px',
+      height: '468px',
+      zIndex: 10,
+      backgroundColor: '#13714C',
+      transform: 'translate(-50%, -50%)',
+      overflowY: 'auto', // Enable vertical scrolling
+      border: '2px solid black',
+    }}
+  >
+    <div
+      className="notifications-content"
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '768px',
+        height: '480px',
+        boxSizing: 'border-box',
+        backgroundColor: '#A2E494',
+        border: '2px solid black',
+        margin: 0,
+        padding: 0,
+      }}
+      onClick={e => e.stopPropagation()}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', fontSize: "24px" }}>
+        <h2>Notifications</h2>
+        <button
+          onClick={() => setShowNotifications(false)}
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            border: 'none',
+            background: 'none',
+          }}
+        >
+          ×
+        </button>
+      </div>
+      {notificationsError && <div style={{ color: 'red', marginBottom: '16px' }}>{notificationsError}</div>}
+      {notifications.length === 0 ? (
+        <div style={{ padding: '16px', color: '#888' }}>No notifications available.</div>
+      ) : (
+        <ul style={{ listStyle: 'none', padding: 0 }}>
+          {notifications.map(notification => (
+            <li
+              key={notification._id}
               style={{
-                position: 'fixed',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                background: 'white',
-                padding: '24px',
-                borderRadius: '8px',
-                maxWidth: '600px',
-                width: '90%',
-                maxHeight: '80vh',
-                overflowY: 'auto',
-                zIndex: 10,
+                padding: '8px',
+                borderBottom: '1px solid #ddd',
+                background: notification.isRead ? '#f4f4f4' : '#fff',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}
-              onClick={() => setShowNotifications(false)}
             >
-              <div
-                className="notifications-content"
-                style={{ padding: '16px' }}
-                onClick={e => e.stopPropagation()}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h2>Notifications</h2>
-                  <button
-                    onClick={() => setShowNotifications(false)}
-                    style={{
-                      fontSize: '1.5rem',
-                      fontWeight: 'bold',
-                      cursor: 'pointer',
-                      border: 'none',
-                      background: 'none',
-                    }}
-                  >
-                    ×
-                  </button>
-                </div>
-                {notificationsError && <div style={{ color: 'red', marginBottom: '16px' }}>{notificationsError}</div>}
-                {notifications.length === 0 ? (
-                  <div style={{ padding: '16px', color: '#888' }}>No notifications available.</div>
-                ) : (
-                  <ul style={{ listStyle: 'none', padding: 0 }}>
-                    {notifications.map(notification => (
-                      <li
-                        key={notification._id}
-                        style={{
-                          padding: '8px',
-                          borderBottom: '1px solid #ddd',
-                          background: notification.isRead ? '#f4f4f4' : '#fff',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <div>
-                          <p style={{ margin: 0, fontWeight: notification.isRead ? 'normal' : 'bold' }}>
-                            {notification.message}
-                          </p>
-                          <span style={{ fontSize: '12px', color: '#888' }}>
-                            {new Date(notification.createdAt).toLocaleString('en-US', {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: '2-digit',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                          </span>
-                        </div>
-                        {!notification.isRead && (
-                          <button
-                            onClick={() => handleMarkAsRead(notification._id)}
-                            style={{
-                              background: '#A2E494',
-                              color: '#13714C',
-                              border: 'none',
-                              borderRadius: '4px',
-                              padding: '4px 8px',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            Mark as Read
-                          </button>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+              <div>
+                <p style={{ margin: 0, fontWeight: notification.isRead ? 'normal' : 'bold' }}>
+                  {notification.message}
+                </p>
+                <span style={{ fontSize: '12px', color: '#888' }}>
+                  {new Date(notification.createdAt).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
               </div>
-            </div>
-          )}
+              {!notification.isRead && (
+                <button
+                  onClick={() => handleMarkAsRead(notification._id)}
+                  style={{
+                    background: '#A2E494',
+                    color: '#13714C',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '4px 8px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Mark as Read
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+)}
           
           {showUserLogs && (
             <div
@@ -819,12 +828,12 @@ const handleDeleteApplicant = async (applicantId) => {
             <div className='interviewscover'>
               <div className='interviewswrapper'>
                 <button
-                  className="interviews-close-btn"
-                  onClick={() => setseeInterviews(false)}
-                  aria-label="Close"
-                >
-                  ×
-                </button>
+              className="interviews-close-btn"
+              onClick={() => setseeInterviews(false)}
+              aria-label="Close"
+            >
+              ×
+            </button>
                 <div className='interviewslabel'>
                   <h1>Interviews</h1>
                 </div>

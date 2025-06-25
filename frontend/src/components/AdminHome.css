@@ -179,6 +179,31 @@ nav {
   top: 0;
   left: 0;
   width: 768px;
+  height: 512px;
+  box-sizing: border-box;
+  background-color: #A2E494;
+  border: 2px solid black;
+  margin: 0;
+  padding: 0;
+}
+
+.notifications-container {
+  position: fixed;
+  top: 16%;
+  left: 24%;
+  height: 70%;
+  max-height: 100vh;
+  width: 800px;
+  background: #13714C;
+  border-radius: 25px;
+  z-index: 10;
+  border: 1px solid black;
+}
+.notifications-content{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 768px;
   height: 480px;
   box-sizing: border-box;
   background-color: #A2E494;
