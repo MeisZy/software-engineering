@@ -1,38 +1,28 @@
 /* Flex layout for aside and main */
 
-.content-wrapper {
-  display:flex;
-  margin-top: 50px;
-  margin-left: 400px;
-  flex-grow: 1;
-  display: flex;
-  justify-content: flex-start;
-  
-  align-items: stretch; /* <- Important: makes child fill height */
-  height: 70vh; /* Full height of the viewport */
-  box-sizing: border-box;
-  padding: 0; /* Remove padding */
-    padding-right: 20px; 
-    max-width: 720px;
-  width: 100%;
-    background-color: #13714C;
-  border-radius: 12px;
-  overflow: visible;
-
-  height: 80vh; /* Match the height of wrapper */
-}
 
 .content-box {
   background-color: white;
-  border-radius: 12px;
+  border-radius: 25px;
   overflow: visible;
-  max-width: 700px;
-  width: 100%;
-  height: 95%; /* Match the height of wrapper */
+  max-width: 1100px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column; /* So header + body stack */
+  outline-width: 1px;
+  border-right: 20px solid #0c4b33;
+  border-bottom: 20px solid #0c4b33;
+  border-top: 2px solid #0c4b33;
+  border-left: 2px solid #0c4b33;
+  margin-top: 50px;
+  margin-left: 400px;
+  flex-grow: 1;
+  align-items: stretch; /* <- Important: makes child fill height */
+  height: 80vh; /* Full height of the viewport */
+  width: 100%;  
+  position: relative;
 }
+
 
 .Main-Container {
   padding-top: 50px;
@@ -101,15 +91,15 @@ aside button.selected {
   margin: 0;
   padding: 0px 24px;
   height: 60px;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
   background-color: #A2E494;
   width: 100%;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 0%;
   box-sizing: border-box;
   align-items: center; 
-   flex-shrink: 0;   
+  flex-shrink: 0;   
   display: flex;
 }
 
@@ -128,6 +118,7 @@ aside button.selected {
   margin: 0;
   font-size: 23px; 
   line-height: 1;   /* Prevent stretching */
+  font-weight: 600;
 }
 
 /* Content box like a card 

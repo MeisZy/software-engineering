@@ -3,6 +3,8 @@ import Navbar from "./Navbar"
 import Sidebar from "./Sidebar"
 import "./Sidebar.css"
 
+
+
 function Help({sections}) {
 
     const [selectedSection, setSelectedSection] = useState('section1');
@@ -22,6 +24,28 @@ const textSections = {
         <p>React makes it painless...</p>
                 <p>This is the first section...</p>
         <p>React makes it painless...</p>
+                <p>This is the first section...</p>
+        <p>React makes it painless...</p>
+                <p>This is the first section...</p>
+        <p>React makes it painless...</p>
+                <p>This is the first section...</p>
+        <p>React makes it painless...</p>
+                <p>This is the first section...</p>
+        <p>React makes it painless...</p>
+                <p>This is the first section...</p>
+        <p>React makes it painless...</p>
+            <p>React makes it painless...</p>
+                <p>This is the first section...</p>
+        <p>React makes it painless...</p>
+                <p>This is the first section...</p>
+        <p>React makes it painless...</p>
+                <p>This is the first section...</p>
+        <p>React makes it painless...</p>
+                <p>This is the first section...</p>
+        <p>React makes it painless...</p>
+                <p>This is the first section...</p>
+        <p>React makes it painless...</p>
+            <p>React makes it painless...</p>
                 <p>This is the first section...</p>
         <p>React makes it painless...</p>
                 <p>This is the first section...</p>
@@ -118,16 +142,15 @@ const textSections = {
   selectedSection={selectedSection}
 />
   
-  <div className="content-wrapper">
     <div className="content-box">
-      <div className="text-header">
-  <h2>{textSections[selectedSection].title}</h2>
-</div>
-<div className="text-body">
-  {textSections[selectedSection].body}
-</div>
+        <div className="text-header">
+                <h2>{textSections[selectedSection].title}</h2>
+        </div>
+        <div className="text-body">
+        {textSections[selectedSection].body}
+        </div>
     </div>
-  </div>
+
 </div>
 
 </>
