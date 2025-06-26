@@ -1,27 +1,27 @@
 const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid'); // Add uuid for unique IDs
+const { v4: uuidv4 } = require('uuid'); // For unique IDs
 
 const applicantSchema = new mongoose.Schema({
-  applicantId: { type: String, default: uuidv4, unique: true }, // Add unique applicantId
-  email: { type: String, required: true, unique: true },
-  fullName: String,
-  firstName: String,
-  middleName: String,
-  lastName: String,
-  birthdate: Date,
-  gender: String,
-  streetAddress: String,
-  city: String,
-  stateProvince: String,
-  postalCode: String,
-  mobileNumber: String,
-  password: String,
+  applicantId: { type: String, default: uuidv4, unique: true }, // Unique applicantId
+  email: { type: String, required: true, unique: true }, // Required field
+  fullName: { type: String }, // Optional field
+  firstName: { type: String, required: true }, // Required field
+  middleName: { type: String }, // Optional field
+  lastName: { type: String, required: true }, // Required field
+  birthdate: { type: Date, required: true }, // Required field
+  gender: { type: String, required: true }, // Required field
+  streetAddress: { type: String }, // Optional field
+  city: { type: String }, // Optional field
+  stateProvince: { type: String }, // Optional field
+  postalCode: { type: String }, // Optional field
+  mobileNumber: { type: String }, // Optional field
+  password: { type: String, required: true }, // Required field
   resume: {
-    filePath: String,
-    fileType: String,
-    originalFileName: String,
+    filePath: { type: String },
+    fileType: { type: String },
+    originalFileName: { type: String },
   },
-  extractedSkills: [String],
+  extractedSkills: { type: [String] }, // Optional field
 });
 
 module.exports = mongoose.model('Applicants', applicantSchema);
