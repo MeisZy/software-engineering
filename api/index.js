@@ -760,34 +760,53 @@ app.post('/apply', async (req, res) => {
 app.get('/fix-applicant-scores', async (req, res) => {
   try {
     const applicants = await JobApplicants.find();
-    let updated = 0;
+    const updatedApplicants = [];
+    let updatedCount = 0;
+
+    console.log(`[DEBUG] Starting score fix for ${applicants.length} applicants`);
+
     for (const applicant of applicants) {
       let needsUpdate = false;
-      if (!applicant.scores) applicant.scores = {};
-      for (const pos of applicant.positionAppliedFor) {
+      const scores = applicant.scores || {};
+
+      for (const pos of applicant.positionAppliedFor || []) {
         const normalizedJobTitle = pos.jobTitle.trim().toLowerCase();
-        if (!(normalizedJobTitle in applicant.scores)) {
+        if (!(normalizedJobTitle in scores)) {
           const job = await Jobs.findOne({ title: { $regex: `^${pos.jobTitle}$`, $options: 'i' } });
           const originalApplicant = await Applicants.findOne({ email: applicant.email });
           let score = 0;
-          if (job && originalApplicant && originalApplicant.extractedSkills) {
+
+          if (job && originalApplicant && originalApplicant.extractedSkills?.length) {
             score = calculateScore(originalApplicant.extractedSkills, job);
+            console.log(`[DEBUG] Calculated score for ${applicant.email} on job ${pos.jobTitle}: ${score}`);
+          } else {
+            console.log(`[DEBUG] No score for ${applicant.email} on ${pos.jobTitle}: Job=${!!job}, Skills=${originalApplicant?.extractedSkills?.length || 0}`);
           }
-          applicant.scores[normalizedJobTitle] = score;
+
+          scores[normalizedJobTitle] = score;
           needsUpdate = true;
-          console.log(`[DEBUG] Fixed score for ${applicant.email} on job ${pos.jobTitle}: ${score}`);
         }
       }
+
       if (needsUpdate) {
-        await applicant.save();
-        updated++;
+        const updatedApplicant = await JobApplicants.findOneAndUpdate(
+          { _id: applicant._id },
+          { $set: { scores } },
+          { new: true, runValidators: true }
+        );
+        updatedApplicants.push(updatedApplicant);
+        updatedCount++;
+        console.log(`[DEBUG] Updated ${applicant.email} scores: ${JSON.stringify(scores)}`);
+      } else {
+        updatedApplicants.push(applicant);
       }
     }
-    console.log(`[DEBUG] Fixed scores for ${updated} applicants.`);
-    res.json({ message: `Fixed scores for ${updated} applicants.` });
+
+    console.log(`[DEBUG] Fixed scores for ${updatedCount} applicants`);
+    res.json({ message: `Fixed scores for ${updatedCount} applicants`, applicants: updatedApplicants });
   } catch (err) {
-    console.error('Error fixing applicant scores:', err);
-    res.status(500).json({ message: err.message });
+    console.error('[ERROR] Fixing applicant scores:', err.message);
+    res.status(500).json({ message: 'Failed to fix scores', error: err.message });
   }
 });
 
