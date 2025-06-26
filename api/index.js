@@ -111,6 +111,7 @@ transporter.verify((error, success) => {
 // Calculate applicant score (matches only keywords, sums their graded points)
 const calculateScore = (extractedSkills, job) => {
   let totalPoints = 0;
+  if (!extractedSkills || !job) return totalPoints;
 
   // For each keyword, check if applicant has it in their skills (partial match, case-insensitive)
   job.keywords.forEach(keyword => {
@@ -126,7 +127,6 @@ const calculateScore = (extractedSkills, job) => {
     }
   });
 
-  // Score is totalPoints (max 20)
   return totalPoints;
 };
 
@@ -649,6 +649,9 @@ app.post('/apply', async (req, res) => {
   try {
     const { email, jobTitle } = req.body;
 
+    // Normalize jobTitle
+    const normalizedJobTitle = jobTitle.trim().toLowerCase();
+
     // Fetch the applicant details
     const applicant = await Applicants.findOne({ email });
     if (!applicant) {
@@ -656,38 +659,37 @@ app.post('/apply', async (req, res) => {
     }
 
     // Fetch the job details
-    const job = await Jobs.findOne({ title: jobTitle });
+    const job = await Jobs.findOne({ title: { $regex: `^${jobTitle}$`, $options: 'i' } });
     if (!job) {
       return res.status(404).json({ message: 'Job not found' });
     }
 
     // Calculate score based on extracted skills and job requirements
-const score = applicant.extractedSkills ? calculateScore(applicant.extractedSkills, job) : 0;
-const status = score >= job.threshold ? 'To Next Interview' : 'Rejected';
+    const score = applicant.extractedSkills ? calculateScore(applicant.extractedSkills, job) : 0;
+    const status = score >= job.threshold ? 'To Next Interview' : 'Rejected';
 
     // Check if the applicant has already applied for this job
     let jobApplicant = await JobApplicants.findOne({ email });
-    if (jobApplicant && jobApplicant.positionAppliedFor.includes(jobTitle)) {
+    if (
+      jobApplicant &&
+      jobApplicant.positionAppliedFor.some(pos => pos.jobTitle.toLowerCase() === normalizedJobTitle)
+    ) {
       return res.status(400).json({ message: 'You have already applied for this job' });
     }
 
     // Update or create job application record
     if (jobApplicant) {
-      if (!jobApplicant.positionAppliedFor.includes(jobTitle)) {
-        jobApplicant.positionAppliedFor.push(jobTitle);
-      }
+      jobApplicant.positionAppliedFor.push({ jobTitle, status });
       jobApplicant.scores = jobApplicant.scores || {};
-      jobApplicant.scores[jobTitle] = score;
-      jobApplicant.status = status;
+      jobApplicant.scores[normalizedJobTitle] = score;
       await jobApplicant.save();
     } else {
       jobApplicant = new JobApplicants({
         fullName: applicant.fullName,
         email: applicant.email,
         mobileNumber: applicant.mobileNumber.replace(/[^\d]/g, '').slice(-10),
-        positionAppliedFor: [jobTitle],
-        status,
-        scores: { [jobTitle]: score },
+        positionAppliedFor: [{ jobTitle, status }],
+        scores: { [normalizedJobTitle]: score },
         applicationStage: 'None'
       });
       await jobApplicant.save();
@@ -697,29 +699,50 @@ const status = score >= job.threshold ? 'To Next Interview' : 'Rejected';
     const now = new Date();
     const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
+    const adminMsg =
+      status === 'To Next Interview'
+        ? `${applicant.fullName || applicant.email} was Accepted after applying for "${jobTitle}".`
+        : `${applicant.fullName || applicant.email} was Rejected after applying for "${jobTitle}".`;
+
     await AdminNotifications.create({
-      message: `${applicant.fullName || applicant.email} applied for "${jobTitle}"`,
+      message: adminMsg,
       email: applicant.email,
       jobTitle: jobTitle,
       isRead: false,
       time: timeString,
     });
 
-    // Send email notification to the applicant
-await transporter.sendMail({
-  from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
-  to: email, // Current applicant's email
-  subject: 'Application Status Update',
-  html: `
-    <h3>Application Status Update</h3>
-    <p>Dear ${applicant.fullName || 'Applicant'},</p>
-    <p>Your application for <strong>${jobTitle}</strong> was marked as <strong>${status}</strong>.</p>
-  `,
-});
-console.log(`[DEBUG] Application for "${jobTitle}" by ${applicant.fullName || applicant.email}:`);
-console.log(`        Computed Score: ${score}`);
-console.log(`        Threshold: ${job.threshold}`);
-console.log(`        Status: ${status}`);
+    const userMsg =
+      status === 'To Next Interview'
+        ? `We're delighted to inform you that your application status for "${jobTitle}" has been set to ${status}.`
+        : `We regret to inform you that your application status for "${jobTitle}" has been set to ${status}.`;
+
+    await new Notifications({
+      email,
+      message: userMsg,
+    }).save();
+
+    await transporter.sendMail({
+      from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
+      to: email,
+      subject: 'Application Status Update',
+      html: `
+        <h3>Application Status Update</h3>
+        <p>Dear ${applicant.fullName || 'Applicant'},</p>
+        <p>${userMsg}</p>
+        <p>Please log in to your Collectius account to view more details.</p>
+        <hr />
+        <p>Best regards,</p>
+        <p>The Collectius Team</p>
+      `,
+    });
+
+    console.log(`[DEBUG] Application for "${jobTitle}" by ${applicant.fullName || applicant.email}:`);
+    console.log(`        Computed Score: ${score}`);
+    console.log(`        Threshold: ${job.threshold}`);
+    console.log(`        Status: ${status}`);
+    console.log(`        Scores Object: ${JSON.stringify(jobApplicant.scores)}`);
+
     res.status(201).json({ message: 'Application submitted successfully', score, status });
   } catch (error) {
     console.error('Error applying for job:', error);
@@ -732,6 +755,43 @@ console.log(`        Status: ${status}`);
     res.status(500).json({ message: 'Server error while applying for job' });
   }
 });
+
+// Fix applicant scores endpoint
+app.get('/fix-applicant-scores', async (req, res) => {
+  try {
+    const applicants = await JobApplicants.find();
+    let updated = 0;
+    for (const applicant of applicants) {
+      let needsUpdate = false;
+      if (!applicant.scores) applicant.scores = {};
+      for (const pos of applicant.positionAppliedFor) {
+        const normalizedJobTitle = pos.jobTitle.trim().toLowerCase();
+        if (!(normalizedJobTitle in applicant.scores)) {
+          const job = await Jobs.findOne({ title: { $regex: `^${pos.jobTitle}$`, $options: 'i' } });
+          const originalApplicant = await Applicants.findOne({ email: applicant.email });
+          let score = 0;
+          if (job && originalApplicant && originalApplicant.extractedSkills) {
+            score = calculateScore(originalApplicant.extractedSkills, job);
+          }
+          applicant.scores[normalizedJobTitle] = score;
+          needsUpdate = true;
+          console.log(`[DEBUG] Fixed score for ${applicant.email} on job ${pos.jobTitle}: ${score}`);
+        }
+      }
+      if (needsUpdate) {
+        await applicant.save();
+        updated++;
+      }
+    }
+    console.log(`[DEBUG] Fixed scores for ${updated} applicants.`);
+    res.json({ message: `Fixed scores for ${updated} applicants.` });
+  } catch (err) {
+    console.error('Error fixing applicant scores:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ... (rest of the index.js code remains unchanged)
 
 // Fetch applicants endpoint
 app.get('/applicants', async (req, res) => {
@@ -845,10 +905,10 @@ if (fileType === 'pdf') {
 // Update applicant status endpoint
 app.put('/update-applicant-status', async (req, res) => {
   try {
-    const { email, status } = req.body;
+    const { email, jobTitle, status } = req.body;
 
-    if (!email || !status) {
-      return res.status(400).json({ message: 'Email and status are required' });
+    if (!email || !status || !jobTitle) {
+      return res.status(400).json({ message: 'Email, jobTitle, and status are required' });
     }
 
     if (!['Rejected', 'To Next Interview'].includes(status)) {
@@ -865,15 +925,33 @@ app.put('/update-applicant-status', async (req, res) => {
       jobApplicant.fullName = applicant.fullName || 'Unknown Applicant';
     }
 
-    jobApplicant.status = status;
+    // Update status for the specific jobTitle in positionAppliedFor
+    let found = false;
+    jobApplicant.positionAppliedFor = jobApplicant.positionAppliedFor.map(pos => {
+      if (pos.jobTitle === jobTitle) {
+        found = true;
+        return { ...pos, status };
+      }
+      return pos;
+    });
+    if (!found) {
+      // If not found, add it
+      jobApplicant.positionAppliedFor.push({ jobTitle, status });
+    }
     await jobApplicant.save();
 
-    const notification = new Notifications({
-      email,
-      message: `Your application status has been updated to: ${status}`,
-    });
-    await notification.save();
+    // Improved user notification message
+    const userMsg =
+      status === 'To Next Interview'
+        ? `We're delighted to inform you that your application status for "${jobTitle}" has been set to ${status}.`
+        : `We regret to inform you that your application status for "${jobTitle}" has been set to ${status}.`;
 
+    await new Notifications({
+      email,
+      message: userMsg,
+    }).save();
+
+    // Send email notification to the applicant
     await transporter.sendMail({
       from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
       to: email,
@@ -881,7 +959,7 @@ app.put('/update-applicant-status', async (req, res) => {
       html: `
         <h3>Application Status Update</h3>
         <p>Dear ${jobApplicant.fullName || 'Applicant'},</p>
-        <p>Your application status has been updated to: <strong>${status}</strong>.</p>
+        <p>${userMsg}</p>
         <p>Please log in to your Collectius account to view more details.</p>
         <hr />
         <p>Best regards,</p>
@@ -1037,6 +1115,39 @@ app.get('/fix-applicant-status', async (req, res) => {
   } catch (error) {
     console.error('Error fixing applicant status:', error);
     res.status(500).json({ message: 'Failed to update status', error: error.message });
+  }
+});
+
+app.get('/fix-applicant-scores', async (req, res) => {
+  try {
+    const applicants = await JobApplicants.find();
+    let updated = 0;
+    for (const applicant of applicants) {
+      let needsUpdate = false;
+      if (!applicant.scores) applicant.scores = {};
+      for (const pos of applicant.positionAppliedFor) {
+        const normalizedJobTitle = pos.jobTitle.trim().toLowerCase();
+        if (!(normalizedJobTitle in applicant.scores)) {
+          // Try to recalculate the score if possible
+          const job = await Jobs.findOne({ title: { $regex: `^${pos.jobTitle}$`, $options: 'i' } });
+          let score = 0;
+          if (job && applicant.extractedSkills) {
+            score = calculateScore(applicant.extractedSkills, job);
+          }
+          applicant.scores[normalizedJobTitle] = score;
+          needsUpdate = true;
+          console.log(`Fixed score for ${applicant.email} on job ${pos.jobTitle}: ${score}`);
+        }
+      }
+      if (needsUpdate) {
+        await applicant.save();
+        updated++;
+      }
+    }
+    res.json({ message: `Fixed scores for ${updated} applicants.` });
+  } catch (err) {
+    console.error('Error fixing applicant scores:', err);
+    res.status(500).json({ message: err.message });
   }
 });
 

@@ -11,6 +11,8 @@ function UserManagement() {
   useEffect(() => {
     const fetchApplicants = async () => {
       try {
+        // Call fix-applicant-scores endpoint to ensure data consistency
+        await axios.get('http://localhost:5000/fix-applicant-scores');
         const response = await axios.get('http://localhost:5000/applicants');
         setApplicants(response.data);
       } catch (err) {
@@ -21,15 +23,23 @@ function UserManagement() {
     fetchApplicants();
   }, []);
 
-  const handleStatusChange = async (email, newStatus) => {
+  const handleStatusChange = async (email, jobTitle, newStatus) => {
     try {
-      const response = await axios.put('http://localhost:5000/update-applicant-status', {
+      await axios.put('http://localhost:5000/update-applicant-status', {
         email,
+        jobTitle,
         status: newStatus,
       });
-      setApplicants((prev) =>
-        prev.map((applicant) =>
-          applicant.email === email ? { ...applicant, status: newStatus } : applicant
+      setApplicants(prev =>
+        prev.map(applicant =>
+          applicant.email === email
+            ? {
+                ...applicant,
+                positionAppliedFor: applicant.positionAppliedFor.map(pos =>
+                  pos.jobTitle === jobTitle ? { ...pos, status: newStatus } : pos
+                ),
+              }
+            : applicant
         )
       );
       setError('');
@@ -56,6 +66,12 @@ function UserManagement() {
     navigate('/adminmaintainance');
   };
 
+  useEffect(() => {
+    if (applicants.length) {
+      console.log('Applicants:', applicants);
+    }
+  }, [applicants]);
+
   const handleDownloadAll = () => {
     const jsonData = JSON.stringify(applicants, null, 2);
     const blob = new Blob([jsonData], { type: 'application/json' });
@@ -81,7 +97,10 @@ function UserManagement() {
         <div className="usermanagementrightcomp">
           <div className="managementcontainer">
             <div className="managementheader">
-              <a onClick={handleDownloadAll} style={{ cursor: 'pointer', color: '#13714C', textDecoration: 'none', fontWeight: '600' }}>
+              <a
+                onClick={handleDownloadAll}
+                style={{ cursor: 'pointer', color: '#13714C', textDecoration: 'none', fontWeight: '600' }}
+              >
                 Download All Applicants
               </a>
             </div>
@@ -89,21 +108,61 @@ function UserManagement() {
             {applicants.length === 0 && !error && (
               <div style={{ padding: '16px', color: '#888' }}>No applicants available.</div>
             )}
-            {applicants.map((applicant) => (
-              <ul className="managementinstance" key={applicant._id}>
-                <label>{applicant.email}</label>
-                <p>Positions Applied: {applicant.positionAppliedFor.join(', ')}</p>
-                <p>Scores: {Object.entries(applicant.scores || {}).map(([job, score]) => `${job}: ${score}`).join(', ')}</p>
-                <select
-                  value={applicant.status}
-                  onChange={(e) => handleStatusChange(applicant.email, e.target.value)}
-                >
-                  <option value="To Next Interview">To Next Interview</option>
-                  <option value="Rejected">Rejected</option>
-                </select>
-                <a onClick={() => handleDelete(applicant.email)}>Delete</a>
-              </ul>
-            ))}
+            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '16px' }}>
+              <thead>
+                <tr>
+                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Email</th>
+                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Position Applied</th>
+                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Score</th>
+                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Status</th>
+                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {applicants.map(applicant => (
+                  (applicant.positionAppliedFor || []).map((pos, idx) => (
+                    <tr key={`${applicant._id}-${pos.jobTitle}`}>
+                      {idx === 0 ? (
+                        <td
+                          rowSpan={applicant.positionAppliedFor.length}
+                          style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'middle' }}
+                        >
+                          {applicant.email}
+                        </td>
+                      ) : null}
+                      <td style={{ padding: '8px', border: '1px solid #13714C' }}>{pos.jobTitle}</td>
+                      <td style={{ padding: '8px', border: '1px solid #13714C' }}>
+                        {applicant.scores && applicant.scores[pos.jobTitle.trim().toLowerCase()] !== undefined
+                          ? applicant.scores[pos.jobTitle.trim().toLowerCase()]
+                          : '-'}
+                      </td>
+                      <td style={{ padding: '8px', border: '1px solid #13714C' }}>
+                        <select
+                          value={pos.status}
+                          onChange={e => handleStatusChange(applicant.email, pos.jobTitle, e.target.value)}
+                        >
+                          <option value="To Next Interview">To Next Interview</option>
+                          <option value="Rejected">Rejected</option>
+                        </select>
+                      </td>
+                      {idx === 0 ? (
+                        <td
+                          rowSpan={applicant.positionAppliedFor.length}
+                          style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'middle' }}
+                        >
+                          <a
+                            onClick={() => handleDelete(applicant.email)}
+                            style={{ cursor: 'pointer', color: '#13714C', textDecoration: 'underline' }}
+                          >
+                            Delete
+                          </a>
+                        </td>
+                      ) : null}
+                    </tr>
+                  ))
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

@@ -183,9 +183,7 @@ function UserHome() {
     setTimeout(() => setShowSuggestions(false), 100);
   };
 
-  const handleProfile = () => {
-    navigate('/profile');
-  };
+
 
   const handleMarkAsRead = async (notificationId) => {
     try {
@@ -230,6 +228,9 @@ function UserHome() {
     return true;
   });
 
+  const handleProfile = () =>{
+    navigate('/profile')
+  }
   return (
     <>
       <nav className="user-nav">
@@ -242,6 +243,7 @@ function UserHome() {
           <a href="#" onClick={(e) => { e.preventDefault(); setShowReportForm(true); }}>Report a Problem</a>
           <a href="#" onClick={handleFAQs}>Help</a>
           <a href="#" onClick={handleAbout}>About</a>
+          <a href="#" onClick={handleProfile}>Profile</a>
         
           {/*   <a href="#" onClick={handleProfile}>Settings</a>  />*/}
           
