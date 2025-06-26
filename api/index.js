@@ -711,62 +711,67 @@ app.post('/apply', async (req, res) => {
     }
 
     // Create admin notification (permanent in DB) with time field
-    const now = new Date();
-    const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  app.post('/apply', async (req, res) => {
+  try {
+    const { email, jobTitle } = req.body;
 
-    const adminMsg =
-      status === 'To Next Interview'
-        ? `${applicant.fullName || applicant.email} was Accepted after applying for "${jobTitle}".`
-        : `${applicant.fullName || applicant.email} was Rejected after applying for "${jobTitle}".`;
+    // Fetch applicant and job details
+    const applicant = await Applicants.findOne({ email });
+    const job = await Jobs.findOne({ title: jobTitle });
 
+    if (!applicant) {
+      return res.status(404).json({ message: 'Applicant not found' });
+    }
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+
+    // Calculate score based on extracted skills and job requirements
+    const score = calculateScore(applicant.extractedSkills, job);
+    const status = score >= job.threshold ? 'To Next Interview' : 'Rejected';
+
+    // Check if the applicant has already applied for this job
+    let jobApplicant = await JobApplicants.findOne({ email });
+    if (jobApplicant) {
+      // Update existing application
+      const existingPosition = jobApplicant.positionAppliedFor.find(pos => pos.jobTitle === jobTitle);
+      if (existingPosition) {
+        return res.status(400).json({ message: 'You have already applied for this job' });
+      }
+      jobApplicant.positionAppliedFor.push({ jobTitle, status });
+      jobApplicant.scores[jobTitle] = score; // Store the computed score
+      await jobApplicant.save();
+    } else {
+      // Create new job application record
+      jobApplicant = new JobApplicants({
+        fullName: applicant.fullName,
+        email,
+        mobileNumber: applicant.mobileNumber,
+        positionAppliedFor: [{ jobTitle, status }],
+        scores: { [jobTitle]: score },
+        applicationStage: 'None',
+      });
+      await jobApplicant.save();
+    }
+
+    // Create admin notification
+    const adminMsg = `${applicant.fullName || applicant.email} applied for "${jobTitle}" with a score of ${score}.`;
     await AdminNotifications.create({
       message: adminMsg,
       email: applicant.email,
-      jobTitle: jobTitle,
+      jobTitle,
       isRead: false,
-      time: timeString,
     });
 
-    const userMsg =
-      status === 'To Next Interview'
-        ? `We're delighted to inform you that your application status for "${jobTitle}" has been set to ${status}.`
-        : `We regret to inform you that your application status for "${jobTitle}" has been set to ${status}.`;
-
-    await new Notifications({
+    // Send notification to applicant
+    await Notifications.create({
       email,
-      message: userMsg,
-    }).save();
-
-    await transporter.sendMail({
-      from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
-      to: email,
-      subject: 'Application Status Update',
-      html: `
-        <h3>Application Status Update</h3>
-        <p>Dear ${applicant.fullName || 'Applicant'},</p>
-        <p>${userMsg}</p>
-        <p>Please log in to your Collectius account to view more details.</p>
-        <hr />
-        <p>Best regards,</p>
-        <p>The Collectius Team</p>
-      `,
+      message: `Your application for "${jobTitle}" has been submitted with a score of ${score}.`,
     });
-
-    console.log(`[DEBUG] Application for "${jobTitle}" by ${applicant.fullName || applicant.email}:`);
-    console.log(`        Computed Score: ${score}`);
-    console.log(`        Threshold: ${job.threshold}`);
-    console.log(`        Status: ${status}`);
-    console.log(`        Scores Object: ${JSON.stringify(jobApplicant.scores)}`);
 
     res.status(201).json({ message: 'Application submitted successfully', score, status });
   } catch (error) {
     console.error('Error applying for job:', error);
-    if (error.code === 11000) {
-      return res.status(400).json({ message: 'Email already exists in job applicants' });
-    }
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({ message: `Validation error: ${error.message}` });
-    }
     res.status(500).json({ message: 'Server error while applying for job' });
   }
 });

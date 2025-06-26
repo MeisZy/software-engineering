@@ -110,21 +110,22 @@ function UserHome() {
     }
   };
 
-  const handleApply = async (jobTitle) => {
-    try {
-      const response = await axios.post('http://localhost:5000/apply', {
-        email: userEmail,
-        jobTitle,
-      });
-      setApplicationMessage(response.data.message);
-      setTimeout(() => setApplicationMessage(''), 3000);
-      setOpenDetailIdx(null);
-    } catch (error) {
-      console.error('Error applying for job:', error);
-      setApplicationMessage(error.response?.data?.message || 'Failed to apply. Please try again.');
-      setTimeout(() => setApplicationMessage(''), 3000);
-    }
-  };
+const handleApply = async (jobTitle) => {
+  try {
+    const response = await axios.post('http://localhost:5000/apply', {
+      email: userEmail,
+      jobTitle,
+    });
+    const { score } = response.data; // Get the score from the response
+    setApplicationMessage(`Applied successfully. Your score: ${score}`);
+    setTimeout(() => setApplicationMessage(''), 3000);
+    setOpenDetailIdx(null);
+  } catch (error) {
+    console.error('Error applying for job:', error);
+    setApplicationMessage(error.response?.data?.message || 'Failed to apply. Please try again.');
+    setTimeout(() => setApplicationMessage(''), 3000);
+  }
+};
 
   const handleReportSubmit = async (e) => {
     e.preventDefault();
