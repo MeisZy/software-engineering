@@ -16,6 +16,7 @@
   import GoogleRegistration from './components/GoogleRegistration.jsx';
   import Profile from './components/About/Profile.jsx';
   import UserManagement from './components/UserManagement.jsx';
+  import HelpAdmin from './components/HelpAdmin.jsx';
   import './App.css';
 
   function App() {
@@ -37,6 +38,7 @@
             <Route path="/googleregistration" element={<GoogleRegistration />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/usermanagement" element={<UserManagement />} />
+            <Route path="/helpadmin" element={<HelpAdmin />} />
           </Routes>
       </>
     );

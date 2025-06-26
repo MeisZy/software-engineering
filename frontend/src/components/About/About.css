@@ -1,3 +1,30 @@
+.user-nav {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #13714C;
+  color: white;
+  width: 100%;
+  height: 50px;
+  box-sizing: border-box;
+  justify-content: space-between;
+}
+
+.user-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-nav-right {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+
+
+
 
 .content-wrapper {
   max-width: 900px;

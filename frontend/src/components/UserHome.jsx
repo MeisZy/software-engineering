@@ -95,7 +95,11 @@ function UserHome() {
   };
 
   const handleFAQs = () => {
-    navigate('/questions');
+    navigate('/help');
+  };
+
+    const handleAbout = () => {
+    navigate('/about');
   };
 
   const handleCheckboxChange = (id, setState, state) => {
@@ -230,11 +234,17 @@ function UserHome() {
     <>
       <nav className="user-nav">
         <div className="user-nav-left">
-          <img src={profilePic || Placeholder} alt="Profile" />
+         {/*  <img src={profilePic || Placeholder} alt="Profile" />*/}
+            <a href="/profile">
+              <img src={profilePic || Placeholder} alt="Profile" />
+            </a>
           <span className="usergreeting">Welcome, {userEmail}!</span>
           <a href="#" onClick={(e) => { e.preventDefault(); setShowReportForm(true); }}>Report a Problem</a>
-          <a href="#" onClick={handleFAQs}>FAQs</a>
-          <a href="#" onClick={handleProfile}>Settings</a>
+          <a href="#" onClick={handleFAQs}>Help</a>
+          <a href="#" onClick={handleAbout}>About</a>
+        
+          {/*   <a href="#" onClick={handleProfile}>Settings</a>  />*/}
+          
         </div>
         <div className="user-nav-right">
           <div style={{ position: 'relative', display: 'inline-block' }}>
@@ -254,6 +264,8 @@ function UserHome() {
           <a className="logout" onClick={handleLogout}>Logout</a>
         </div>
       </nav>
+
+
       <div className='usercontainer'>
         <div className='userleftcomp'>
           <div className='usersearch'>
@@ -345,47 +357,57 @@ function UserHome() {
               {applicationMessage}
             </div>
           )}
+
+          {/*Notification  */}
+
           {showNotifications && (
             <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              background: 'rgba(0,0,0,0.4)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 10,
+          }}
+            
+            > 
+            <div
               className="notifications-container"
-              style={{
-                position: 'fixed',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                background: 'white',
-                padding: '24px',
-                borderRadius: '8px',
-                maxWidth: '600px',
-                width: '90%',
-                maxHeight: '80vh',
-                overflowY: 'auto',
-                zIndex: 10,
-              }}
               onClick={() => setShowNotifications(false)}
             >
+              <div className='notiflightGreenBG'>
               <div
                 className="notifications-content"
-                style={{ padding: '16px' }}
                 onClick={e => e.stopPropagation()}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <div className= "notif-header" >
                   <h2>Notifications</h2>
                   <button
                     onClick={() => setShowNotifications(false)}
-                    style={{
-                      fontSize: '1.5rem',
-                      fontWeight: 'bold',
-                      cursor: 'pointer',
-                      border: 'none',
-                      background: 'none',
-                    }}
+                                    style={{
+                  fontSize: '30px',
+                  marginRight: '19px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: 'none',
+                                    }}
                   >
                     ×
                   </button>
+
                 </div>
                 {notifications.length === 0 ? (
-                  <div style={{ padding: '16px', color: '#888' }}>No notifications available.</div>
+                  <div className='NoNotif'>
+                    
+                   <p>No notifications available.</p> 
+                    
+                    </div>
                 ) : (
                   <ul style={{ listStyle: 'none', padding: 0 }}>
                     {notifications.map(notification => (
@@ -435,6 +457,8 @@ function UserHome() {
                 )}
               </div>
             </div>
+            </div>
+          </div>
           )}
           {loading ? (
             <div style={{ padding: '32px', color: '#888' }}>Loading jobs...</div>
@@ -465,91 +489,70 @@ function UserHome() {
                       </div>
                     </div>
                     {openDetailIdx === idx && (
-                      <div className="userjobdetails" onClick={() => setOpenDetailIdx(null)}>
-                          <div className="userjobdetailswrapper">
+                            /* After opening job details button */
+                  <div className="userjobdetails" onClick={() => setOpenDetailIdx(null)}>
+                       <div className='jobdetails-wrapper'> 
                         <div className="userjobdetailsblock" onClick={e => e.stopPropagation()}>
-                          <div className='userjobdetailsinner'>
-                          <div
-                            style={{
-                              display: 'flex',
-                              alignItems: 'flex-start',
-                              justifyContent: 'flex-start',
-                              width: '100%',
-                              margin: 0,
-                              padding: 0,
-                              position: 'relative'
-                            }}
-                          >
-                            <h3
-                              style={{
-                                margin: 0,
-                                padding: 0,
-                                textAlign: 'left',
-                                alignSelf: 'flex-start',
-                                flex: 1
-                              }}
-                            >
+                          <div className = "jobtitle-Header">
+                            <h3 style={{ marginLeft: '25px' }}>
                               {job.title}
                             </h3>
-                          </div>
                             <a
-                              onClick={() => setOpenDetailIdx(null)}
-                              aria-label="Close"
                               style={{
-                                position: 'absolute',
-                                top: "10px",
-                                right: "8px",
                                 fontSize: '2rem',
                                 fontWeight: 'bold',
-                                color: 'white',
+                                color: 'black',
                                 textDecoration: 'none',
                                 cursor: 'pointer',
+                                marginLeft: '24px',
+                                marginRight:'24px',
                                 lineHeight: '1',
-                                margin: 0,
-                                padding: 0,
-                                background: 'none',
-                                border: 'none'
                               }}
+                              onClick={() => setOpenDetailIdx(null)}
+                              aria-label="Close"
                             >
                               ×
                             </a>
-                          <div className="userjobdetailsgrid" style={{ marginTop: "16px" }}>
-                            <p><b>Department:</b> {job.department}</p>
+                          </div>
+
+
+                          <div className="userjobdetailsgrid">
+                            <p style={{ marginTop: '20px' }}><b>Department:</b> {job.department}</p>
                             <p><b>Work Schedule:</b> {job.workSchedule}</p>
                             <p><b>Work Setup:</b> {job.workSetup}</p>
                             <p><b>Employment Type:</b> {job.employmentType}</p>
-                            <p><b>Description:</b> {job.description.join(', ')}</p>
+                            <p><b>Description:</b></p>
+                            <p> {job.description.join(', ')}</p>
                             <p><b>Key Responsibilities:</b></p>
                             <ul>
                               {job.keyResponsibilities.map((item, i) => (
-                              <p key={i}>{item}</p>
+                                <li key={i}>{item}</li>
                               ))}
-                              </ul>
+                            </ul>
                             <p><b>Qualifications:</b></p>
                             <ul>
                               {job.qualifications.map((item, i) => (
-                              <p key={i}>{item}</p>
+                                <li key={i}>{item}</li>
                               ))}
-                              </ul>
+                            </ul>
                             <p><b>What we Offer:</b></p>
                             <ul>
                               {job.whatWeOffer.map((item, i) => (
-                              <p key={i}>{item}</p>
+                                <li key={i}>{item}</li>
                               ))}
-                              </ul>
-                            <div className='userjobdetailbuttons'>
-                                <button className='userjobdetailexit' onClick={() => setOpenDetailIdx(null)}>
-                                  Close
-                                </button>
-                                <button className='userjobdetailapply' onClick={() => handleApply(job.title)}>
-                                  Apply
-                                </button>
-                            </div>
+                            </ul>
+  
+                            <button
+                              className='userjobdetailapply'
+                              onClick={() => handleApply(job.title)}
+
+                            >
+                              Apply
+                            </button>
                           </div>
-                          </div>
-                            </div>
-                          </div>
+                        </div>
                       </div>
+                  </div>
                     )}
                   </div>
                 ))
@@ -614,25 +617,11 @@ function UserHome() {
                   />
                 </div>
                   <div className='form-buttons'>
-                    <button
-                      type="button"
-                      className="userjobdetailexit"
-                      onClick={() => setShowReportForm(false)}
-                      style={{
-                        marginRight: '8px',
-                        border:"2px solid black"
-                      }}
-                    >
-                      Close
-                    </button>
+
                     <button
                       type="submit"
-                      className="userjobdetailapply"
-                      style={{
-                        background: '#A2E494',
-                        color: '#13714C',
-                        border:"2px solid black"
-                      }}
+                      className="reportSubmit"
+
                     >
                       Submit
                     </button>
