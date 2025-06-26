@@ -18,4 +18,4 @@ function GoogleRegistration() {
   )
 }
 
-export default GoogleRegistration;
+export default GoogleRegistration;<s></s>
