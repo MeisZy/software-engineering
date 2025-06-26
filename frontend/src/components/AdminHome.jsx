@@ -35,6 +35,12 @@ function AdminHome() {
   const [seeInterviews, setseeInterviews] = useState(false);
   const [adminNotifications, setAdminNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+
+  const [showApplicantDropdown, setShowApplicantDropdown] = useState(false);
+const [selectedApplicant, setSelectedApplicant] = useState('');
+const [interviewDate, setInterviewDate] = useState('');
+const [interviewVenue, setInterviewVenue] = useState('');
+const [interviewType, setInterviewType] = useState('');
   
 
   const workingSchedule = [
@@ -850,27 +856,98 @@ const handleDeleteApplicant = async (applicantId) => {
               </div>
             </div>
           )}
-        {seeInterviews&&(
-          <>
-            <div className='interviewscover'>
-              <div className='interviewswrapper'>
-                <button
-              className="interviews-close-btn"
-              onClick={() => setseeInterviews(false)}
-              aria-label="Close"
-            >
-              ×
-            </button>
-                <div className='interviewslabel'>
-                  <h1>Interviews</h1>
-                </div>
-                <div className='interviewsproper'>
-                    <h2>Interview</h2>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
+        {seeInterviews && (
+  <>
+    <div className='interviewscover'>
+      <div className='interviewswrapper'>
+        <button
+          className="interviews-close-btn"
+          onClick={() => setseeInterviews(false)}
+          aria-label="Close"
+        >
+          ×
+        </button>
+        <div className='interviewslabel'>
+          <h1>Interviews</h1>
+        </div>
+        <div className='interviewsproper'>
+          <h2>Interview</h2>
+          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '24px' }}>
+            <thead>
+              <tr>
+                <th style={{ padding: '8px', border: '1px solid #13714C' }}>Interview</th>
+                <th style={{ padding: '8px', border: '1px solid #13714C' }}>Date of Interview</th>
+                <th style={{ padding: '8px', border: '1px solid #13714C' }}>Type of Interview</th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* Example row, you can map over your interviews data here */}
+              <tr>
+                <td style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'top' }}>
+                  <div style={{ marginTop: '8px' }}>
+                    <a
+                      href="#"
+                      onClick={e => {
+                        e.preventDefault();
+                        setShowApplicantDropdown(prev => !prev);
+                      }}
+                      style={{ color: '#13714C', textDecoration: 'underline', cursor: 'pointer', fontSize: '14px' }}
+                    >
+                      Add Applicant
+                    </a>
+                    {showApplicantDropdown && (
+                      <select
+                        style={{ display: 'block', marginTop: '8px', width: '100%' }}
+                        onChange={e => setSelectedApplicant(e.target.value)}
+                        value={selectedApplicant}
+                      >
+                        <option value="">Select Applicant</option>
+                        {applicants.map(app => (
+                          <option key={app._id} value={app._id}>
+                            {app.fullName} ({app.email})
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                </td>
+                <td style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'top' }}>
+                  <input
+                    type="date"
+                    value={interviewDate}
+                    onChange={e => setInterviewDate(e.target.value)}
+                    style={{ marginBottom: '8px', width: '100%' }}
+                  />
+                  <select
+                    value={interviewVenue}
+                    onChange={e => setInterviewVenue(e.target.value)}
+                    style={{ width: '100%' }}
+                  >
+                    <option value="">Select Interview</option>
+                    <option value="On-site">On-site</option>
+                    <option value="Conference">Conference</option>
+                  </select>
+                </td>
+                <td style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'top' }}>
+                  <select
+                    value={interviewType}
+                    onChange={e => setInterviewType(e.target.value)}
+                    style={{ width: '100%' }}
+                  >
+                    <option value="">Select Type</option>
+                    <option value="Online">Online</option>
+                    <option value="Initial Screen">Initial Screen</option>
+                  </select>
+                </td>
+              </tr>
+              {/* Add more rows as needed */}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </>
+)}
 
         </div>
       </div>
