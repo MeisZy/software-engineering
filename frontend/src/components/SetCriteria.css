@@ -83,6 +83,22 @@ textarea{
     background: #13714C;
     color: #fff;
 }
+
+
+.qualificationswrapper {
+  background: #13714C;
+  border: 2px solid black;
+  border-radius: 20px;
+  width: 700px;
+  height: 700px;
+  overflow-y: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
+  padding: 0;
+}
+
 .page1 label {
     font-size: 20px;
     font-weight: 600;
@@ -116,6 +132,38 @@ textarea{
     height: 50px;
     display: flex;
     align-items: center;
+}
+
+.keywords-textarea {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.keywords-textarea > div {
+  min-height: 48px; /* Reserve space for at least one row of keywords */
+  max-height: 96px; /* Prevent excessive growth */
+  overflow-y: auto;
+  margin-bottom: 8px;
+  box-sizing: border-box;
+  /* Keep padding and background as before */
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+  background-color: white;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* Optionally, make the textarea always the same width and not affected by keyword buttons above */
+.keywords-textarea textarea {
+  width: 100%;
+  min-height: 100px;
+  max-height: 160px;
+  box-sizing: border-box;
+  margin: 0;
+  display: block;
 }
 
 .criteriascreencontent input {
@@ -300,6 +348,12 @@ textarea{
     padding:20px;
     top:0;
     left:0;
+}
+
+.button-container button{
+    margin:20px;
+    width:100px;
+    
 }
 
 .page6 .keywords-textarea {

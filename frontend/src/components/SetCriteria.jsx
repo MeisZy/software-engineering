@@ -641,123 +641,157 @@ function SetCriteria() {
                   </div>
                 </div>
               )}
-              {criteriaPage === 5 && (
-                <div className='page5'>
-                  <div className="criteriajobcard">
-                    <h2 style={{ margin: '20px 20px 16px 20px' }}>
-                      {jobData.title || 'Job Title'}
-                    </h2>
-                    <div className='tags' style={{ marginBottom: '16px' }}>
-                      <a>{jobData.department || 'Department'}</a>
-                      <a>{jobData.employmentType || 'Employment Type'}</a>
-                      <a>{jobData.workSchedule || 'Work Schedule'}</a>
-                      <a>{jobData.workSetup || 'Work Setup'}</a>
-                    </div>
-                    <div style={{ marginBottom: '16px' }}>
-                      <b>Description:</b>
-                      <div>{jobData.description || 'No description'}</div>
-                    </div>
-                    <div style={{ marginBottom: '16px' }}>
-                      <b>Key Responsibilities:</b>
-                      <ul>
-                        {keyResponsibilities.filter(Boolean).map((item, i) => (
-                          <li key={i}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div style={{ marginBottom: '16px' }}>
-                      <b>Qualifications:</b>
-                      <ul>
-                        {qualifications.filter(Boolean).map((item, i) => (
-                          <li key={i}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <b>What we Offer:</b>
-                      <ul>
-                        {offers.filter(Boolean).map((item, i) => (
-                          <li key={i}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <button
-                      onClick={handleSubmit}
-                      style={{ marginTop: '16px' }}
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? 'Submitting...' : 'Submit Job'}
-                    </button>
-                  </div>
-                </div>
-              )}
-              {criteriaPage === 6 && (
-                <div className='page6'>
-                  <h1>Customize Criteria</h1>
-                  <div className="keywords-textarea">
-                    <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>Which words to look out for in the applicant's resume?</label>
-                    <div style={{ display: 'flex', padding: '10px', backgroundColor: 'white', flexWrap: 'wrap' }}>
-                      {keywords.map((word, index) => (
-                        <WordButton key={index} word={word} onRemove={removeKeyword} />
-                      ))}
-                    </div>
-                    <textarea
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onKeyDown={handleKeywordsKeyDown}
-                      placeholder="Enter keywords separated by space or comma"
-                      style={{ width: '100%', height: '100px', fontSize: '16px', padding: '8px', border: '2px solid black', borderRadius: '6px', background: 'white', resize: 'vertical' }}
-                    />
-                  </div>
-                  <div className="graded-qualifications">
-                    <h2 style={{ fontSize: '24px', color: 'white', marginBottom: '16px' }}>Graded Qualifications</h2>
-                    <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>Attribute</label>
-                    <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>Points (out of 20)</label>
-                    {gradedQualifications.map((qual, idx) => (
-                      <div className="attribute-row" key={idx}>
-                        <input
-                          type="text"
-                          value={qual.attribute}
-                          onChange={(e) => handleGradedQualificationChange(idx, 'attribute', e.target.value)}
-                          placeholder="Attribute"
-                          style={{ flex: 1, height: '32px', fontSize: '16px', border: '2px solid black', borderRadius: '6px' }}
-                        />
-                        <input
-                          type="number"
-                          value={qual.points}
-                          onChange={(e) => handleGradedQualificationChange(idx, 'points', Math.min(20, Math.max(0, e.target.value)))}
-                          min="0"
-                          max="20"
-                          placeholder="Points"
-                          style={{ width: '80px', height: '32px', fontSize: '16px', border: '2px solid black', borderRadius: '6px', textAlign: 'center' }}
-                        />
-                        {idx > 0 && (
-                          <div className='removebuttonwrap'>
-                            <a onClick={() => handleRemoveGradedQualification(idx)}>-</a>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                    <div className='addbuttonwrap'>
-                      <a onClick={handleAddGradedQualification}>+</a>
-                    </div>
-                  </div>
-                  <div className='threshold'>
-                    <label>Threshold</label>
-                    <input
-                      type='number'
-                      value={threshold}
-                      onChange={(e) => setThreshold(e.target.value)}
-                      placeholder='Enter threshold score (0-15)'
-                      style={{ width: '100%', height: '32px', fontSize: '16px', border: '2px solid black', borderRadius: '6px' }}
-                    />
-                  </div>
-                  <div className='button-container'>
-                    <button onClick={handlePrevPage}>Previous</button>
-                    <button onClick={handleSubmit}>Submit</button>
-                  </div>
-                </div>
-              )}
+{criteriaPage === 5 && (
+  <div className='page5'>
+    <div className='customizewrapper'>
+    <h1>Customize Criteria</h1>
+    <div className="keywords-textarea">
+      <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>
+        Which words to look out for in the applicant's resume?
+      </label>
+      <div style={{ display: 'flex', padding: '10px', backgroundColor: 'white', flexWrap: 'wrap' }}>
+        {keywords.map((word, index) => (
+          <WordButton key={index} word={word} onRemove={removeKeyword} />
+        ))}
+      </div>
+      <textarea
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={handleKeywordsKeyDown}
+        placeholder="Enter keywords separated by space or comma"
+        style={{
+          width: '100%',
+          height: '100px',
+          fontSize: '16px',
+          padding: '8px',
+          border: '2px solid black',
+          borderRadius: '6px',
+          background: 'white',
+          resize: 'vertical'
+        }}
+      />
+    </div>
+    <div className="graded-qualifications">
+      <h2 style={{ fontSize: '24px', color: 'white', marginBottom: '16px' }}>Graded Qualifications</h2>
+      <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>Attribute</label>
+      <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>Points (out of 20)</label>
+      {gradedQualifications.map((qual, idx) => (
+        <div className="attribute-row" key={idx}>
+          <input
+            type="text"
+            value={qual.attribute}
+            onChange={(e) => handleGradedQualificationChange(idx, 'attribute', e.target.value)}
+            placeholder="Attribute"
+            style={{
+              flex: 1,
+              height: '32px',
+              fontSize: '16px',
+              border: '2px solid black',
+              borderRadius: '6px'
+            }}
+          />
+          <input
+            type="number"
+            value={qual.points}
+            onChange={(e) =>
+              handleGradedQualificationChange(idx, 'points', Math.min(20, Math.max(0, e.target.value)))
+            }
+            min="0"
+            max="20"
+            placeholder="Points"
+            style={{
+              width: '80px',
+              height: '32px',
+              fontSize: '16px',
+              border: '2px solid black',
+              borderRadius: '6px',
+              textAlign: 'center'
+            }}
+          />
+          {idx > 0 && (
+            <div className='removebuttonwrap'>
+              <a onClick={() => handleRemoveGradedQualification(idx)}>-</a>
+            </div>
+          )}
+      <div className='addbuttonwrap'>
+        <a onClick={handleAddGradedQualification}>+</a>
+      </div>
+        </div>
+      ))}
+    </div>
+    <div className='threshold'>
+      <label>Threshold</label>
+      <input
+        type='number'
+        value={threshold}
+        onChange={(e) => setThreshold(e.target.value)}
+        placeholder='Enter threshold score (0-15)'
+        style={{
+          width: '100%',
+          height: '32px',
+          fontSize: '16px',
+          border: '2px solid black',
+          borderRadius: '6px'
+        }}
+      />
+    </div>
+    <div className='button-container'>
+      <button onClick={handlePrevPage}>Previous</button>
+      <button onClick={handleSubmit}>Submit</button>
+    </div>
+    </div>
+  </div>
+)}
+{criteriaPage === 6 && (
+  <div className='page6'>
+    <div className="criteriajobcard">
+      <h2 style={{ margin: '20px 20px 16px 20px' }}>
+        {jobData.title || 'Job Title'}
+      </h2>
+      <div className='tags' style={{ marginBottom: '16px' }}>
+        <a>{jobData.department || 'Department'}</a>
+        <a>{jobData.employmentType || 'Employment Type'}</a>
+        <a>{jobData.workSchedule || 'Work Schedule'}</a>
+        <a>{jobData.workSetup || 'Work Setup'}</a>
+      </div>
+      <div style={{ marginBottom: '16px' }}>
+        <b>Description:</b>
+        <div>{jobData.description || 'No description'}</div>
+      </div>
+      <div style={{ marginBottom: '16px' }}>
+        <b>Key Responsibilities:</b>
+        <ul>
+          {keyResponsibilities.filter(Boolean).map((item, i) => (
+            <li key={i}>{item}</li>
+          ))}
+        </ul>
+      </div>
+      <div style={{ marginBottom: '16px' }}>
+        <b>Qualifications:</b>
+        <ul>
+          {qualifications.filter(Boolean).map((item, i) => (
+            <li key={i}>{item}</li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <b>What we Offer:</b>
+        <ul>
+          {offers.filter(Boolean).map((item, i) => (
+            <li key={i}>{item}</li>
+          ))}
+        </ul>
+      </div>
+      <button
+        onClick={handleSubmit}
+        style={{ marginTop: '16px' }}
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? 'Submitting...' : 'Submit Job'}
+      </button>
+    </div>
+  </div>
+)}
             </div>
             <div className="criterianavigate">
               <ul><a onClick={handlePrevPage} className='left'></a></ul>

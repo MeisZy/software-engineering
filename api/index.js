@@ -13,6 +13,7 @@ const Jobs = require('./models/Jobs');
 const JobApplicants = require('./models/JobApplicants');
 const UserLogs = require('./models/UserLogs');
 const Notifications = require('./models/Notifications');
+const AdminNotifications = require('./models/AdminNotifications'); 
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -672,7 +673,9 @@ app.post('/apply', async (req, res) => {
 
     // Update or create job application record
     if (jobApplicant) {
-      jobApplicant.positionAppliedFor.push(jobTitle);
+      if (!jobApplicant.positionAppliedFor.includes(jobTitle)) {
+        jobApplicant.positionAppliedFor.push(jobTitle);
+      }
       jobApplicant.scores = jobApplicant.scores || {};
       jobApplicant.scores[jobTitle] = score;
       jobApplicant.status = status;
@@ -690,6 +693,18 @@ app.post('/apply', async (req, res) => {
       await jobApplicant.save();
     }
 
+    // Create admin notification (permanent in DB) with time field
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    await AdminNotifications.create({
+      message: `${applicant.fullName || applicant.email} applied for "${jobTitle}"`,
+      email: applicant.email,
+      jobTitle: jobTitle,
+      isRead: false,
+      time: timeString,
+    });
+
     // Send email notification to the applicant
     await transporter.sendMail({
       from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
@@ -698,7 +713,7 @@ app.post('/apply', async (req, res) => {
       html: `
         <h3>Application Status Update</h3>
         <p>Dear ${applicant.fullName || 'Applicant'},</p>
-        <p>Your application was <strong>${jobTitle}</strong> ${status}.</p>
+        <p>Your application for <strong>${jobTitle}</strong> was marked as <strong>${status}</strong>.</p>
       `,
     });
 
@@ -877,6 +892,37 @@ app.put('/update-applicant-status', async (req, res) => {
       return res.status(400).json({ message: `Validation error: ${error.message}` });
     }
     res.status(500).json({ message: 'Server error while updating applicant status' });
+  }
+});
+
+// Fetch admin notifications endpoint
+app.get('/adminnotifications', async (req, res) => {
+  try {
+    const notifications = await AdminNotifications.find().sort({ createdAt: -1 });
+    res.status(200).json(notifications);
+  } catch (err) {
+    console.error('Error fetching admin notifications:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Mark admin notification as read endpoint
+app.put('/adminnotifications/:id/read', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid notification ID' });
+    }
+    const notification = await AdminNotifications.findById(id);
+    if (!notification) {
+      return res.status(404).json({ message: 'Notification not found' });
+    }
+    notification.isRead = true;
+    await notification.save();
+    res.status(200).json({ message: 'Notification marked as read' });
+  } catch (err) {
+    console.error('Error marking admin notification as read:', err);
+    res.status(500).json({ message: err.message });
   }
 });
 

@@ -18,7 +18,6 @@ function AdminHome() {
   const [selectedWorkingSchedule, setSelectedWorkingSchedule] = useState([]);
   const [selectedEmploymentType, setSelectedEmploymentType] = useState([]);
   const [selectedWorkSetup, setSelectedWorkSetup] = useState([]);
-  const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notificationsError, setNotificationsError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,7 +32,10 @@ function AdminHome() {
   const [showUserLogs, setShowUserLogs] = useState(false);
   const [userLogs, setUserLogs] = useState([]);
   const [logsError, setLogsError] = useState('');
-  const [seeInterviews, setseeInterviews] = useState(false)
+  const [seeInterviews, setseeInterviews] = useState(false);
+  const [adminNotifications, setAdminNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  
 
   const workingSchedule = [
     { label: 'Full Time', id: 'fulltime' },
@@ -75,35 +77,33 @@ function AdminHome() {
   ]
     .filter(suggestion => suggestion.value.toLowerCase().includes(searchQuery.toLowerCase()))
     .slice(0, 5);
+  
+    
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [jobsResponse, applicantsResponse] = await Promise.all([
-          axios.get('http://localhost:5000/jobs'),
-          axios.get('http://localhost:5000/applicants'),
-        ]);
-        setJobs(jobsResponse.data);
-        setApplicants(applicantsResponse.data);
-        const applicationNotifications = applicantsResponse.data.flatMap(applicant =>
-          applicant.positionAppliedFor.map(jobTitle => ({
-            _id: `${applicant._id}-${jobTitle}`,
-            message: `${applicant.fullName} has applied for the ${jobTitle}.`,
-            createdAt: applicant.createdAt || new Date(),
-            isRead: false,
-            email: applicant.email,
-          }))
-        ).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setNotifications(applicationNotifications);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching data:', err);
-        setError('Failed to load data. Please try again.');
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const [jobsResponse, applicantsResponse, adminNotificationsResponse] = await Promise.all([
+        axios.get('http://localhost:5000/jobs'),
+        axios.get('http://localhost:5000/applicants'),
+        axios.get('http://localhost:5000/adminnotifications'),
+      ]);
+      setJobs(jobsResponse.data);
+      setApplicants(applicantsResponse.data);
+      setAdminNotifications(
+        adminNotificationsResponse.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        )
+      );
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setError('Failed to load data. Please try again.');
+      setLoading(false);
+    }
+  };
+  fetchData();
+}, []);
 
   const handleMarkAsRead = (notificationId) => {
     setNotifications(prev =>
@@ -112,6 +112,18 @@ function AdminHome() {
       )
     );
   };
+
+useEffect(() => {
+  const fetchAdminNotifications = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/adminnotifications');
+      setAdminNotifications(res.data);
+    } catch (err) {
+      setNotificationsError('Failed to fetch notifications');
+    }
+  };
+  fetchAdminNotifications();
+}, []);
 
   const handleMessageSubmit = async (e) => {
     e.preventDefault();
@@ -139,6 +151,17 @@ function AdminHome() {
       setTimeout(() => setMessageStatus(''), 3000);
     }
   };
+
+  const handleMarkAdminNotificationAsRead = async (id) => {
+  try {
+    await axios.put(`http://localhost:5000/adminnotifications/${id}/read`);
+    setAdminNotifications(prev =>
+      prev.map(n => n._id === id ? { ...n, isRead: true } : n)
+    );
+  } catch (err) {
+    console.error('Error marking admin notification as read:', err);
+  }
+};
 
 const handleDeleteApplicant = async (applicantId) => {
   try {
@@ -294,16 +317,20 @@ const handleDeleteApplicant = async (applicantId) => {
           <a onClick={handleShowUserLogs}>User Logs</a>
         </div>
     <div className="admin-nav-right">
-    <div style={{ position: 'relative', display: 'inline-block' }}>
-      <img
-        src={Notification}
-        alt="Notifications"
-        className="notification-icon"
-        style={{ cursor: 'pointer' }}
-        onClick={() => setShowNotifications(!showNotifications)}
-      />
-      {/* Notification counter removed */}
-    </div>
+<div style={{ position: 'relative', display: 'inline-block' }}>
+  <img
+    src={Notification}
+    alt="Notifications"
+    className="notification-icon"
+    style={{ cursor: 'pointer' }}
+    onClick={() => setShowNotifications(!showNotifications)}
+  />
+  {adminNotifications.filter(n => !n.isRead).length > 0 && (
+    <span className="notification-count" style={{ position: 'absolute', top: '-8px', right: '-8px' }}>
+      {adminNotifications.filter(n => !n.isRead).length}
+    </span>
+  )}
+</div>
     <a className="logout" onClick={handleLogout}>Logout</a>
   </div>
 </nav>
@@ -478,55 +505,55 @@ const handleDeleteApplicant = async (applicantId) => {
         </button>
       </div>
       {notificationsError && <div style={{ color: 'red', marginBottom: '16px' }}>{notificationsError}</div>}
-      {notifications.length === 0 ? (
-        <div style={{ padding: '16px', color: '#888' }}>No notifications available.</div>
-      ) : (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {notifications.map(notification => (
-            <li
-              key={notification._id}
-              style={{
-                padding: '8px',
-                borderBottom: '1px solid #ddd',
-                background: notification.isRead ? '#f4f4f4' : '#fff',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <div>
-                <p style={{ margin: 0, fontWeight: notification.isRead ? 'normal' : 'bold' }}>
-                  {notification.message}
-                </p>
-                <span style={{ fontSize: '12px', color: '#888' }}>
-                  {new Date(notification.createdAt).toLocaleString('en-US', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </span>
-              </div>
-              {!notification.isRead && (
-                <button
-                  onClick={() => handleMarkAsRead(notification._id)}
-                  style={{
-                    background: '#A2E494',
-                    color: '#13714C',
-                    border: 'none',
-                    borderRadius: '4px',
-                    padding: '4px 8px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Mark as Read
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+{adminNotifications.length === 0 ? (
+  <div style={{ padding: '16px', color: '#888' }}>No notifications available.</div>
+) : (
+  <ul style={{ listStyle: 'none', padding: 0 }}>
+    {adminNotifications.map(notification => (
+      <li
+        key={notification._id}
+        style={{
+          padding: '8px',
+          borderBottom: '1px solid #ddd',
+          background: notification.isRead ? '#f4f4f4' : '#fff',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <div>
+          <p style={{ margin: 0, fontWeight: notification.isRead ? 'normal' : 'bold' }}>
+            {notification.message}
+          </p>
+          <span style={{ fontSize: '12px', color: '#888' }}>
+            {notification.time || new Date(notification.createdAt).toLocaleString('en-US', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </span>
+        </div>
+        {!notification.isRead && (
+          <button
+            onClick={() => handleMarkAdminNotificationAsRead(notification._id)}
+            style={{
+              background: '#A2E494',
+              color: '#13714C',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '4px 8px',
+              cursor: 'pointer',
+            }}
+          >
+            Mark as Read
+          </button>
+        )}
+      </li>
+    ))}
+  </ul>
+)}
     </div>
   </div>
 )}

@@ -1,4 +1,3 @@
-// models/AdminNotifications.js
 const mongoose = require('mongoose');
 
 const adminNotificationSchema = new mongoose.Schema({
@@ -7,6 +6,7 @@ const adminNotificationSchema = new mongoose.Schema({
   isRead: { type: Boolean, default: false },
   email: { type: String, required: true }, // Applicant's email
   jobTitle: { type: String, required: true }, // Specific job applied for
+  time: { type: String, required: true }, // Time as a string, e.g. "14:23"
 });
 
 module.exports = mongoose.model('AdminNotifications', adminNotificationSchema);
