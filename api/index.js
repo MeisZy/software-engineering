@@ -714,11 +714,12 @@ await transporter.sendMail({
     <h3>Application Status Update</h3>
     <p>Dear ${applicant.fullName || 'Applicant'},</p>
     <p>Your application for <strong>${jobTitle}</strong> was marked as <strong>${status}</strong>.</p>
-    <p><b>Computed Score:</b> ${score}</p>
-    <p><b>Threshold:</b> ${job.threshold}</p>
   `,
 });
-
+console.log(`[DEBUG] Application for "${jobTitle}" by ${applicant.fullName || applicant.email}:`);
+console.log(`        Computed Score: ${score}`);
+console.log(`        Threshold: ${job.threshold}`);
+console.log(`        Status: ${status}`);
     res.status(201).json({ message: 'Application submitted successfully', score, status });
   } catch (error) {
     console.error('Error applying for job:', error);
