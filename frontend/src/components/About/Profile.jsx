@@ -1,3 +1,4 @@
+// ...existing imports...
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -25,6 +26,12 @@ function Profile() {
 
       try {
         const response = await axios.get(`http://localhost:5000/applicants/${userEmail}`);
+        // Clean extractedSkills to remove bullets and non-word characters
+        if (response.data && response.data.extractedSkills) {
+          response.data.extractedSkills = response.data.extractedSkills.map(skill =>
+            skill.replace(/^[•\-\u2022\s]+/, '').replace(/[^\w\s]/g, '').trim()
+          ).filter(skill => skill.length > 0);
+        }
         setApplicantData(response.data);
         setError('');
       } catch (err) {
@@ -49,6 +56,12 @@ function Profile() {
         const response = await axios.post('http://localhost:5000/upload-resume', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
+        // Clean extractedSkills to remove bullets and non-word characters
+        if (response.data && response.data.applicant && response.data.applicant.extractedSkills) {
+          response.data.applicant.extractedSkills = response.data.applicant.extractedSkills.map(skill =>
+            skill.replace(/^[•\-\u2022\s]+/, '').replace(/[^\w\s]/g, '').trim()
+          ).filter(skill => skill.length > 0);
+        }
         setApplicantData(response.data.applicant);
         setError('');
       } catch (err) {
@@ -140,35 +153,3 @@ function Profile() {
 }
 
 export default Profile;
-
-function ResumeUpload({ email }) {
-  const [file, setFile] = useState(null);
-  const [message, setMessage] = useState('');
-
-  const handleFileChange = (e) => setFile(e.target.files[0]);
-
-  const handleUpload = async (e) => {
-    e.preventDefault();
-    if (!file) return setMessage('Please select a file.');
-    const formData = new FormData();
-    formData.append('resume', file);
-    formData.append('email', email); // must match registration email
-
-    try {
-      await axios.post('http://localhost:5000/upload-resume', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      setMessage('Resume uploaded and parsed!');
-    } catch (err) {
-      setMessage('Upload failed.');
-    }
-  };
-
-  return (
-    <form onSubmit={handleUpload}>
-      <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileChange} />
-      <button type="submit">Upload Resume</button>
-      {message && <p>{message}</p>}
-    </form>
-  );
-}

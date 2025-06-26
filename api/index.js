@@ -108,26 +108,26 @@ transporter.verify((error, success) => {
   }
 });
 
-// Calculate applicant score
+// Calculate applicant score (matches only keywords, sums their graded points)
 const calculateScore = (extractedSkills, job) => {
-  let keywordScore = 0;
-  let qualificationScore = 0;
+  let totalPoints = 0;
 
-  // Keyword matching (10 points max)
-  const matchedKeywords = job.keywords.filter(keyword => 
-    extractedSkills.some(skill => skill.toLowerCase().includes(keyword.toLowerCase()))
-  );
-  keywordScore = (matchedKeywords.length / job.keywords.length) * 10;
-
-  // Graded qualifications (20 points max)
-  job.gradedQualifications.forEach(qual => {
-    if (extractedSkills.some(skill => skill.toLowerCase().includes(qual.attribute.toLowerCase()))) {
-      qualificationScore += qual.points;
+  // For each keyword, check if applicant has it in their skills (partial match, case-insensitive)
+  job.keywords.forEach(keyword => {
+    const matched = extractedSkills.some(skill => skill.toLowerCase().includes(keyword.toLowerCase()));
+    if (matched) {
+      // Find the graded qualification for this keyword
+      const qual = job.gradedQualifications.find(
+        q => q.attribute.toLowerCase() === keyword.toLowerCase()
+      );
+      if (qual) {
+        totalPoints += qual.points;
+      }
     }
   });
 
-  // Average score (keywords only, as years of experience not implemented)
-  return Number(((keywordScore + qualificationScore) / 2).toFixed(2));
+  // Score is totalPoints (max 20)
+  return totalPoints;
 };
 
 // Status endpoint
@@ -662,8 +662,8 @@ app.post('/apply', async (req, res) => {
     }
 
     // Calculate score based on extracted skills and job requirements
-    const score = applicant.extractedSkills ? calculateScore(applicant.extractedSkills, job) : 0;
-    const status = score >= job.threshold ? 'To Next Interview' : 'Rejected';
+const score = applicant.extractedSkills ? calculateScore(applicant.extractedSkills, job) : 0;
+const status = score >= job.threshold ? 'To Next Interview' : 'Rejected';
 
     // Check if the applicant has already applied for this job
     let jobApplicant = await JobApplicants.findOne({ email });
@@ -706,16 +706,18 @@ app.post('/apply', async (req, res) => {
     });
 
     // Send email notification to the applicant
-    await transporter.sendMail({
-      from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
-      to: email, // Current applicant's email
-      subject: 'Application Status Update',
-      html: `
-        <h3>Application Status Update</h3>
-        <p>Dear ${applicant.fullName || 'Applicant'},</p>
-        <p>Your application for <strong>${jobTitle}</strong> was marked as <strong>${status}</strong>.</p>
-      `,
-    });
+await transporter.sendMail({
+  from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
+  to: email, // Current applicant's email
+  subject: 'Application Status Update',
+  html: `
+    <h3>Application Status Update</h3>
+    <p>Dear ${applicant.fullName || 'Applicant'},</p>
+    <p>Your application for <strong>${jobTitle}</strong> was marked as <strong>${status}</strong>.</p>
+    <p><b>Computed Score:</b> ${score}</p>
+    <p><b>Threshold:</b> ${job.threshold}</p>
+  `,
+});
 
     res.status(201).json({ message: 'Application submitted successfully', score, status });
   } catch (error) {
@@ -798,27 +800,28 @@ app.post('/upload-resume', upload.single('resume'), async (req, res) => {
     const fileType = path.extname(req.file.filename).toLowerCase() === '.pdf' ? 'pdf' : 'docx';
     let extractedSkills = [];
 
-    if (fileType === 'pdf') {
-      const fullPath = path.join(__dirname, '../frontend/public', filePath);
-      const pdfBuffer = await fs.readFile(fullPath);
-      const pdfData = await pdfParse(pdfBuffer);
-      const text = pdfData.text.toLowerCase();
-      const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+if (fileType === 'pdf') {
+  const fullPath = path.join(__dirname, '../frontend/public', filePath);
+  const pdfBuffer = await fs.readFile(fullPath);
+  const pdfData = await pdfParse(pdfBuffer);
+  const text = pdfData.text;
+  const lines = text.split('\n').map(line => line.trim()).filter(line => line);
 
-      let inSkillsSection = false;
-      for (const line of lines) {
-        if (line.includes('skills')) {
-          inSkillsSection = true;
-          const skillsInLine = line.replace('skills', '').trim().split(/[,;]/).map(s => s.trim()).filter(s => s);
-          if (skillsInLine.length) extractedSkills.push(...skillsInLine);
-        } else if (inSkillsSection && !line.match(/^(education|experience|projects|certifications)/i)) {
-          const skillsInLine = line.split(/[,;]/).map(s => s.trim()).filter(s => s);
-          if (skillsInLine.length) extractedSkills.push(...skillsInLine);
-        } else if (inSkillsSection && line.match(/^(education|experience|projects|certifications)/i)) {
-          inSkillsSection = false;
-        }
-      }
+  let inSkillsSection = false;
+  for (const line of lines) {
+    const lowerLine = line.toLowerCase();
+    if (lowerLine.includes('skills')) {
+      inSkillsSection = true;
+      const skillsInLine = line.replace(/skills/i, '').trim().split(/[,;]/).map(s => s.trim()).filter(s => s);
+      if (skillsInLine.length) extractedSkills.push(...skillsInLine);
+    } else if (inSkillsSection && !lowerLine.match(/^(education|experience|projects|certifications)/i)) {
+      const skillsInLine = line.split(/[,;]/).map(s => s.trim()).filter(s => s);
+      if (skillsInLine.length) extractedSkills.push(...skillsInLine);
+    } else if (inSkillsSection && lowerLine.match(/^(education|experience|projects|certifications)/i)) {
+      inSkillsSection = false;
     }
+  }
+}
 
     applicant.resume = {
       filePath,
