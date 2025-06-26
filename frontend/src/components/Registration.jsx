@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Registration.css';
+import uuid from "uuid";
 
 function Registration() {
   const [formData, setFormData] = useState({
@@ -21,13 +22,50 @@ function Registration() {
   const [message, setMessage] = useState('');
   const [debugInputs, setDebugInputs] = useState(null);
 
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage('');
+
+    // Validate required fields
+    const requiredFields = [
+      'firstName', 'lastName', 'birthdate', 'gender', 'streetAddress',
+      'city', 'stateProvince', 'postalCode', 'email', 'mobileNumber',
+      'password', 'confirmPassword'
+    ];
+    const missingFields = requiredFields.filter(field => !formData[field]);
+    if (missingFields.length > 0) {
+      setMessage('All fields are required');
+      alert('Registration failed: All fields are required');
+      return;
+    }
+
+    // Validate email format
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      setMessage('Invalid email format');
+      alert('Registration failed: Invalid email format');
+      return;
+    }
+
+    // Validate password: at least 2 special characters and 1 number
+    const specialCharCount = (formData.password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g) || []).length;
+    const numberCount = (formData.password.match(/[0-9]/g) || []).length;
+    if (specialCharCount < 2 || numberCount < 1) {
+      setMessage('Password must contain at least 2 special characters and 1 number');
+      alert('Registration failed: Password must contain at least 2 special characters and 1 number');
+      return;
+    }
+
+    // Validate password match
+    if (formData.password !== formData.confirmPassword) {
+      setMessage('Passwords do not match');
+      alert('Registration failed: Passwords do not match');
+      return;
+    }
+
     try {
       const payload = {
         firstName: formData.firstName,
@@ -44,7 +82,7 @@ function Registration() {
         password: formData.password,
         confirmPassword: formData.confirmPassword,
       };
-      await axios.post('http://localhost:5000/add', payload);
+      const response = await axios.post('http://localhost:5000/add', payload);
       setFormData({
         firstName: '',
         middleName: '',
@@ -60,8 +98,18 @@ function Registration() {
         password: '',
         confirmPassword: '',
       });
+      setMessage('Registration successful');
+      alert('Registration successful! Welcome to Collectius.');
+      setDebugInputs(response.data);
     } catch (error) {
-      setMessage(error.response?.data?.message || 'Registration failed');
+      const errorMsg = error.response?.data?.message || 'Registration failed';
+      if (error.response?.data?.code === 11000) {
+        setMessage('Email already registered');
+        alert('Registration failed: Email already registered');
+      } else {
+        setMessage(errorMsg);
+        alert(`Registration failed: ${errorMsg}`);
+      }
     }
   };
 
@@ -110,7 +158,7 @@ function Registration() {
           <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="Confirm Password" />
         </div>
         <button type="submit" className="btn">Register</button>
-        {message && <p>{message}</p>}
+        {message && <p style={{ color: message.includes('successful') ? 'green' : 'red', fontSize: '12px' }}>{message}</p>}
         {debugInputs && (
           <div style={{ background: "#f4f4f4", padding: "12px", borderRadius: "6px", marginTop: "12px" }}>
             <b>Debug: Submitted Inputs</b>

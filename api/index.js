@@ -14,6 +14,7 @@ const JobApplicants = require('./models/JobApplicants');
 const UserLogs = require('./models/UserLogs');
 const Notifications = require('./models/Notifications');
 const AdminNotifications = require('./models/AdminNotifications'); 
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -161,9 +162,17 @@ app.post('/add', async (req, res) => {
       return res.status(400).json({ message: 'Passwords do not match' });
     }
 
+    // Password validation: at least 2 special characters and at least 1 number
+    const specialCharCount = (password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g) || []).length;
+    const numberCount = (password.match(/[0-9]/g) || []).length;
+    if (specialCharCount < 2 || numberCount < 1) {
+      return res.status(400).json({ message: 'Password must contain at least 2 special characters and 1 number' });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const applicant = new Applicants({
+      applicantId: uuidv4(), // Generate unique applicantId
       fullName: `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`.trim(),
       firstName,
       middleName,
@@ -187,7 +196,6 @@ app.post('/add', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
 // Login endpoint
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -208,7 +216,7 @@ app.post('/login', async (req, res) => {
       date: new Date(),
       firstName: applicant.firstName || '',
       middleName: applicant.middleName || '',
-      fullName: applicant.fullName || 'Unknown User',
+      fullName: applicant.fullName,
       activity: 'Logged in',
     });
     await userLog.save();
@@ -231,7 +239,7 @@ app.post('/google-login', async (req, res) => {
       return res.status(400).json({ message: 'Email and full name are required' });
     }
 
-    const normalizedFullName = fullName.trim() || 'Unknown Google User';
+    const normalizedFullName = fullName ;
 
     let applicant = await Applicants.findOne({ email });
     if (!applicant) {
@@ -295,7 +303,7 @@ app.post('/logout', async (req, res) => {
       date: new Date(),
       firstName: firstName || '',
       middleName: middleName || '',
-      fullName: fullName || 'Unknown User',
+      fullName: fullName,
       activity: 'Logged out',
     });
     await userLog.save();
@@ -388,6 +396,13 @@ app.post('/reset-password', async (req, res) => {
 
     if (!email || !password || !resetToken) {
       return res.status(400).json({ message: 'Email, password, and reset token are required' });
+    }
+
+    // Password validation: at least 2 special characters and at least 1 number
+    const specialCharCount = (password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g) || []).length;
+    const numberCount = (password.match(/[0-9]/g) || []).length;
+    if (specialCharCount < 2 || numberCount < 1) {
+      return res.status(400).json({ message: 'Password must contain at least 2 special characters and 1 number' });
     }
 
     const stored = resetTokenStore.get(email);
@@ -810,8 +825,6 @@ app.get('/fix-applicant-scores', async (req, res) => {
   }
 });
 
-// ... (rest of the index.js code remains unchanged)
-
 // Fetch applicants endpoint
 app.get('/applicants', async (req, res) => {
   try {
@@ -962,8 +975,8 @@ app.put('/update-applicant-status', async (req, res) => {
     // Improved user notification message
     const userMsg =
       status === 'To Next Interview'
-        ? `We're delighted to inform you that your application status for "${jobTitle}" has been set to ${status}.`
-        : `We regret to inform you that your application status for "${jobTitle}" has been set to ${status}.`;
+        ? `We hope this email finds you well. We are delighted to inform you that your application status for "${jobTitle}" has been set to ${status}.`
+        : `We hope this email finds you well. We regret to inform you that your application status for "${jobTitle}" has been set to ${status}.`;
 
     await new Notifications({
       email,

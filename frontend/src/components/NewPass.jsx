@@ -29,6 +29,15 @@ function NewPass() {
       return;
     }
 
+    // Password validation: at least 2 special characters and at least 1 number
+    const specialCharCount = (password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g) || []).length;
+    const numberCount = (password.match(/[0-9]/g) || []).length;
+    if (specialCharCount < 2 || numberCount < 1) {
+      setError('Password must contain at least 2 special characters and 1 number');
+      setIsLoading(false);
+      return;
+    }
+
     const resetToken = localStorage.getItem('resetToken');
     const email = localStorage.getItem('resetEmail');
 
