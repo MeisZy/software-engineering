@@ -8,6 +8,8 @@ import './AdminHome.css';
 
 function AdminHome() {
   const navigate = useNavigate();
+  const [interviewLoading, setInterviewLoading] = useState(false);
+  const [interviewError, setInterviewError] = useState('');
   const [jobs, setJobs] = useState([]);
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,6 +44,9 @@ const [selectedApplicant, setSelectedApplicant] = useState('');
 const [interviewDate, setInterviewDate] = useState('');
 const [interviewVenue, setInterviewVenue] = useState('');
 const [interviewType, setInterviewType] = useState('');
+const [interviewEmail, setInterviewEmail] = useState('');
+const [interviewList, setInterviewList] = useState([]);
+
   
 
   const workingSchedule = [
@@ -112,6 +117,53 @@ useEffect(() => {
   };
   fetchData();
 }, []);
+
+useEffect(() => {
+  if (seeInterviews) {
+    fetch('http://localhost:5000/interviews')
+      .then(res => res.json())
+      .then(data => setInterviewList(data))
+      .catch(() => setInterviewList([]));
+  }
+}, [seeInterviews]);
+
+const handleAssignInterview = async () => {
+  if (!interviewEmail || !interviewDate || !interviewType) {
+    setInterviewError('All fields are required.');
+    return;
+  }
+  setInterviewLoading(true);
+  setInterviewError('');
+  try {
+    const res = await fetch('http://localhost:5000/interviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: interviewEmail,
+        date: interviewDate,
+        type: interviewType
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to assign interview');
+    setInterviewList(prev => [
+      ...prev,
+      {
+        email: interviewEmail,
+        date: interviewDate,
+        type: interviewType,
+        notified: true
+      }
+    ]);
+    setInterviewEmail('');
+    setInterviewDate('');
+    setInterviewType('');
+  } catch (err) {
+    setInterviewError(err.message);
+  }
+  setInterviewLoading(false);
+};
+
 
   const handleAddApplicantToInterview = () => {
     if (!selectedApplicant) return;
@@ -338,7 +390,7 @@ const handleDeleteApplicant = async (applicantId) => {
         </div>
         <div className="admin-nav-center">
           <a onClick={handleMaintainance}>Settings</a>
-          <a onClick={() => setseeInterviews(true)}>Interviews</a>
+          <a onClick={() => setSeeInterviews(True)}>Interviews</a>
           <a onClick={handleFAQs}>FAQs</a>
           <a onClick={handleSetCriteria}>Manage Jobs</a>
           <a onClick={() => setShowMessageForm(true)}>Send Message</a>
@@ -878,99 +930,128 @@ const handleDeleteApplicant = async (applicantId) => {
               </div>
             </div>
           )}
-          {seeInterviews && (
-    <>
-      <div className='interviewscover'>
-        <div className='interviewswrapper'>
-          <button
-            className="interviews-close-btn"
-            onClick={() => setseeInterviews(false)}
-            aria-label="Close"
+{seeInterviews && (
+  <div className="interviewscover">
+    <div className="interviewswrapper">
+      <button className="interviews-close-btn" onClick={() => setSeeInterviews(false)}>×</button>
+      <div className="interviewslabel"><h1>Interviews</h1></div>
+      <div className="interviewsproper">
+        <div style={{ display: 'flex', gap: 24, marginBottom: 16 }}>
+          <a
+            style={{
+              fontWeight: interviewTab === 'interviews' ? 'bold' : 'normal',
+              textDecoration: interviewTab === 'interviews' ? 'underline' : 'none',
+              cursor: 'pointer'
+            }}
+            onClick={() => setInterviewTab('interviews')}
           >
-            ×
-          </button>
-          <div className='interviewslabel'>
-            <h1>Interviews</h1>
-          </div>
-          <div className='interviewsproper'>
-            <a>Interviews</a>
-            <a>Applicants</a>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '24px' }}>
+            Interviews
+          </a>
+          <a
+            style={{
+              fontWeight: interviewTab === 'applicants' ? 'bold' : 'normal',
+              textDecoration: interviewTab === 'applicants' ? 'underline' : 'none',
+              cursor: 'pointer'
+            }}
+            onClick={() => setInterviewTab('applicants')}
+          >
+            Applicants
+          </a>
+        </div>
+        {interviewTab === 'interviews' && (
+          <>
+            <div style={{ margin: '20px 0' }}>
+              <label>
+                Applicant Email:
+                <select
+                  value={interviewEmail}
+                  onChange={e => setInterviewEmail(e.target.value)}
+                  style={{ marginLeft: 8, marginRight: 16 }}
+                >
+                  <option value="">Select Applicant</option>
+                  {applicants.map(a => (
+                    <option key={a.email} value={a.email}>{a.email}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Date:
+                <input
+                  type="datetime-local"
+                  value={interviewDate}
+                  onChange={e => setInterviewDate(e.target.value)}
+                  style={{ marginLeft: 8, marginRight: 16 }}
+                />
+              </label>
+              <label>
+                Type:
+                <select
+                  value={interviewType}
+                  onChange={e => setInterviewType(e.target.value)}
+                  style={{ marginLeft: 8, marginRight: 16 }}
+                >
+                  <option value="">Select Type</option>
+                  <option value="Online">Online</option>
+                  <option value="Initial Screen">Initial Screen</option>
+                  <option value="On-site">On-site</option>
+                  <option value="Conference">Conference</option>
+                </select>
+              </label>
+              <button onClick={handleAssignInterview} disabled={interviewLoading}>
+                {interviewLoading ? 'Assigning...' : 'Assign Interview'}
+              </button>
+              {interviewError && <span style={{ color: 'red', marginLeft: 12 }}>{interviewError}</span>}
+            </div>
+            <h2>Scheduled Interviews</h2>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
-                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Interview</th>
-                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Date of Interview</th>
-                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Type of Interview</th>
+                  <th>Email</th>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Notified</th>
                 </tr>
               </thead>
               <tbody>
-                {/* Example row, you can map over your interviews data here */}
-                <tr>
-                  <td style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'top' }}>
-                    <div style={{ marginTop: '8px' }}>
-                      <a
-                        href="#"
-                        onClick={e => {
-                          e.preventDefault();
-                          setShowApplicantDropdown(prev => !prev);
-                        }}
-                        style={{ color: '#13714C', textDecoration: 'underline', cursor: 'pointer', fontSize: '14px' }}
-                      >
-                        Add Applicant
-                      </a>
-                      {showApplicantDropdown && (
-                        <select
-                          style={{ display: 'block', marginTop: '8px', width: '100%' }}
-                          onChange={e => setSelectedApplicant(e.target.value)}
-                          value={selectedApplicant}
-                        >
-                          <option value="">Select Applicant</option>
-                          {applicants.map(app => (
-                            <option key={app._id} value={app._id}>
-                              {app.fullName} ({app.email})
-                            </option>
-                          ))}
-                        </select>
-                      )}
-                    </div>
-                  </td>
-                  <td style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'top' }}>
-                    <input
-                      type="date"
-                      value={interviewDate}
-                      onChange={e => setInterviewDate(e.target.value)}
-                      style={{ marginBottom: '8px', width: '100%' }}
-                    />
-                    <select
-                      value={interviewVenue}
-                      onChange={e => setInterviewVenue(e.target.value)}
-                      style={{ width: '100%' }}
-                    >
-                      <option value="">Select Interview</option>
-                      <option value="On-site">On-site</option>
-                      <option value="Conference">Conference</option>
-                    </select>
-                  </td>
-                  <td style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'top' }}>
-                    <select
-                      value={interviewType}
-                      onChange={e => setInterviewType(e.target.value)}
-                      style={{ width: '100%' }}
-                    >
-                      <option value="">Select Type</option>
-                      <option value="Online">Online</option>
-                      <option value="Initial Screen">Initial Screen</option>
-                    </select>
-                  </td>
-                </tr>
-                {/* Add more rows as needed */}
+                {interviewList.map((iv, idx) => (
+                  <tr key={idx}>
+                    <td>{iv.email}</td>
+                    <td>{new Date(iv.date).toLocaleString()}</td>
+                    <td>{iv.type}</td>
+                    <td>{iv.notified ? 'Yes' : 'No'}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-          </div>
-        </div>
+          </>
+        )}
+        {interviewTab === 'applicants' && (
+          <>
+            <h2>Applicants for Interview</h2>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Full Name</th>
+                  <th>Applied Positions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {applicants.map((a, idx) => (
+                  <tr key={idx}>
+                    <td>{a.email}</td>
+                    <td>{a.fullName}</td>
+                    <td>{(a.positionAppliedFor || []).map(pos => pos.jobTitle).join(', ')}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
       </div>
-    </>
-  )}
+    </div>
+  </div>
+)}
 
         </div>
       </div>

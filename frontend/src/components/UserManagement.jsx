@@ -141,7 +141,7 @@ function UserManagement() {
                           value={pos.status}
                           onChange={e => handleStatusChange(applicant.email, pos.jobTitle, e.target.value)}
                         >
-                          <option value="To Next Interview">To Next Interview</option>
+                          <option value="Accepted">Accepted</option>
                           <option value="Rejected">Rejected</option>
                         </select>
                       </td>
