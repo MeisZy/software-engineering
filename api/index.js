@@ -14,7 +14,6 @@ const JobApplicants = require('./models/JobApplicants');
 const UserLogs = require('./models/UserLogs');
 const Notifications = require('./models/Notifications');
 const AdminNotifications = require('./models/AdminNotifications'); 
-const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -112,7 +111,6 @@ transporter.verify((error, success) => {
 // Calculate applicant score (matches only keywords, sums their graded points)
 const calculateScore = (extractedSkills, job) => {
   let totalPoints = 0;
-  if (!extractedSkills || !job) return totalPoints;
 
   // For each keyword, check if applicant has it in their skills (partial match, case-insensitive)
   job.keywords.forEach(keyword => {
@@ -128,6 +126,7 @@ const calculateScore = (extractedSkills, job) => {
     }
   });
 
+  // Score is totalPoints (max 20)
   return totalPoints;
 };
 
@@ -162,17 +161,9 @@ app.post('/add', async (req, res) => {
       return res.status(400).json({ message: 'Passwords do not match' });
     }
 
-    // Password validation: at least 2 special characters and at least 1 number
-    const specialCharCount = (password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g) || []).length;
-    const numberCount = (password.match(/[0-9]/g) || []).length;
-    if (specialCharCount < 2 || numberCount < 1) {
-      return res.status(400).json({ message: 'Password must contain at least 2 special characters and 1 number' });
-    }
-
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const applicant = new Applicants({
-      applicantId: uuidv4(), // Generate unique applicantId
       fullName: `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`.trim(),
       firstName,
       middleName,
@@ -196,6 +187,7 @@ app.post('/add', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
 // Login endpoint
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -216,7 +208,7 @@ app.post('/login', async (req, res) => {
       date: new Date(),
       firstName: applicant.firstName || '',
       middleName: applicant.middleName || '',
-      fullName: applicant.fullName,
+      fullName: applicant.fullName || 'Unknown User',
       activity: 'Logged in',
     });
     await userLog.save();
@@ -239,7 +231,7 @@ app.post('/google-login', async (req, res) => {
       return res.status(400).json({ message: 'Email and full name are required' });
     }
 
-    const normalizedFullName = fullName ;
+    const normalizedFullName = fullName.trim() || 'Unknown Google User';
 
     let applicant = await Applicants.findOne({ email });
     if (!applicant) {
@@ -303,7 +295,7 @@ app.post('/logout', async (req, res) => {
       date: new Date(),
       firstName: firstName || '',
       middleName: middleName || '',
-      fullName: fullName,
+      fullName: fullName || 'Unknown User',
       activity: 'Logged out',
     });
     await userLog.save();
@@ -396,13 +388,6 @@ app.post('/reset-password', async (req, res) => {
 
     if (!email || !password || !resetToken) {
       return res.status(400).json({ message: 'Email, password, and reset token are required' });
-    }
-
-    // Password validation: at least 2 special characters and at least 1 number
-    const specialCharCount = (password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g) || []).length;
-    const numberCount = (password.match(/[0-9]/g) || []).length;
-    if (specialCharCount < 2 || numberCount < 1) {
-      return res.status(400).json({ message: 'Password must contain at least 2 special characters and 1 number' });
     }
 
     const stored = resetTokenStore.get(email);
@@ -664,9 +649,6 @@ app.post('/apply', async (req, res) => {
   try {
     const { email, jobTitle } = req.body;
 
-    // Normalize jobTitle
-    const normalizedJobTitle = jobTitle.trim().toLowerCase();
-
     // Fetch the applicant details
     const applicant = await Applicants.findOne({ email });
     if (!applicant) {
@@ -674,7 +656,7 @@ app.post('/apply', async (req, res) => {
     }
 
     // Fetch the job details
-    const job = await Jobs.findOne({ title: { $regex: `^${jobTitle}$`, $options: 'i' } });
+    const job = await Jobs.findOne({ title: jobTitle });
     if (!job) {
       return res.status(404).json({ message: 'Job not found' });
     }
@@ -687,16 +669,22 @@ app.post('/apply', async (req, res) => {
     let jobApplicant = await JobApplicants.findOne({ email });
     if (
       jobApplicant &&
-      jobApplicant.positionAppliedFor.some(pos => pos.jobTitle.toLowerCase() === normalizedJobTitle)
+      jobApplicant.positionAppliedFor.some(pos => pos.jobTitle === jobTitle)
     ) {
       return res.status(400).json({ message: 'You have already applied for this job' });
     }
 
     // Update or create job application record
     if (jobApplicant) {
-      jobApplicant.positionAppliedFor.push({ jobTitle, status });
+      if (!jobApplicant.positionAppliedFor.some(pos => pos.jobTitle === jobTitle)) {
+        jobApplicant.positionAppliedFor.push({ jobTitle, status });
+      }
+      // Always update the status for this jobTitle
+      jobApplicant.positionAppliedFor = jobApplicant.positionAppliedFor.map(pos =>
+        pos.jobTitle === jobTitle ? { ...pos, status } : pos
+      );
       jobApplicant.scores = jobApplicant.scores || {};
-      jobApplicant.scores[normalizedJobTitle] = score;
+      jobApplicant.scores[jobTitle] = score;
       await jobApplicant.save();
     } else {
       jobApplicant = new JobApplicants({
@@ -704,7 +692,7 @@ app.post('/apply', async (req, res) => {
         email: applicant.email,
         mobileNumber: applicant.mobileNumber.replace(/[^\d]/g, '').slice(-10),
         positionAppliedFor: [{ jobTitle, status }],
-        scores: { [normalizedJobTitle]: score },
+        scores: { [jobTitle]: score },
         applicationStage: 'None'
       });
       await jobApplicant.save();
@@ -714,6 +702,7 @@ app.post('/apply', async (req, res) => {
     const now = new Date();
     const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
+    // Improved admin notification message
     const adminMsg =
       status === 'To Next Interview'
         ? `${applicant.fullName || applicant.email} was Accepted after applying for "${jobTitle}".`
@@ -727,16 +716,21 @@ app.post('/apply', async (req, res) => {
       time: timeString,
     });
 
+    // Improved user notification message
     const userMsg =
       status === 'To Next Interview'
         ? `We're delighted to inform you that your application status for "${jobTitle}" has been set to ${status}.`
         : `We regret to inform you that your application status for "${jobTitle}" has been set to ${status}.`;
 
+    // Save notification for user
     await new Notifications({
       email,
       message: userMsg,
     }).save();
+    
+    
 
+    // Send email notification to the applicant
     await transporter.sendMail({
       from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
       to: email,
@@ -756,7 +750,6 @@ app.post('/apply', async (req, res) => {
     console.log(`        Computed Score: ${score}`);
     console.log(`        Threshold: ${job.threshold}`);
     console.log(`        Status: ${status}`);
-    console.log(`        Scores Object: ${JSON.stringify(jobApplicant.scores)}`);
 
     res.status(201).json({ message: 'Application submitted successfully', score, status });
   } catch (error) {
@@ -768,60 +761,6 @@ app.post('/apply', async (req, res) => {
       return res.status(400).json({ message: `Validation error: ${error.message}` });
     }
     res.status(500).json({ message: 'Server error while applying for job' });
-  }
-});
-
-// Fix applicant scores endpoint
-app.get('/fix-applicant-scores', async (req, res) => {
-  try {
-    const applicants = await JobApplicants.find();
-    const updatedApplicants = [];
-    let updatedCount = 0;
-
-    console.log(`[DEBUG] Starting score fix for ${applicants.length} applicants`);
-
-    for (const applicant of applicants) {
-      let needsUpdate = false;
-      const scores = applicant.scores || {};
-
-      for (const pos of applicant.positionAppliedFor || []) {
-        const normalizedJobTitle = pos.jobTitle.trim().toLowerCase();
-        if (!(normalizedJobTitle in scores)) {
-          const job = await Jobs.findOne({ title: { $regex: `^${pos.jobTitle}$`, $options: 'i' } });
-          const originalApplicant = await Applicants.findOne({ email: applicant.email });
-          let score = 0;
-
-          if (job && originalApplicant && originalApplicant.extractedSkills?.length) {
-            score = calculateScore(originalApplicant.extractedSkills, job);
-            console.log(`[DEBUG] Calculated score for ${applicant.email} on job ${pos.jobTitle}: ${score}`);
-          } else {
-            console.log(`[DEBUG] No score for ${applicant.email} on ${pos.jobTitle}: Job=${!!job}, Skills=${originalApplicant?.extractedSkills?.length || 0}`);
-          }
-
-          scores[normalizedJobTitle] = score;
-          needsUpdate = true;
-        }
-      }
-
-      if (needsUpdate) {
-        const updatedApplicant = await JobApplicants.findOneAndUpdate(
-          { _id: applicant._id },
-          { $set: { scores } },
-          { new: true, runValidators: true }
-        );
-        updatedApplicants.push(updatedApplicant);
-        updatedCount++;
-        console.log(`[DEBUG] Updated ${applicant.email} scores: ${JSON.stringify(scores)}`);
-      } else {
-        updatedApplicants.push(applicant);
-      }
-    }
-
-    console.log(`[DEBUG] Fixed scores for ${updatedCount} applicants`);
-    res.json({ message: `Fixed scores for ${updatedCount} applicants`, applicants: updatedApplicants });
-  } catch (err) {
-    console.error('[ERROR] Fixing applicant scores:', err.message);
-    res.status(500).json({ message: 'Failed to fix scores', error: err.message });
   }
 });
 
@@ -975,8 +914,8 @@ app.put('/update-applicant-status', async (req, res) => {
     // Improved user notification message
     const userMsg =
       status === 'To Next Interview'
-        ? `We hope this email finds you well. We are delighted to inform you that your application status for "${jobTitle}" has been set to ${status}.`
-        : `We hope this email finds you well. We regret to inform you that your application status for "${jobTitle}" has been set to ${status}.`;
+        ? `We're delighted to inform you that your application status for "${jobTitle}" has been set to ${status}.`
+        : `We regret to inform you that your application status for "${jobTitle}" has been set to ${status}.`;
 
     await new Notifications({
       email,
@@ -1155,30 +1094,17 @@ app.get('/fix-applicant-scores', async (req, res) => {
     const applicants = await JobApplicants.find();
     let updated = 0;
     for (const applicant of applicants) {
-      let needsUpdate = false;
       if (!applicant.scores) applicant.scores = {};
       for (const pos of applicant.positionAppliedFor) {
-        const normalizedJobTitle = pos.jobTitle.trim().toLowerCase();
-        if (!(normalizedJobTitle in applicant.scores)) {
-          // Try to recalculate the score if possible
-          const job = await Jobs.findOne({ title: { $regex: `^${pos.jobTitle}$`, $options: 'i' } });
-          let score = 0;
-          if (job && applicant.extractedSkills) {
-            score = calculateScore(applicant.extractedSkills, job);
-          }
-          applicant.scores[normalizedJobTitle] = score;
-          needsUpdate = true;
-          console.log(`Fixed score for ${applicant.email} on job ${pos.jobTitle}: ${score}`);
+        if (!(pos.jobTitle in applicant.scores)) {
+          applicant.scores[pos.jobTitle] = 0; // or fetch actual score if possible
         }
       }
-      if (needsUpdate) {
-        await applicant.save();
-        updated++;
-      }
+      await applicant.save();
+      updated++;
     }
     res.json({ message: `Fixed scores for ${updated} applicants.` });
   } catch (err) {
-    console.error('Error fixing applicant scores:', err);
     res.status(500).json({ message: err.message });
   }
 });
