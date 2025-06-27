@@ -745,7 +745,11 @@ const handleDeleteApplicant = async (applicantId) => {
                   <div className='applicantinstance'>
                     <ul>
 {applicants
-  .filter(applicant => applicant.positionAppliedFor.includes(filteredJobOpenings[openApplicantsIdx]?.title))
+  .filter(applicant =>
+    (applicant.positionAppliedFor || []).some(
+      pos => pos.jobTitle === filteredJobOpenings[openApplicantsIdx]?.title
+    )
+  )
   .map((applicant, idx) => (
     <li key={applicant._id} style={{ marginBottom: "16px", listStyle: "none" }}>
       <b>{applicant.fullName}</b>
@@ -755,19 +759,18 @@ const handleDeleteApplicant = async (applicantId) => {
       <button onClick={() => handleDeleteApplicant(applicant._id)} style={{ marginLeft: '8px' }}>
         Delete
       </button>
-
       {openApplicantDetailIdx === idx && (
         <div className='applicantdetailwrap'>
           <span>Email: {applicant.email}</span>
           <span>Mobile: {applicant.mobileNumber}</span>
-          <span>Jobs Applied For: {applicant.positionAppliedFor.join(', ')}</span>
+          <span>Jobs Applied For: {(applicant.positionAppliedFor || []).map(pos => pos.jobTitle).join(', ')}</span>
           <span>Birthdate: {new Date(applicant.birthdate).toISOString().split('T')[0]}</span>
           <span>Gender: {applicant.gender}</span>
           <span>City: {applicant.city}</span>
           <span>State/Province: {applicant.stateProvince}</span>
           <span>Status: {applicant.status}</span>
           <span>Stage: {applicant.applicationStage}</span>
-          <span>Skills: {applicant.resume.join(', ')}</span>
+          <span>Skills: {(applicant.resume && applicant.resume.filePath) ? applicant.resume.filePath : ''}</span>
           <button
             style={{ marginTop: "8px", fontSize: "12px", width: "100px" }}
             onClick={() => setOpenApplicantDetailIdx(null)}
