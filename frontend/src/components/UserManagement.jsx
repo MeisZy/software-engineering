@@ -85,6 +85,31 @@ function UserManagement() {
     window.URL.revokeObjectURL(url);
   };
 
+  const handleDeleteJobApplication = async (email, jobTitle) => {
+  try {
+    await axios.put('http://localhost:5000/delete-job-application', {
+      email,
+      jobTitle,
+    });
+    setApplicants(prev =>
+      prev.map(applicant =>
+        applicant.email === email
+          ? {
+              ...applicant,
+              positionAppliedFor: applicant.positionAppliedFor.filter(
+                pos => pos.jobTitle !== jobTitle
+              ),
+            }
+          : applicant
+      ).filter(applicant => applicant.positionAppliedFor.length > 0)
+    );
+    setError('');
+  } catch (err) {
+    console.error('Error deleting job application:', err);
+    setError('Failed to delete job application.');
+  }
+};
+
   return (
     <>
       <nav>
@@ -109,58 +134,54 @@ function UserManagement() {
               <div style={{ padding: '16px', color: '#888' }}>No applicants available.</div>
             )}
             <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '16px' }}>
-              <thead>
-                <tr>
-                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Email</th>
-                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Position Applied</th>
-                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Score</th>
-                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Status</th>
-                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Action</th>
-                </tr>
-              </thead>
+<thead>
+  <tr>
+    <th style={{ padding: '8px', border: '1px solid #13714C' }}>Email</th>
+    <th style={{ padding: '8px', border: '1px solid #13714C' }}>Position Applied</th>
+    <th style={{ padding: '8px', border: '1px solid #13714C' }}>Score</th>
+    <th style={{ padding: '8px', border: '1px solid #13714C', width: '130px' }}>Status</th>
+    <th style={{ padding: '8px', border: '1px solid #13714C', width: '120px' }}>Action</th>
+  </tr>
+</thead>
               <tbody>
-                {applicants.map(applicant => (
-                  (applicant.positionAppliedFor || []).map((pos, idx) => (
-                    <tr key={`${applicant._id}-${pos.jobTitle}`}>
-                      {idx === 0 ? (
-                        <td
-                          rowSpan={applicant.positionAppliedFor.length}
-                          style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'middle' }}
-                        >
-                          {applicant.email}
-                        </td>
-                      ) : null}
-                      <td style={{ padding: '8px', border: '1px solid #13714C' }}>{pos.jobTitle}</td>
-                      <td style={{ padding: '8px', border: '1px solid #13714C' }}>
-                        {applicant.scores && applicant.scores[pos.jobTitle.trim().toLowerCase()] !== undefined
-                          ? applicant.scores[pos.jobTitle.trim().toLowerCase()]
-                          : '-'}
-                      </td>
-                      <td style={{ padding: '8px', border: '1px solid #13714C' }}>
-                        <select
-                          value={pos.status}
-                          onChange={e => handleStatusChange(applicant.email, pos.jobTitle, e.target.value)}
-                        >
-                          <option value="Accepted">Accepted</option>
-                          <option value="Rejected">Rejected</option>
-                        </select>
-                      </td>
-                      {idx === 0 ? (
-                        <td
-                          rowSpan={applicant.positionAppliedFor.length}
-                          style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'middle' }}
-                        >
-                          <a
-                            onClick={() => handleDelete(applicant.email)}
-                            style={{ cursor: 'pointer', color: '#13714C', textDecoration: 'underline' }}
-                          >
-                            Delete
-                          </a>
-                        </td>
-                      ) : null}
-                    </tr>
-                  ))
-                ))}
+                {applicants.map(applicant =>
+  (applicant.positionAppliedFor || []).map((pos, idx) => (
+    <tr key={`${applicant._id}-${pos.jobTitle}`}>
+      {idx === 0 ? (
+        <td
+          rowSpan={applicant.positionAppliedFor.length}
+          style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'middle' }}
+        >
+          {applicant.email}
+        </td>
+      ) : null}
+      <td style={{ padding: '8px', border: '1px solid #13714C' }}>{pos.jobTitle}</td>
+      <td style={{ padding: '8px', border: '1px solid #13714C' }}>
+        {applicant.scores && applicant.scores[pos.jobTitle.trim().toLowerCase()] !== undefined
+          ? applicant.scores[pos.jobTitle.trim().toLowerCase()]
+          : '-'}
+      </td>
+<td style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'middle' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '75px' }}>
+    <select
+      value={pos.status}
+      onChange={e => handleStatusChange(applicant.email, pos.jobTitle, e.target.value)}
+      style={{ width: '100px' }}
+    >
+      <option value="Accepted">Accepted</option>
+      <option value="Rejected">Rejected</option>
+    </select>
+    <a
+      onClick={() => handleDeleteJobApplication(applicant.email, pos.jobTitle)}
+      style={{ cursor: 'pointer', color: '#13714C', textDecoration: 'underline' }}
+    >
+      Delete
+    </a>
+  </div>
+</td>
+    </tr>
+  ))
+)}
               </tbody>
             </table>
           </div>

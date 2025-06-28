@@ -663,7 +663,7 @@ app.post('/apply', async (req, res) => {
 
     // Calculate score based on extracted skills and job requirements
     const score = applicant.extractedSkills ? calculateScore(applicant.extractedSkills, job) : 0;
-    const status = score >= job.threshold ? 'To Next Interview' : 'Rejected';
+    const status = score >= job.threshold ? 'Accepted' : 'Rejected';
 
     // Check if the applicant has already applied for this job
     let jobApplicant = await JobApplicants.findOne({ email });
@@ -704,7 +704,7 @@ app.post('/apply', async (req, res) => {
 
     // Improved admin notification message
     const adminMsg =
-      status === 'To Next Interview'
+      status === 'Accepted'
         ? `${applicant.fullName || applicant.email} was Accepted after applying for "${jobTitle}".`
         : `${applicant.fullName || applicant.email} was Rejected after applying for "${jobTitle}".`;
 
@@ -718,7 +718,7 @@ app.post('/apply', async (req, res) => {
 
     // Improved user notification message
     const userMsg =
-      status === 'To Next Interview'
+      status === 'Accepted'
         ? `We're delighted to inform you that your application status for "${jobTitle}" has been set to ${status}.`
         : `We regret to inform you that your application status for "${jobTitle}" has been set to ${status}.`;
 
@@ -806,6 +806,43 @@ app.get('/applicants/:email', async (req, res) => {
   }
 });
 
+// Delete a specific job application for an applicant
+app.put('/delete-job-application', async (req, res) => {
+  try {
+    const { email, jobTitle } = req.body;
+    if (!email || !jobTitle) {
+      return res.status(400).json({ message: 'Email and jobTitle are required' });
+    }
+
+    const jobApplicant = await JobApplicants.findOne({ email });
+    if (!jobApplicant) {
+      return res.status(404).json({ message: 'Applicant not found' });
+    }
+
+    // Remove the job from positionAppliedFor
+    jobApplicant.positionAppliedFor = jobApplicant.positionAppliedFor.filter(
+      pos => pos.jobTitle !== jobTitle
+    );
+
+    // Remove the score for this jobTitle if it exists
+    if (jobApplicant.scores && jobApplicant.scores[jobTitle]) {
+      delete jobApplicant.scores[jobTitle];
+    }
+
+    // If no more jobs, delete the applicant entry
+    if (jobApplicant.positionAppliedFor.length === 0) {
+      await JobApplicants.deleteOne({ email });
+      return res.status(200).json({ message: 'Job application deleted and applicant removed' });
+    } else {
+      await jobApplicant.save();
+      return res.status(200).json({ message: 'Job application deleted' });
+    }
+  } catch (err) {
+    console.error('Error deleting job application:', err);
+    res.status(500).json({ message: 'Failed to delete job application.' });
+  }
+});
+
 // Upload resume endpoint
 app.post('/upload-resume', upload.single('resume'), async (req, res) => {
   try {
@@ -882,7 +919,7 @@ app.put('/update-applicant-status', async (req, res) => {
       return res.status(400).json({ message: 'Email, jobTitle, and status are required' });
     }
 
-    if (!['Rejected', 'To Next Interview'].includes(status)) {
+    if (!['Rejected', 'Accepted'].includes(status)) {
       return res.status(400).json({ message: 'Invalid status value' });
     }
 
@@ -913,9 +950,9 @@ app.put('/update-applicant-status', async (req, res) => {
 
     // Improved user notification message
     const userMsg =
-      status === 'To Next Interview'
-        ? `We're delighted to inform you that your application status for "${jobTitle}" has been set to ${status}.`
-        : `We regret to inform you that your application status for "${jobTitle}" has been set to ${status}.`;
+      status === 'Accepted'
+        ? `We Hope this email finds you well. We're delighted to inform you that your application status for "${jobTitle}" has been ${status}.`
+        : `We Hope this email finds you well. We regret to inform you that your application status for "${jobTitle}" has been ${status}.`;
 
     await new Notifications({
       email,
@@ -1062,8 +1099,8 @@ app.get('/fix-applicant-status', async (req, res) => {
     for (const jobApplicant of applicants) {
       let needsUpdate = false;
 
-      if (jobApplicant.status !== 'To Next Interview' && jobApplicant.status !== 'Rejected') {
-        jobApplicant.status = 'To Next Interview';
+      if (jobApplicant.status !== 'Accepted' && jobApplicant.status !== 'Rejected') {
+        jobApplicant.status = 'Accepted';
         needsUpdate = true;
       }
 
