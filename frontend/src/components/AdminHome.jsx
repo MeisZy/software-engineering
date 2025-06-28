@@ -135,15 +135,14 @@ const handleAssignInterview = async () => {
   setInterviewLoading(true);
   setInterviewError('');
   try {
-    // Create FormData object
-    const formData = new FormData();
-    formData.append('email', interviewEmail);
-    formData.append('date', interviewDate);
-    formData.append('type', interviewType);
-
     const res = await fetch('http://localhost:5000/interviews', {
       method: 'POST',
-      body: formData // send FormData instead of JSON
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: interviewEmail,
+        date: interviewDate,
+        type: interviewType
+      })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Failed to assign interview');
@@ -1016,7 +1015,7 @@ const handleDeleteApplicant = async (applicantId) => {
               </button>
               {interviewError && <span style={{ color: 'red', marginLeft: 12 }}>{interviewError}</span>}
             </div>
-            <h2 style={{color:"black"}}>Scheduled Interviews</h2>
+            <h2 style={{ color: "black" }}>Scheduled Interviews</h2>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
@@ -1031,11 +1030,24 @@ const handleDeleteApplicant = async (applicantId) => {
                   {interviewList.map((iv, idx) => (
                     <tr key={idx}>
                       <td>{iv.email}</td>
-                      <td>{new Date(iv.date).toLocaleString()}</td>
+                      <td>{iv.date ? new Date(iv.date).toLocaleString() : ''}</td>
                       <td>{iv.type}</td>
                       <td>{iv.notified ? 'Yes' : 'No'}</td>
                     </tr>
                   ))}
+                  {/* Show the just inputted values if not yet in interviewList */}
+                  {!interviewLoading && interviewEmail && interviewDate && interviewType && !interviewList.some(iv =>
+                    iv.email === interviewEmail &&
+                    new Date(iv.date).toISOString() === new Date(interviewDate).toISOString() &&
+                    iv.type === interviewType
+                  ) && (
+                    <tr style={{ background: '#e6ffe6' }}>
+                      <td>{interviewEmail}</td>
+                      <td>{new Date(interviewDate).toLocaleString()}</td>
+                      <td>{interviewType}</td>
+                      <td>No</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

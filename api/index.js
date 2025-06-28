@@ -15,7 +15,6 @@ const UserLogs = require('./models/UserLogs');
 const Notifications = require('./models/Notifications');
 const Interviews = require('./models/Interviews');
 const AdminNotifications = require('./models/AdminNotifications'); 
-const Notifications = require('./models/Notifications');
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -647,86 +646,6 @@ app.delete('/jobs/:id', async (req, res) => {
   }
 });
 
-app.post('/interviews', async (req, res) => {
-  try {
-    const { email, date, type } = req.body;
-    if (!email || !date || !type) {
-      return res.status(400).json({ message: 'Email, date, and type are required.' });
-    }
-
-    // Find applicant for name and job info
-    // Try JobApplicants first for job info, fallback to Applicants for name
-    let jobApplicant = await JobApplicants.findOne({ email });
-    let applicant = await Applicants.findOne({ email });
-    if (!jobApplicant && !applicant) {
-      return res.status(404).json({ message: 'Applicant not found.' });
-    }
-    const applicantName = (jobApplicant && jobApplicant.fullName) || (applicant && applicant.fullName) || email;
-    // Find the latest job applied for (or adjust as needed)
-    const lastPosition = (jobApplicant && jobApplicant.positionAppliedFor && jobApplicant.positionAppliedFor.length)
-      ? jobApplicant.positionAppliedFor[jobApplicant.positionAppliedFor.length - 1].jobTitle
-      : 'Unknown Position';
-
-    // Save interview in DB with notified: false
-    const interview = new Interviews({
-      email,
-      date: new Date(date),
-      type,
-      notified: false // strictly per schema
-    });
-    await interview.save();
-
-    // Admin notification (DB)
-    await AdminNotifications.create({
-      message: `Appointment is set for ${applicantName}, via ${type}, for ${lastPosition}, ${new Date(date).toLocaleString()}. Please forward the interview address/venue for the applicant.`,
-      email,
-      jobTitle: lastPosition,
-      isRead: false,
-      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-    });
-
-    // User notification (DB)
-    await Notifications.create({
-      email,
-      message: `Your appointment is set for the position ${lastPosition} in ${new Date(date).toLocaleString()}, via ${type}. Please stand by for your notifications and email for the Interview. We look forward to know you more!`,
-      isRead: false
-    });
-
-    // Send email to applicant
-    await transporter.sendMail({
-      from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
-      to: email,
-      subject: 'Interview Appointment Set',
-      html: `
-        <h3>Interview Appointment</h3>
-        <p>Your appointment is set for the position <b>${lastPosition}</b> in <b>${new Date(date).toLocaleString()}</b>, via <b>${type}</b>.</p>
-        <p>Please stand by for your notifications and email for the Interview.<br>We look forward to know you more!</p>
-        <hr />
-        <p>Best regards,<br>The Collectius Team</p>
-      `
-    });
-
-    // Send email to admin (optional)
-    await transporter.sendMail({
-      from: `"Collectius System" <${process.env.NODEMAILER_ADMIN}>`,
-      to: process.env.NODEMAILER_ADMIN,
-      subject: 'Interview Appointment Set',
-      html: `
-        <h3>Interview Appointment Set</h3>
-        <p>Appointment is set for <b>${applicantName}</b> (${email}), via <b>${type}</b>, for <b>${lastPosition}</b>, <b>${new Date(date).toLocaleString()}</b>.<br>
-        Please forward the interview address/venue for the applicant.</p>
-        <hr />
-        <p>Collectius Admin Panel</p>
-      `
-    });
-
-    res.status(201).json({ message: 'Interview assigned and notifications sent.' });
-  } catch (err) {
-    console.error('Error assigning interview:', err);
-    res.status(500).json({ message: 'Failed to assign interview.' });
-  }
-});
-
 // Apply for job endpoint
 app.post('/apply', async (req, res) => {
   try {
@@ -1229,7 +1148,7 @@ app.get('/fix-applicant-scores', async (req, res) => {
   }
 });
 
-app.post('/interviews', async (req, res) => {
+app.post('/interviews',upload.none() async (req, res) => {
   try {
     const { email, date, type } = req.body;
     if (!email || !date || !type) {
@@ -1237,30 +1156,34 @@ app.post('/interviews', async (req, res) => {
     }
 
     // Find applicant for name and job info
-    const applicant = await Applicants.findOne({ email });
-    if (!applicant) {
+    // Try JobApplicants first for job info, fallback to Applicants for name
+    let jobApplicant = await JobApplicants.findOne({ email });
+    let applicant = await Applicants.findOne({ email });
+    if (!jobApplicant && !applicant) {
       return res.status(404).json({ message: 'Applicant not found.' });
     }
-    const applicantName = applicant.fullName || email;
-    // Use the latest job applied for, or adjust as needed
-    const lastPosition = (applicant.positionAppliedFor && applicant.positionAppliedFor.length)
-      ? applicant.positionAppliedFor[applicant.positionAppliedFor.length - 1].jobTitle
+    const applicantName = (jobApplicant && jobApplicant.fullName) || (applicant && applicant.fullName) || email;
+    // Find the latest job applied for (or adjust as needed)
+    const lastPosition = (jobApplicant && jobApplicant.positionAppliedFor && jobApplicant.positionAppliedFor.length)
+      ? jobApplicant.positionAppliedFor[jobApplicant.positionAppliedFor.length - 1].jobTitle
       : 'Unknown Position';
 
-    // Save interview in DB
+    // Save interview in DB with notified: false
     const interview = new Interviews({
       email,
       date: new Date(date),
       type,
-      notified: true
+      notified: false // strictly per schema
     });
     await interview.save();
 
     // Admin notification (DB)
-    await Notifications.create({
-      email: 'admin', // or use a dedicated admin email/identifier
-      message: `Appointment is set for ${applicantName} (${email}), via ${type}, for ${lastPosition}, ${new Date(date).toLocaleString()}. Please forward the interview address/venue for the applicant.`,
-      isRead: false
+    await AdminNotifications.create({
+      message: `Appointment is set for ${applicantName}, via ${type}, for ${lastPosition}, ${new Date(date).toLocaleString()}. Please forward the interview address/venue for the applicant.`,
+      email,
+      jobTitle: lastPosition,
+      isRead: false,
+      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
     });
 
     // User notification (DB)
@@ -1284,7 +1207,7 @@ app.post('/interviews', async (req, res) => {
       `
     });
 
-    // Send email to admin (optional)
+    // Send email to admin
     await transporter.sendMail({
       from: `"Collectius System" <${process.env.NODEMAILER_ADMIN}>`,
       to: process.env.NODEMAILER_ADMIN,
@@ -1304,7 +1227,6 @@ app.post('/interviews', async (req, res) => {
     res.status(500).json({ message: 'Failed to assign interview.' });
   }
 });
-
 // Fetch applied jobs endpoint
 app.get('/applied-jobs/:email', async (req, res) => {
   try {

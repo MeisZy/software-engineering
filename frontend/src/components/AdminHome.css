@@ -170,11 +170,10 @@ nav {
   top: 50%;
   left: 50%;
   width: 800px;
-  height: 512px;
+  height: 600px; /* Increased from 512px */
   z-index: 10;
   background-color: #13714C;
   transform: translate(-50%, -50%);
-  /* Remove centering of child, allow absolute positioning inside */
   overflow: hidden;
   border:2px solid black;
 }
@@ -184,12 +183,13 @@ nav {
   top: 0;
   left: 0;
   width: 768px;
-  height: 512px;
+  height: 600px; /* Increased from 512px */
   box-sizing: border-box;
   background-color: #A2E494;
   border: 2px solid black;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 .notifications-container {
@@ -240,7 +240,7 @@ nav {
 .interviewsproper {
   width: 90%;
   min-height: 288px;
-  max-height: 340px;
+  max-height: 500px; /* Increased from 340px */
   background-color: white;
   position: relative;
   margin: 0 auto;
@@ -250,7 +250,7 @@ nav {
   transform: none;
   border: 2px solid black;
   overflow-y: auto;
-}
+} 
 .interviewsproper h2{
   font-size:20px;
   margin:20px;
