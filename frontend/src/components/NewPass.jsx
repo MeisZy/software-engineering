@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './NewPass.css';
+import './ForgotPassword.css'
+import './NewPass.css'
+
 
 function NewPass() {
   const [password, setPassword] = useState('');
@@ -69,8 +71,9 @@ function NewPass() {
         <h2>Collectius</h2>
       </nav>
       <div className='proper'>
-        <p>New Password</p>
-        <div className='container'>
+        <div className='formcontainer'>
+          <p className="forgottext">New Password</p>
+          <p>Enter your new password below</p>
           {error && <p style={{ color: 'red', fontSize: '12px' }}>{error}</p>}
           {message && <p style={{ color: 'green', fontSize: '12px' }}>{message}</p>}
           <form onSubmit={handleSubmit}>

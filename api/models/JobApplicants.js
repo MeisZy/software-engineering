@@ -12,7 +12,7 @@ const jobApplicantSchema = new mongoose.Schema({
   lastName: String,
   email: { type: String, required: true },
   mobileNumber: String,
-  positionAppliedFor: [{ jobTitle: String, status: String }], // <-- FIXED: now array of objects
+  positionAppliedFor: [{ jobTitle: String, status: String }],
   birthdate: Date,
   gender: String,
   city: String,

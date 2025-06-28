@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Authenticator.css';
+import './ForgotPassword.css'
 
 function Authenticator() {
   const [email, setEmail] = useState('');
@@ -35,7 +36,7 @@ function Authenticator() {
     try {
       const response = await axios.post('http://localhost:5000/verify-otp', { email, otp });
       localStorage.setItem('resetToken', response.data.resetToken);
-      setMessage('OTP verified successfully');
+      alert("OTP sent successfully");
       setTimeout(() => navigate('/newpass'), 2000);
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid OTP');
@@ -55,9 +56,9 @@ function Authenticator() {
         <h1>Collectius</h1>
       </nav>
       <div className='proper'>
-        <div className='container' style={{ borderRadius: '0', border: 'none' }}>
-          <p className="verifytext">Verify OTP</p>
-          <div className='fpassproper'>
+        <div className='container'>
+          <div className='formcontainer'>
+          <p className="forgottext">Verify OTP</p>
             {error && <p style={{ color: 'red', fontSize: '12px' }}>{error}</p>}
             {message && <p style={{ color: 'green', fontSize: '12px' }}>{message}</p>}
             <input
@@ -68,27 +69,18 @@ function Authenticator() {
               disabled={isLoading}
             />
             <input
-              type="text"
-              placeholder="Enter 6-Digit OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              maxLength={6}
-              disabled={isLoading}
-            />
+                type="text"
+                placeholder="Enter 6-digit OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                maxLength={6}
+                disabled={isLoading}
+              />
             <button onClick={verifyOtp} disabled={isLoading}>
               {isLoading ? 'Verifying...' : 'Verify OTP'}
             </button>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              width: '100%',
-              marginTop: '20px'
-            }}>
-              <li onClick={redirectHomePage} style={{
-                listStyle: 'none',
-                fontSize: '20px',
-                cursor: 'pointer'
-              }}>
+            <div style={{listStyle:"none",fontSize:"20px"}}>
+              <li onClick={redirectHomePage}>
                 <u>Back to Login</u>
               </li>
             </div>

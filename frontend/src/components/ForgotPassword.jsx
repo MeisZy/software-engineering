@@ -30,7 +30,7 @@ function ForgotPassword() {
     try {
       // Send the email to backend
       const response = await axios.post('http://localhost:5000/forgot-password', { email });
-      setMessage(response.data.message);
+      alert(response.data.message);
       localStorage.setItem('resetEmail', email);
       setTimeout(() => navigate('/authenticator'), 2000);
     } catch (err) {
@@ -45,10 +45,9 @@ function ForgotPassword() {
       <nav>
         <h1>Collectius</h1>
       </nav>
-      <div className='proper'>
-        <div className='container' style={{ borderRadius: '0', border: 'none' }}>
-          <p className="forgottext">Forgot Password</p>
-          <div className='fpassproper'>
+        <div className='proper'>
+          <div className='formcontainer'>
+            <p className="forgottext">Forgot Password</p>
             <img src={IconLock} alt="Lock Icon" />
             <p>Enter your Email Address</p>
             {error && <p style={{ color: 'red', fontSize: '12px' }}>{error}</p>}
@@ -63,12 +62,7 @@ function ForgotPassword() {
             <button onClick={handleSubmit} disabled={isLoading}>
               {isLoading ? 'Sending...' : 'Send'}
             </button>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              width: '100%',
-              marginTop: '20px'
-            }}>
+            <div>
               <li onClick={redirectHomePage} style={{
                 listStyle: 'none',
                 fontSize: '20px',
@@ -79,7 +73,6 @@ function ForgotPassword() {
             </div>
           </div>
         </div>
-      </div>
     </>
   );
 }

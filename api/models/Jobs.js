@@ -12,7 +12,7 @@ const jobSchema = new mongoose.Schema({
   whatWeOffer: { type: [String], required: true },
   keywords: [String],
   gradedQualifications: [{ attribute: String, points: Number }],
-  threshold: { type: Number, default: 10 }, // Minimum score for passing
+  threshold: { type: Number, default: 10 }, 
 });
 
 module.exports = mongoose.model('Jobs', jobSchema);
