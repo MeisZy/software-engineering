@@ -1148,13 +1148,13 @@ app.get('/fix-applicant-scores', async (req, res) => {
   }
 });
 
-app.post('/interviews',upload.none() async (req, res) => {
+app.post('/interviews',upload.none(), async (req, res) => {
   try {
     const { email, date, type } = req.body;
     if (!email || !date || !type) {
       return res.status(400).json({ message: 'Email, date, and type are required.' });
     }
-
+s
     // Find applicant for name and job info
     // Try JobApplicants first for job info, fallback to Applicants for name
     let jobApplicant = await JobApplicants.findOne({ email });
@@ -1227,6 +1227,17 @@ app.post('/interviews',upload.none() async (req, res) => {
     res.status(500).json({ message: 'Failed to assign interview.' });
   }
 });
+
+app.get('/interviews', async (req, res) => {
+  try {
+    const interviews = await Interviews.find().sort({ date: 1 }); // sort by date ascending
+    res.status(200).json(interviews);
+  } catch (err) {
+    console.error('Error fetching interviews:', err);
+    res.status(500).json({ message: 'Failed to fetch interviews.' });
+  }
+});
+
 // Fetch applied jobs endpoint
 app.get('/applied-jobs/:email', async (req, res) => {
   try {

@@ -571,7 +571,7 @@ const handleDeleteApplicant = async (applicantId) => {
       onClick={e => e.stopPropagation()}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', fontSize: "24px" }}>
-        <h2>Notifications</h2>
+        <h2 style={{color:"black"}}>Notifications</h2>
         <button
           onClick={() => setShowNotifications(false)}
           style={{
