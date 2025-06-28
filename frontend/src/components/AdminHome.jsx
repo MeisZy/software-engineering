@@ -135,14 +135,15 @@ const handleAssignInterview = async () => {
   setInterviewLoading(true);
   setInterviewError('');
   try {
+    // Create FormData object
+    const formData = new FormData();
+    formData.append('email', interviewEmail);
+    formData.append('date', interviewDate);
+    formData.append('type', interviewType);
+
     const res = await fetch('http://localhost:5000/interviews', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: interviewEmail,
-        date: interviewDate,
-        type: interviewType
-      })
+      body: formData // send FormData instead of JSON
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Failed to assign interview');
@@ -152,12 +153,13 @@ const handleAssignInterview = async () => {
         email: interviewEmail,
         date: interviewDate,
         type: interviewType,
-        notified: true
+        notified: false
       }
     ]);
     setInterviewEmail('');
     setInterviewDate('');
     setInterviewType('');
+    setInterviewError('');
   } catch (err) {
     setInterviewError(err.message);
   }
@@ -390,7 +392,7 @@ const handleDeleteApplicant = async (applicantId) => {
         </div>
         <div className="admin-nav-center">
           <a onClick={handleMaintainance}>Settings</a>
-          <a onClick={() => setSeeInterviews(True)}>Interviews</a>
+          <a onClick={() => setseeInterviews(true)}>Interviews</a>
           <a onClick={handleFAQs}>FAQs</a>
           <a onClick={handleSetCriteria}>Manage Jobs</a>
           <a onClick={() => setShowMessageForm(true)}>Send Message</a>
@@ -936,32 +938,43 @@ const handleDeleteApplicant = async (applicantId) => {
 {seeInterviews && (
   <div className="interviewscover">
     <div className="interviewswrapper">
-      <button className="interviews-close-btn" onClick={() => setSeeInterviews(false)}>×</button>
+      <button className="interviews-close-btn" onClick={() => setseeInterviews(false)}>×</button>
       <div className="interviewslabel"><h1>Interviews</h1></div>
-      <div className="interviewsproper">
+      <div
+        className="interviewsproper"
+        style={{
+          width: '90%',
+          minHeight: 288,
+          maxHeight: 480,
+          margin: '0 auto',
+          overflowY: 'auto',
+          background: '#fff',
+          border: '2px solid #13714C'
+        }}
+      >
         <div style={{ display: 'flex', gap: 24, marginBottom: 16 }}>
           <a
             style={{
-              fontWeight: interviewTab === 'interviews' ? 'bold' : 'normal',
-              textDecoration: interviewTab === 'interviews' ? 'underline' : 'none',
+              fontWeight: activeInterviewTab === 'interviews' ? 'bold' : 'normal',
+              textDecoration: activeInterviewTab === 'interviews' ? 'underline' : 'none',
               cursor: 'pointer'
             }}
-            onClick={() => setInterviewTab('interviews')}
+            onClick={() => setActiveInterviewTab('interviews')}
           >
             Interviews
           </a>
           <a
             style={{
-              fontWeight: interviewTab === 'applicants' ? 'bold' : 'normal',
-              textDecoration: interviewTab === 'applicants' ? 'underline' : 'none',
+              fontWeight: activeInterviewTab === 'applicants' ? 'bold' : 'normal',
+              textDecoration: activeInterviewTab === 'applicants' ? 'underline' : 'none',
               cursor: 'pointer'
             }}
-            onClick={() => setInterviewTab('applicants')}
+            onClick={() => setActiveInterviewTab('applicants')}
           >
             Applicants
           </a>
         </div>
-        {interviewTab === 'interviews' && (
+        {activeInterviewTab === 'interviews' && (
           <>
             <div style={{ margin: '20px 0' }}>
               <label>
@@ -995,9 +1008,7 @@ const handleDeleteApplicant = async (applicantId) => {
                 >
                   <option value="">Select Type</option>
                   <option value="Online">Online</option>
-                  <option value="Initial Screen">Initial Screen</option>
                   <option value="On-site">On-site</option>
-                  <option value="Conference">Conference</option>
                 </select>
               </label>
               <button onClick={handleAssignInterview} disabled={interviewLoading}>
@@ -1005,50 +1016,54 @@ const handleDeleteApplicant = async (applicantId) => {
               </button>
               {interviewError && <span style={{ color: 'red', marginLeft: 12 }}>{interviewError}</span>}
             </div>
-            <h2>Scheduled Interviews</h2>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  <th>Email</th>
-                  <th>Date</th>
-                  <th>Type</th>
-                  <th>Notified</th>
-                </tr>
-              </thead>
-              <tbody>
-                {interviewList.map((iv, idx) => (
-                  <tr key={idx}>
-                    <td>{iv.email}</td>
-                    <td>{new Date(iv.date).toLocaleString()}</td>
-                    <td>{iv.type}</td>
-                    <td>{iv.notified ? 'Yes' : 'No'}</td>
+            <h2 style={{color:"black"}}>Scheduled Interviews</h2>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Notified</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {interviewList.map((iv, idx) => (
+                    <tr key={idx}>
+                      <td>{iv.email}</td>
+                      <td>{new Date(iv.date).toLocaleString()}</td>
+                      <td>{iv.type}</td>
+                      <td>{iv.notified ? 'Yes' : 'No'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </>
         )}
-        {interviewTab === 'applicants' && (
+        {activeInterviewTab === 'applicants' && (
           <>
             <h2>Applicants for Interview</h2>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  <th>Email</th>
-                  <th>Full Name</th>
-                  <th>Applied Positions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {applicants.map((a, idx) => (
-                  <tr key={idx}>
-                    <td>{a.email}</td>
-                    <td>{a.fullName}</td>
-                    <td>{(a.positionAppliedFor || []).map(pos => pos.jobTitle).join(', ')}</td>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Full Name</th>
+                    <th>Applied Positions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {applicants.map((a, idx) => (
+                    <tr key={idx}>
+                      <td>{a.email}</td>
+                      <td>{a.fullName}</td>
+                      <td>{(a.positionAppliedFor || []).map(pos => pos.jobTitle).join(', ')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </>
         )}
       </div>

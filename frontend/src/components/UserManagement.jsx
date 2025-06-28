@@ -170,6 +170,7 @@ function UserManagement() {
     >
       <option value="Accepted">Accepted</option>
       <option value="Rejected">Rejected</option>
+      <option value="Pending">Pending</option>
     </select>
     <a
       onClick={() => handleDeleteJobApplication(applicant.email, pos.jobTitle)}

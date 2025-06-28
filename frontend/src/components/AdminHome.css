@@ -239,15 +239,18 @@ nav {
 
 .interviewsproper {
   width: 90%;
-  height:288px;
+  min-height: 288px;
+  max-height: 340px;
   background-color: white;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border:2px solid black;
+  position: relative;
+  margin: 0 auto;
+  top: 50px;
+  left: 0;
+  right: 0;
+  transform: none;
+  border: 2px solid black;
+  overflow-y: auto;
 }
-
 .interviewsproper h2{
   font-size:20px;
   margin:20px;

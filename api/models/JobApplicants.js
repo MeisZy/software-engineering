@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const positionStatusSchema = new mongoose.Schema({
   jobTitle: { type: String, required: true },
-  status: { type: String, required: true }
+  status: { type: String, required: true, default: "Pending" }
 }, { _id: false });
 
 const jobApplicantSchema = new mongoose.Schema({
