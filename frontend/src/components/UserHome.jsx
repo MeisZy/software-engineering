@@ -306,7 +306,8 @@ const handleApply = async (jobTitle) => {
             <h2 style={{
               paddingBottom: "24px",
               paddingTop: "25px",
-              fontSize: "24px"
+              fontSize: "24px",
+              color:"black"
             }}>Filters</h2>
             <h4 style={{ fontSize: "14px", fontWeight: "600" }}>Working Schedule</h4>
             {workingSchedule.map(option => (

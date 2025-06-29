@@ -46,6 +46,9 @@ function AdminHome() {
   const [interviewType, setInterviewType] = useState('');
   const [interviewEmail, setInterviewEmail] = useState('');
   const [interviewList, setInterviewList] = useState([]);
+  const [selectedApplicantJobs, setSelectedApplicantJobs] = useState([]);
+const [selectedJobTitle, setSelectedJobTitle] = useState('');
+  
 
   
 
@@ -128,8 +131,13 @@ useEffect(() => {
 }, [seeInterviews]);
 
 const handleAssignInterview = async () => {
-  if (!interviewEmail || !interviewDate || !interviewType) {
-    setInterviewError('All fields are required.');
+  
+  if (!interviewEmail || !interviewDate || !interviewType || !selectedJobTitle) {
+    setInterviewError('All fields are required, including a job title. Please ensure the selected applicant has applied for a job.');
+    return;
+  }
+  if (selectedApplicantJobs.length === 0) {
+    setInterviewError('The selected applicant has no applied jobs. Please select a different applicant.');
     return;
   }
   setInterviewLoading(true);
@@ -141,7 +149,8 @@ const handleAssignInterview = async () => {
       body: JSON.stringify({
         email: interviewEmail,
         date: interviewDate,
-        type: interviewType
+        type: interviewType,
+        jobTitle: selectedJobTitle
       })
     });
     const data = await res.json();
@@ -152,12 +161,14 @@ const handleAssignInterview = async () => {
         email: interviewEmail,
         date: interviewDate,
         type: interviewType,
+        jobTitle: selectedJobTitle,
         notified: false
       }
     ]);
     setInterviewEmail('');
     setInterviewDate('');
     setInterviewType('');
+    setSelectedJobTitle('');
     setInterviewError('');
   } catch (err) {
     setInterviewError(err.message);
@@ -165,6 +176,20 @@ const handleAssignInterview = async () => {
   setInterviewLoading(false);
 };
 
+const handleApplicantChange = (e) => {
+  const applicantId = e.target.value;
+  setSelectedApplicant(applicantId);
+
+  const applicantObj = applicants.find(app => app._id === applicantId);
+  if (applicantObj) {
+    setInterviewEmail(applicantObj.email);
+    const jobs = (applicantObj.positionAppliedFor || []).map(pos => pos.jobTitle);
+    setSelectedApplicantJobs(jobs);
+  } else {
+    setInterviewEmail('');
+    setSelectedApplicantJobs([]);
+  }
+};
 
   const handleAddApplicantToInterview = () => {
     if (!selectedApplicant) return;
@@ -453,7 +478,7 @@ const handleDeleteApplicant = async (applicantId) => {
             )}
           </div>
           <div className="verticalfilter">
-            <h2 style={{ paddingBottom: "24px", paddingTop: "25px", fontSize: "24px" }}>Filters</h2>
+            <h2 style={{ paddingBottom: "24px", paddingTop: "25px", fontSize: "24px", color:"black" }}>Filters</h2>
             <h4 style={{ fontSize: "14px", fontWeight: "600" }}>Working Schedule</h4>
             {workingSchedule.map(option => (
               <label className="custom-checkbox" key={option.id}>
@@ -976,19 +1001,15 @@ const handleDeleteApplicant = async (applicantId) => {
         {activeInterviewTab === 'interviews' && (
           <>
             <div style={{ margin: '20px 0' }}>
-              <label>
-                Applicant Email:
-                <select
-                  value={interviewEmail}
-                  onChange={e => setInterviewEmail(e.target.value)}
-                  style={{ marginLeft: 8, marginRight: 16 }}
-                >
-                  <option value="">Select Applicant</option>
-                  {applicants.map(a => (
-                    <option key={a.email} value={a.email}>{a.email}</option>
-                  ))}
-                </select>
-              </label>
+              <label>Select Applicant:</label>
+<select value={selectedApplicant} onChange={handleApplicantChange}>
+  <option value="">-- Select Applicant --</option>
+  {applicants.map(applicant => (
+    <option key={applicant._id} value={applicant._id}>
+      {applicant.fullName}
+    </option>
+  ))}
+</select>
               <label>
                 Date:
                 <input
@@ -1010,6 +1031,18 @@ const handleDeleteApplicant = async (applicantId) => {
                   <option value="On-site">On-site</option>
                 </select>
               </label>
+              <label>Select Job Applied For:</label>
+<select value={selectedJobTitle} onChange={(e) => setSelectedJobTitle(e.target.value)}>
+  <option value="">-- Select Job --</option>
+  {selectedApplicantJobs.map((job, index) => (
+    <option key={index} value={job}>{job}</option>
+  ))}
+</select>
+{selectedApplicantJobs.length === 0 && (
+  <span style={{ color: 'red', marginLeft: 12 }}>
+    This applicant has no applied jobs. Please select a different applicant.
+  </span>
+)}
               <button onClick={handleAssignInterview} disabled={interviewLoading}>
                 {interviewLoading ? 'Assigning...' : 'Assign Interview'}
               </button>

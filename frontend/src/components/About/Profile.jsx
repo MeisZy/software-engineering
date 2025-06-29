@@ -9,31 +9,42 @@ function Profile() {
   const [applicantData, setApplicantData] = useState(null);
   const [error, setError] = useState('');
   const [file, setFile] = useState(null);
+  
   const navigate = useNavigate();
 
-  // Get current user's data from localStorage
   const userEmail = localStorage.getItem('userEmail');
-  const userName = localStorage.getItem('userName');
+  const userName = localStorage.getItem('userName') || 'Unknown User'; // Fallback
   const profilePic = localStorage.getItem('profilePic');
 
   useEffect(() => {
     const fetchApplicantData = async () => {
       if (!userEmail) {
         setError('No user logged in. Please log in again.');
-        navigate('/'); // Redirect to login if no user email
+        navigate('/');
         return;
       }
 
       try {
         const response = await axios.get(`http://localhost:5000/applicants/${userEmail}`);
-        // Clean extractedSkills to remove bullets and non-word characters
-        if (response.data && response.data.extractedSkills) {
-          response.data.extractedSkills = response.data.extractedSkills.map(skill =>
-            skill.replace(/^[•\-\u2022\s]+/, '').replace(/[^\w\s]/g, '').trim()
-          ).filter(skill => skill.length > 0);
+        if (response.data) {
+          // Clean extractedSkills
+          response.data.extractedSkills = response.data.extractedSkills
+            ? response.data.extractedSkills
+                .map(skill => skill.replace(/^[•\-\u2022\s]+/, '').replace(/[^\w\s]/g, '').trim())
+                .filter(skill => skill.length > 0)
+            : [];
+          // Ensure fullName is valid
+          response.data.fullName = response.data.fullName || 'Unknown User';
+          setApplicantData(response.data);
+          // Update localStorage if fullName has changed
+          if (response.data.fullName !== userName) {
+            localStorage.setItem('userName', response.data.fullName);
+          }
+          setError('');
+        } else {
+          setApplicantData(null);
+          setError('No applicant data found.');
         }
-        setApplicantData(response.data);
-        setError('');
       } catch (err) {
         console.error('Error fetching applicant data:', err);
         setError('Failed to load profile data. Please try again.');
@@ -84,70 +95,70 @@ function Profile() {
     navigate('/'); // Redirect to login page
   };
 
-  return (
+return (
     <>
-    <Navbar/>
-    <div className="profile-page">
-      <div className="profile-card">
-        <div className="profile-main">
-          <div className="profile-left">
-            {profilePic && (
-              <img src={profilePic} alt="Profile" className="profile-pic" />
-            )}
-            <div className="profile-info">
-              <h2>{userName || 'User'}</h2>
-              <p>{userEmail || 'No email available'}</p>
-              <button className="resume-button" onClick={() => document.getElementById('resume-upload').click()}>
-                Upload Resume
-              </button>
-              <input
-                id="resume-upload"
-                type="file"
-                accept=".pdf"
-                onChange={handleSendFileChange}
-                style={{ display: 'none' }}
-              />
-              <button className="refresh-button" onClick={handleLogout}>
-                Logout
-              </button>
-            </div>
-          </div>
-          <div className="profile-right">
-            {error && <p className="error">{error}</p>}
-            {file && <p>Selected file: {file.name}</p>}
-          </div>
-        </div>
-        <div className="preview-container">
-          <h3>Resume Preview</h3>
-          {applicantData && applicantData.resume ? (
-            <div className="resume-display">
-              <p>Resume: {applicantData.resume.originalFileName}</p>
-              {applicantData.resume.filePath && (
-                <iframe
-                  src={`http://localhost:5000${applicantData.resume.filePath}`}
-                  title="Resume Preview"
-                  className="resume-display"
+      <Navbar />
+      <div className="profile-page">
+        <div className="profile-card">
+          <div className="profile-main">
+            <div className="profile-left">
+              {profilePic && (
+                <img src={profilePic} alt="Profile" className="profile-pic" />
+              )}
+              <div className="profile-info">
+                <h2>{applicantData?.fullName || userName}</h2> {/* Prefer applicantData.fullName */}
+                <p>{userEmail || 'No email available'}</p>
+                <button className="resume-button" onClick={() => document.getElementById('resume-upload').click()}>
+                  Upload Resume
+                </button>
+                <input
+                  id="resume-upload"
+                  type="file"
+                  accept=".pdf"
+                  onChange={handleSendFileChange}
+                  style={{ display: 'none' }}
                 />
-              )}
-              {applicantData.extractedSkills && applicantData.extractedSkills.length > 0 ? (
-                <div className="skills-container">
-                  <h4>Extracted Skills</h4>
-                  <ul>
-                    {applicantData.extractedSkills.map((skill, index) => (
-                      <li key={index}>{skill}</li>
-                    ))}
-                  </ul>
-                </div>
-              ) : (
-                <p>No skills extracted from resume.</p>
-              )}
+                <button className="refresh-button" onClick={handleLogout}>
+                  Logout
+                </button>
+              </div>
             </div>
-          ) : (
-            <p>No resume uploaded.</p>
-          )}
+            <div className="profile-right">
+              {error && <p className="error">{error}</p>}
+              {file && <p>Selected file: {file.name}</p>}
+            </div>
+          </div>
+          <div className="preview-container">
+            <h3>Resume Preview</h3>
+            {applicantData && applicantData.resume ? (
+              <div className="resume-display">
+                <p>Resume: {applicantData.resume.originalFileName}</p>
+                {applicantData.resume.filePath && (
+                  <iframe
+                    src={`http://localhost:5000${applicantData.resume.filePath}`}
+                    title="Resume Preview"
+                    className="resume-display"
+                  />
+                )}
+                {applicantData.extractedSkills && applicantData.extractedSkills.length > 0 ? (
+                  <div className="skills-container">
+                    <h4>Extracted Skills</h4>
+                    <ul>
+                      {applicantData.extractedSkills.map((skill, index) => (
+                        <li key={index}>{skill}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <p>No skills extracted from resume.</p>
+                )}
+              </div>
+            ) : (
+              <p>No resume uploaded.</p>
+            )}
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 }

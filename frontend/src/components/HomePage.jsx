@@ -17,44 +17,51 @@ function HomePage() {
     if (storedUser) setUserName(storedUser);
   }, []);
 
-  const handleLoginSuccess = async (credentialResponse) => {
-    try {
-      const decoded = jwtDecode(credentialResponse?.credential);
-      const fullName = decoded.name; // Use full name from Google
-      const userEmail = decoded.email;
-      const profilePic = decoded.picture;
+const handleLoginSuccess = async (credentialResponse) => {
+  try {
+    const decoded = jwtDecode(credentialResponse?.credential);
+    let fullName = decoded.name;
+    const userEmail = decoded.email;
+    const profilePic = decoded.picture;
 
-      if (fullName && userEmail) {
-        // Send to backend for authentication/registration
-        const response = await axios.post('http://localhost:5000/google-login', {
-          email: userEmail,
-          fullName: fullName,
-          picture: profilePic,
-        });
-
-        const { applicant } = response.data;
-        setUserName(applicant.fullName);
-        setError('');
-
-        // Store user data in localStorage
-        localStorage.setItem('userName', applicant.fullName);
-        localStorage.setItem('userEmail', applicant.email);
-        localStorage.setItem('profilePic', applicant.profilePic);
-
-        // Redirect based on user
-        if (decoded.name === 'Collectius HR Admin') {
-          navigate('/adminhome');
-        } else {
-          navigate('/userhome');
-        }
-      } else {
-        setError('Missing required user information from Google');
-      }
-    } catch (err) {
-      console.error('Google login error:', err);
-      setError(err.response?.data?.message || 'Google login failed. Please try again.');
+    // Sanitize fullName
+    if (!fullName || typeof fullName !== 'string') {
+      fullName = 'Unknown User';
+    } else {
+      fullName = fullName.replace(/[^\w\s]/g, '').trim(); // Remove special characters
+      if (!fullName) fullName = 'Unknown User';
     }
-  };
+
+    if (userEmail) {
+      const response = await axios.post('http://localhost:5000/google-login', {
+        email: userEmail,
+        fullName,
+        picture: profilePic,
+      });
+
+      const { applicant } = response.data;
+      setUserName(applicant.fullName);
+      setError('');
+
+      // Store user data in localStorage
+      localStorage.setItem('userName', applicant.fullName);
+      localStorage.setItem('userEmail', applicant.email);
+      localStorage.setItem('profilePic', applicant.profilePic || '');
+
+      // Redirect based on user
+      if (applicant.fullName === 'Collectius HR Admin') {
+        navigate('/adminhome');
+      } else {
+        navigate('/userhome');
+      }
+    } else {
+      setError('Missing required user information from Google');
+    }
+  } catch (err) {
+    console.error('Google login error:', err);
+    setError(err.response?.data?.message || 'Google login failed. Please try again.');
+  }
+};
 
   const handleManualLogin = async () => {
     try {

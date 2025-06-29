@@ -233,31 +233,36 @@ app.post('/google-login', async (req, res) => {
       return res.status(400).json({ message: 'Email and full name are required' });
     }
 
-    const normalizedFullName = fullName.trim() || 'Unknown Google User';
+    // Split fullName into firstName and lastName
+    const nameParts = fullName.trim().split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+    const normalizedFullName = fullName.trim() || 'Unknown User'; // Fallback if fullName is empty
 
     let applicant = await Applicants.findOne({ email });
     if (!applicant) {
       applicant = new Applicants({
         fullName: normalizedFullName,
-        firstName: '',
-        middleName: '',
-        lastName: '',
+        firstName,
+        lastName,
+        middleName: '', // Middle name not provided by Google
         email,
-        birthdate: new Date('1970-01-01'),
-        gender: 'F',
-        streetAddress: 'Unknown',
-        city: 'Unknown',
-        stateProvince: 'Unknown',
-        postalCode: '0000',
-        mobileNumber: '0000000000',
+        birthdate: new Date('1970-01-01'), // Placeholder
+        gender: 'F', // Placeholder
+        streetAddress: 'Unknown', // Placeholder
+        city: 'Unknown', // Placeholder
+        stateProvince: 'Unknown', // Placeholder
+        postalCode: '0000', // Placeholder
+        mobileNumber: '0000000000', // Placeholder
         password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
         resume: { filePath: null, fileType: null }
       });
       await applicant.save();
-    }
-
-    if (!applicant.fullName) {
+    } else if (!applicant.fullName || applicant.fullName === 'Unknown Google User') {
+      // Update existing applicant if fullName is missing or set to default
       applicant.fullName = normalizedFullName;
+      applicant.firstName = firstName;
+      applicant.lastName = lastName;
       await applicant.save();
     }
 
@@ -274,6 +279,8 @@ app.post('/google-login', async (req, res) => {
       message: 'Google login successful',
       applicant: {
         fullName: applicant.fullName,
+        firstName: applicant.firstName,
+        lastName: applicant.lastName,
         email: applicant.email,
         profilePic: picture || '',
       },
@@ -507,7 +514,7 @@ app.post('/send-message', async (req, res) => {
       });
     });
 
-    res.status(200).json({ message: 'Message sent successfully' });
+    res.status(200).alert({ message: 'Message sent successfully' });
   } catch (err) {
     console.error('Error in send-message endpoint:', {
       message: err.message,
@@ -915,11 +922,11 @@ if (fileType === 'pdf') {
 // Update applicant status endpoint
 app.put('/update-applicant-status', async (req, res) => {
   try {
-    const { email, jobTitle, status } = req.body;
+    const { email, date, type, jobTitle } = req.body;
 
-    if (!email || !status || !jobTitle) {
-      return res.status(400).json({ message: 'Email, jobTitle, and status are required' });
-    }
+if (!email || !date || !type || !jobTitle) {
+  return res.status(400).json({ message: 'Email, date, type, and jobTitle are required.' });
+}
 
     if (!['Rejected', 'Accepted', 'Pending'].includes(status)) {
   return res.status(400).json({ message: 'Invalid status value' });
@@ -1148,12 +1155,12 @@ app.get('/fix-applicant-scores', async (req, res) => {
 });
 
 app.post('/interviews',upload.none(), async (req, res) => {
-  try {
-    const { email, date, type } = req.body;
-    if (!email || !date || !type) {
+try {
+    const { email, date, type, jobTitle } = req.body;
+    if (!email || !date || !type || !jobTitle) {
       return res.status(400).json({ message: 'Email, date, and type are required.' });
     }
-s
+
     // Find applicant for name and job info
     // Try JobApplicants first for job info, fallback to Applicants for name
     let jobApplicant = await JobApplicants.findOne({ email });
@@ -1172,8 +1179,10 @@ s
       email,
       date: new Date(date),
       type,
-      notified: false // strictly per schema
+      jobTitle, // <== include this
+      notified: false
     });
+
     await interview.save();
 
     // Admin notification (DB)
@@ -1191,6 +1200,7 @@ s
       message: `Your appointment is set for the position ${lastPosition} in ${new Date(date).toLocaleString()}, via ${type}. Please stand by for your notifications and email for the Interview. We look forward to know you more!`,
       isRead: false
     });
+
 
     // Send email to applicant
     await transporter.sendMail({
@@ -1221,7 +1231,7 @@ s
     });
 
     res.status(201).json({ message: 'Interview assigned and notifications sent.' });
-  } catch (err) {
+} catch (err) {
     console.error('Error assigning interview:', err);
     res.status(500).json({ message: 'Failed to assign interview.' });
   }
