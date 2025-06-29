@@ -921,10 +921,9 @@ app.put('/update-applicant-status', async (req, res) => {
       return res.status(400).json({ message: 'Email, jobTitle, and status are required' });
     }
 
-    if (!['Rejected', 'Accepted'].includes(status)) {
-      return res.status(400).json({ message: 'Invalid status value' });
-    }
-
+    if (!['Rejected', 'Accepted', 'Pending'].includes(status)) {
+  return res.status(400).json({ message: 'Invalid status value' });
+}
     const jobApplicant = await JobApplicants.findOne({ email });
     if (!jobApplicant) {
       return res.status(404).json({ message: 'Applicant not found' });
