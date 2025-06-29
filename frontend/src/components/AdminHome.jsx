@@ -40,12 +40,12 @@ function AdminHome() {
   const [activeInterviewTab, setActiveInterviewTab] = useState('Interviews');
   const [interviewApplicants, setInterviewApplicants] = useState([]); // [{applicantId, name, status, score, evaluation}]
   const [showApplicantDropdown, setShowApplicantDropdown] = useState(false);
-const [selectedApplicant, setSelectedApplicant] = useState('');
-const [interviewDate, setInterviewDate] = useState('');
-const [interviewVenue, setInterviewVenue] = useState('');
-const [interviewType, setInterviewType] = useState('');
-const [interviewEmail, setInterviewEmail] = useState('');
-const [interviewList, setInterviewList] = useState([]);
+  const [selectedApplicant, setSelectedApplicant] = useState('');
+  const [interviewDate, setInterviewDate] = useState('');
+  const [interviewVenue, setInterviewVenue] = useState('');
+  const [interviewType, setInterviewType] = useState('');
+  const [interviewEmail, setInterviewEmail] = useState('');
+  const [interviewList, setInterviewList] = useState([]);
 
   
 
