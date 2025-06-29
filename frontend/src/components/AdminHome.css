@@ -165,6 +165,10 @@ nav {
   font-weight:600;
 }
 
+label{
+  font-size:20px;
+}
+
 .interviewscover {
   position: fixed;
   top: 50%;
@@ -786,4 +790,80 @@ td:nth-child(3) {
 
 .messagedetailsgrid{
   gap:20px;
+}
+
+.interview-form-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  margin: 20px;
+  flex-wrap: wrap;
+}
+
+.interview-form-row .form-item {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+
+.form-item button{
+  margin-top:25px;
+}
+
+.interview-form-row label {
+  font-size: 16px;
+  color: black;
+  margin-bottom: 8px;
+}
+
+.interview-form-row select,
+.interview-form-row input {
+  width: 100%;
+  max-width: 200px;
+  padding: 8px;
+  font-size: 14px;
+  border: 2px solid #13714C;
+  border-radius: 6px;
+  background: #f8fff8;
+  color: #222;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.interview-form-row select:focus,
+.interview-form-row input:focus {
+  border: 2px solid #A2E494;
+  box-shadow: 0 0 0 2px #A2E49433;
+}
+
+.interview-form-row button {
+  background: #A2E494;
+  color: #13714C;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s, color 0.3s;
+  align-self: flex-end;
+}
+
+.interview-form-row button:hover {
+  background: #13714C;
+  color: white;
+}
+
+.interview-form-row button:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.interview-error {
+  color: red;
+  font-size: 14px;
+  margin-top: 8px;
+  margin-left: 20px;
 }
