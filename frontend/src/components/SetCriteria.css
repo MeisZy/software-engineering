@@ -1,26 +1,60 @@
 .criteria {
-    margin-top:10vh;
-    margin-left:5vw;
+  margin-top: 10vh;
+  margin-left: 5vw;
 }
-.criteria a{
-    width:200px;
-    height:50px;
-    background-color:#A2E494;
-    font-weight:400;
-    border:1px solid black;
-    border-radius:3vh;
-    font-size:20px;
-    margin:10px;
-    padding:10px;
-}   
 
-textarea{
-    resize:none;
+.jobswrapper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+  padding: 25px;
+  margin-left: 1vw;
+}
+.criteria a {
+  width: 200px;
+  height: 50px;
+  background-color: #A2E494;
+  font-weight: 400;
+  border: 1px solid black;
+  border-radius: 3vh;
+  font-size: 20px;
+  margin: 10px;
+  padding: 10px;
+}
+
+.jobinstancedarkgreen {
+  border: 1px solid black;
+  background-color: #13714C;
+  width: 100%;
+  height: 256px;
+  border-radius: 25px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1280px) {
+  .jobswrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .jobswrapper {
+    grid-template-columns: 1fr;
+  }
+}
+
+textarea {
+  resize: none;
 }
 
 .criteria a:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
+
 .criteriascreen {
   position: fixed;
   top: 50%;
@@ -36,54 +70,54 @@ textarea{
   width: 576px;
   height: 576px;
   z-index: 3;
-  border:2px solid black;
+  border: 2px solid black;
 }
 
-
 .page1 {
-    display: flex;
-    flex-direction: column;
-    gap: 10px; 
-    width: 100%;
-}   
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
 
-.page1 textarea{
-    height:150px;
+.page1 textarea {
+  height: 150px;
 }
 
 .rowcomponent {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
 }
-.rowcomponent select{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    border-radius:none;
+
+.rowcomponent select {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  border-radius: none;
 }
+
 .rowcomponent,
 .rowcomponent select,
 .rowcomponent input,
 .rowcomponent textarea {
-    border-radius: 0 !important; 
-}
+  border-radius: 0 !important;
+}s /*this s is keeping the whole thing together. DO NOT REMOVE THIS*/
 
 .rowcomponent input,
 .rowcomponent textarea {
-    flex: unset;
-    width: 300px;
-    font-size: 16px;
-    margin-right: 0;
+  flex: unset;
+  width: 300px;
+  font-size: 16px;
+  margin-right: 0;
 }
 
 .rowcomponent option:hover {
-    background: #13714C;
-    color: #fff;
+  background: #13714C;
+  color: #fff;
 }
-
 
 .qualificationswrapper {
   background: #13714C;
@@ -100,45 +134,48 @@ textarea{
 }
 
 .page1 label {
-    font-size: 20px;
-    font-weight: 600;
-    color: white;
-    height: 50px;
-    width: 200px;
-    display: flex;
-    align-items: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  height: 50px;
+  width: 200px;
+  display: flex;
+  align-items: center;
 }
+
 .rowcomponent input {
-    flex: 1;
-    height: 20px;
-    font-size: 16px;
-    padding: 8px 12px;
-    margin-right: 0;
+  flex: 1;
+  height: 20px;
+  font-size: 16px;
+  padding: 8px 12px;
+  margin-right: 0;
 }
 
 .criteriascreencontent {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 600px;
-    height:500px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 600px;
+  height: 500px;
 }
 
 .criteriascreencontent label {
-    width: 300px;
-    font-size: 20px;
-    font-weight: 600;
-    color: white;
-    height: 50px;
-    display: flex;
-    align-items: center;
+  width: 300px;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  height: 50px;
+  display: flex;
+  align-items: center;
 }
+
 .keywords-textarea {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 100%;
+  width: 90%;
 }
+
 .keywords-textarea label {
   font-size: 18px;
   font-weight: 600;
@@ -157,22 +194,7 @@ textarea{
   flex-wrap: wrap;
   gap: 8px;
 }
-.keywords-textarea > div {
-  min-height: 48px; /* Reserve space for at least one row of keywords */
-  max-height: 96px; /* Prevent excessive growth */
-  overflow-y: auto;
-  margin-bottom: 8px;
-  box-sizing: border-box;
-  /* Keep padding and background as before */
-  display: flex;
-  flex-wrap: wrap;
-  padding: 10px;
-  background-color: white;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
 
-/* Optionally, make the textarea always the same width and not affected by keyword buttons above */
 .keywords-textarea textarea {
   width: 100%;
   height: 100px;
@@ -184,54 +206,47 @@ textarea{
   resize: vertical;
 }
 
-
-.criteriascreencontent input {
-    flex: 1;
-    margin-right: 0;
-    height: 20px;
-    font-size: 16px;
-    padding: 8px 12px;
-    width:256px;
+.criterianavigate {
+  z-index: 2;
+  position: sticky;
 }
 
-.criterianavigate{
-    z-index:2;
-    position:sticky;
-}
 .criterianavigate ul {
-    padding:0;
-    margin-top:25px;
-    margin-left: 20px;
-    display: inline-flex;           
-    justify-content: center;        
-    align-items: center;            
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: black;
+  padding: 0;
+  margin-top: 25px;
+  margin-left: 20px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: black;
 }
 
-.criterianavigate a{
-    display: block;
-    width: 0;
-    height: 0;
-    margin: 0 auto;
+.criterianavigate a {
+  display: block;
+  width: 0;
+  height: 0;
+  margin: 0 auto;
 }
 
 .criterianavigate ul:hover .left,
 .criterianavigate ul:hover .right {
-    border-right-color: #13714C;
-    border-left-color: #13714C;
+  border-right-color: #13714C;
+  border-left-color: #13714C;
 }
-.criterianavigate .left{
-    border-top: 15px solid transparent;
-    border-right: 25px solid #A2E494;
-    border-bottom: 15px solid transparent;
+
+.criterianavigate .left {
+  border-top: 15px solid transparent;
+  border-right: 25px solid #A2E494;
+  border-bottom: 15px solid transparent;
 }
-.criterianavigate .right{
-	border-top: 15px solid transparent;
-	border-left: 25px solid #A2E494;
-	border-bottom: 15px solid transparent;
+
+.criterianavigate .right {
+  border-top: 15px solid transparent;
+  border-left: 25px solid #A2E494;
+  border-bottom: 15px solid transparent;
 }
 
 .page5 h1 {
@@ -242,164 +257,136 @@ textarea{
   position: sticky;
   top: 0;
   z-index: 2;
+  background-color: #13714C;
 }
+
 .page5 h2 {
   color: white;
   font-size: 24px;
   font-weight: 600;
   margin: 0 0 12px 0;
 }
-.page5 h1,
-.page4 h1,
-.page3 h1,
+
 .page2 h1,
+.page3 h1,
+.page4 h1,
 .page6 h1 {
-    position: sticky;
-    left: 0;    
-    color: white;
-    margin: 0;
-    padding: 0;
-    z-index: 2;
-    font-size:36px;
-    font-weight:600;
-    top:20px;
+  position: sticky;
+  left: 0;
+  color: white;
+  margin: 0;
+  padding: 0;
+  z-index: 2;
+  font-size: 36px;
+  font-weight: 600;
+  top: 20px;
 }
 
-.page2 input{
-    width:200px;
-    border:3px solid black;
+.page2 input {
+  width: 200px;
+  border: 3px solid black;
 }
 
-.addbuttonwrap{
-    margin:10px;
-    width:25px;
-    height:25px;
-    border:1px solid black;
-    background-color:black;
-    border-radius: 50%;
+.addbuttonwrap {
+  margin: 10px;
+  width: 25px;
+  height: 25px;
+  border: 1px solid black;
+  background-color: black;
+  border-radius: 50%;
 }
 
-.addbuttonwrap a{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color:white;
-    cursor:pointer;
-    font-size:20px;
+.addbuttonwrap a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  cursor: pointer;
+  font-size: 20px;
 }
 
 .keyresponsibilities,
 .qualifications,
 .offers,
-.gradedqualifications{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 512px;
-    height: 32px;
-    margin-top:20px;
+.gradedqualifications {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 512px;
+  height: 32px;
+  margin-top: 20px;
 }
 
 .keyresponsibilities input,
 .qualifications input,
 .offers input,
-.gradedqualifications input{
-    height:32px;
-    font-size:16px;
-    border: 2px solid black;
-    width:96%;
-    resize:none;
+.gradedqualifications input {
+  height: 32px;
+  font-size: 16px;
+  border: 2px solid black;
+  width: 96%;
+  resize: none;
 }
 
 .removebuttonwrap {
-    margin: 10px;
-    width: 25px;
-    height: 25px;
-    border: 1px solid black;
-    background-color: black;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  margin: 10px;
+  width: 25px;
+  height: 25px;
+  border: 1px solid black;
+  background-color: black;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .removebuttonwrap a {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    cursor: pointer;
-    font-size: 20px;
-    text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  cursor: pointer;
+  font-size: 20px;
+  text-decoration: none;
 }
 
 .addremovewrap {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    align-items: center;
-    justify-content: flex-start;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
 }
+
 .page1,
 .page2,
 .page3,
 .page4,
-.page6
-{
-    padding: '20px'; 
-    width:800px;
-    height:528px;
-    margin:0;
-    left:0;
+.page6 {
+  padding: 20px;
+  width: 800px;
+  height: 528px;
+  margin: 0;
+  left: 0;
 }
 
 .page5 {
   padding: 20px;
   width: 512px;
-  height: 528px;
+  height: 496px;
+  display: flex;
+  flex-direction: column;
+}
+
+.scrollable-content {
+  overflow-y: auto;
+  min-height:512px;
+  max-height: 460px;
+  width:560px;
+  padding-right: 8px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-.criteriajobcard {
-    width: 672px;
-    height: 632px;
-    border: 1px solid black;
-    margin: 0 0 25px 0;         
-    font-size: 16px;
-    background-color: #A2E494;
-    overflow: hidden;
-    border-radius: 25px; 
-    z-index: 2; 
-    position: absolute;         
-    top: 0;
-    left: 0;
-}
-
-.criteriajobcard h2{
-    background-color: #13714C;
-    width:250px;
-    color:white;
-    padding:20px;
-    top:0;
-    left:0;
-}
-
-.button-container {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 16px;
-}
-
-.button-container button {
-  width: 120px;
-  height: 40px;
-  font-size: 16px;
-  background-color: #A2E494;
-  border: 2px solid black;
-  border-radius: 6px;
-  cursor: pointer;
 }
 
 .graded-qualifications {
@@ -408,47 +395,22 @@ textarea{
   gap: 12px;
 }
 
-.page6 .keywords-textarea {
-    width: 100%;
-    height: 100px;
-    font-size: 16px;
-    padding: 8px;
-    border: 2px solid black;
-    border-radius: 6px;
-    background: white;
-    resize: vertical;
-}
-
-.page6 .graded-qualifications {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
-}
-
 .attribute-header {
   display: grid;
-  grid-template-columns: 1fr 80px;
-  gap: 12px;
+  gap: 20px;
 }
 
-  .attribute-header label {
-    font-size: 18px;
-    font-weight: 600;
-    color: white;
-  }
+.attribute-header label {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+}
 
-  .attribute-row {
+.attribute-row {
   display: grid;
   grid-template-columns: 1fr 80px 32px 32px;
   gap: 12px;
   align-items: center;
-}
-
-.page6 .graded-qualifications .attribute-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
 }
 
 .attribute-row input[type="text"] {
@@ -468,43 +430,96 @@ textarea{
   padding: 0 8px;
 }
 
-.page6 .graded-qualifications input[type="text"] {
-    flex: 1;
-    height: 32px;
-    font-size: 16px;
-    border: 2px solid black;
-    border-radius: 6px;
+.add-button,
+.remove-button {
+  width: 32px;
+  height: 32px;
+  border: 2px solid black;
+  background-color: black;
+  color: white;
+  font-size: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.page6 .graded-qualifications input[type="number"] {
-    width: 80px;
-    height: 32px;
-    font-size: 16px;
-    border: 2px solid black;
-    border-radius: 6px;
-    text-align: center;
+.threshold {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
 }
 
-.jobinstancedarkgreen{
-    border:2px solid black;
-    background-color:#13714C;
-    margin:40px;
-    width:512px;
-    height:320px;
-    border-radius:20px;
+.threshold label {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  display:flex;
+  justify-content: center;
+  text-align:center;
+}
+
+.threshold input {
+  width: 100px;
+  height: 32px;
+  font-size: 16px;
+  border: 2px solid black;
+  border-radius: 6px;
+  padding: 0 8px;
+  text-align:center;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.button-container button {
+  width: 120px;
+  height: 40px;
+  font-size: 16px;
+  background-color: #A2E494;
+  border: 2px solid black;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.criteriajobcard {
+  width: 672px;
+  height: 632px;
+  border: 1px solid black;
+  margin: 0 0 25px 0;
+  font-size: 16px;
+  background-color: #A2E494;
+  overflow: hidden;
+  border-radius: 25px;
+  z-index: 2;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.criteriajobcard h2 {
+  background-color: #13714C;
+  width: 250px;
+  color: white;
+  padding: 20px;
+  top: 0;
+  left: 0;
 }
 
 
-.jobswrapper {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 32px;
-  width: 100%;
-  padding: 32px 0;
-  justify-items: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  box-sizing: border-box;
+
+.submitjob{
+    background-color: #13714C;
+    padding:5px;
+    box-shadow: none;
+    color:white;
+    border-radius:2px;
 }
 
 .jobinstancedarkgreen {
@@ -540,7 +555,7 @@ textarea{
   gap: 8px;
   flex-wrap: wrap;
   width: 100%;
-  margin-top:36px;
+  margin-top: 36px;
 }
 
 .jobinstance p {
@@ -554,7 +569,7 @@ textarea{
   display: inline-block;
   white-space: nowrap;
 }
-.jobtitle{
+.jobtitle {
   font-size: 20px;
   font-weight: 500;
   color: #222;
@@ -566,10 +581,31 @@ textarea{
   overflow-wrap: break-word;
 }
 
+.jobdescription {
+  background-color: #13714C;
+  margin: 3px 6px 3px 0;
+  border: 2px solid black;
+  padding: 2px 8px;
+  color: white;
+  border-radius: 5px;
+  font-size: 12px;
+  display: inline-block;
+  white-space: nowrap;
+}
+
 .jobrequirements {
   font-size: 14px;
   color: #444;
   margin-bottom: 6px;
+  background-color: #13714C;
+  margin: 3px 6px 3px 0;
+  border: 2px solid black;
+  padding: 2px 8px;
+  color: white;
+  border-radius: 5px;
+  font-size: 12px;
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .jobactions {
@@ -588,43 +624,6 @@ textarea{
   padding-right: 16px;
 }
 
-.threshold {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.threshold label {
-  font-size: 18px;
-  font-weight: 600;
-  color: white;
-}
-
-.threshold input {
-  width: 100%;
-  height: 32px;
-  font-size: 16px;
-  border: 2px solid black;
-  border-radius: 6px;
-  padding: 0 8px;
-}
-
-
-.add-button,
-.remove-button {
-  width: 32px;
-  height: 32px;
-  border: 2px solid black;
-  background-color: black;
-  color: white;
-  font-size: 20px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .jobactions a {
   color: black;
   text-decoration: none;
@@ -635,8 +634,8 @@ textarea{
   border-radius: 25px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
-  margin-right:5px;
-  margin-bottom:10px;
+  margin-right: 5px;
+  margin-bottom: 10px;
 }
 
 .jobactions a:hover {
@@ -645,29 +644,32 @@ textarea{
 }
 
 .jobdetailscontent {
-    background-color: #A2E494;
-    border-radius: 20px;
-    padding: 32px;
-    width: 720px;
-    height: 732px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: absolute;
-    top: 0;
-    left: 0;
+  background-color: #A2E494;
+  border-radius: 20px;
+  padding: 32px;
+  width: 720px;
+  height: 732px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .jobdetailscontent h2 {
-    background-color: #13714C;
-    color: white;
-    margin: 0 0 16px 0;
-    padding: 16px 24px;
-    border-radius:20px;
+  background-color: #13714C;
+  color: white;
+  margin: 0 0 16px 0;
+  padding: 16px 24px;
+  border-radius: 20px;
 }
 
-.jobdetailscontentdarkgreen{
-    width:832px;
-    height:832px;
-    border-radius:20px;
-    background-color:#13714C
+.jobdetailscontentdarkgreen {
+  width: 832px;
+  height: 832px;
+  border-radius: 20px;
+  background-color: #13714C;
+}
+.tags{
+    
 }

@@ -346,160 +346,157 @@ function SetCriteria() {
           <a onClick={() => setShowAddJob(true)}>Add Job</a>
           <a style={{ cursor: jobs.length ? 'pointer' : 'not-allowed' }} onClick={() => jobs.length && alert('Select a job to remove from the list below.')}>Remove Job</a>
         </div>
-<div className='jobswrapper'>
-  {jobsError && <div style={{ color: 'red', padding: '16px' }}>{jobsError}</div>}
-  {jobs.length === 0 ? (
-    <div style={{ padding: '16px', color: '#888' }}>No jobs available.</div>
-  ) : (
-    jobs.map((job, idx) => (
-      <div className='jobinstancedarkgreen' key={job._id}>
-        <div className='jobinstance'>
-          <h1 className='jobtitle'><a>{job.title}</a></h1>
-          <div className="jobinstance-row">
-            <p className='jobdescription'>{job.department}</p>
-            <p className='jobrequirements'>{job.employmentType}</p>
-            <p className='jobrequirements'>{job.workSchedule}</p>
-            <p className='jobrequirements'>{job.workSetup}</p>
-          </div>
+        <div className='jobswrapper'>
+          {jobsError && <div style={{ color: 'red', padding: '16px' }}>{jobsError}</div>}
+          {jobs.length === 0 ? (
+            <div style={{ padding: '16px', color: '#888' }}>No jobs available.</div>
+          ) : (
+            jobs.map((job, idx) => (
+              <div className='jobinstancedarkgreen' key={job._id}>
+                <div className='jobinstance'>
+                  <h1 className='jobtitle'><a>{job.title}</a></h1>
+                  <div className="jobinstance-row">
+                    <p className='jobdescription'>{job.department}</p>
+                    <p className='jobrequirements'>{job.employmentType}</p>
+                    <p className='jobrequirements'>{job.workSchedule}</p>
+                    <p className='jobrequirements'>{job.workSetup}</p>
+                  </div>
+                </div>
+                <div className='jobactions'>
+                  <a
+                    href="#"
+                    onClick={e => { e.preventDefault(); setOpenDetailIdx(idx); }}
+                    style={{ marginRight: '8px' }}
+                  >
+                    Details
+                  </a>
+                  <a
+                    href="#"
+                    onClick={e => { e.preventDefault(); handleRemoveJob(job._id); }}
+                  >
+                    Delete
+                  </a>
+                </div>
+                {openDetailIdx === idx && (
+                  <div
+                    className="jobdetailsmodal"
+                    style={{
+                      position: 'fixed',
+                      top: 0,
+                      left: 0,
+                      width: '100vw',
+                      height: '100vh',
+                      background: 'rgba(0,0,0,0.4)',
+                      zIndex: 20,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center'
+                    }}
+                    onClick={() => setOpenDetailIdx(null)}
+                  >
+                    <div className='jobdetailscontentdarkgreen' style={{ position: 'relative' }}>
+                      <button
+                        onClick={() => setOpenDetailIdx(null)}
+                        style={{
+                          position: 'absolute',
+                          top: '16px',
+                          right: '24px',
+                          fontSize: '20px',
+                          fontWeight: 'bold',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: '#A2E494',
+                          zIndex: 2,
+                        }}
+                        aria-label="Close"
+                      >
+                        ×
+                      </button>
+                      <div className="jobdetailscontent" onClick={e => e.stopPropagation()}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                          <h2 style={{ margin: 0 }}>{job.title}</h2>
+                        </div>
+                        <div style={{ marginBottom: 12 }}>
+                          <p><b>Department:</b> {job.department}</p>
+                        </div>
+                        <div style={{ marginBottom: 12 }}>
+                          <p><b>Employment Type:</b> {job.employmentType}</p>          
+                        </div>
+                        <div style={{ marginBottom: 12 }}>
+                          <p>
+                            <b>Work Schedule:</b> {job.workSchedule}
+                          </p>
+                        </div>
+                        <div style={{ marginBottom: 12 }}>
+                          <p><b>Work Setup:</b> {job.workSetup}</p>
+                        </div>
+                        <div style={{ marginBottom: 12 }}>
+                          <p><b>Description:</b> {Array.isArray(job.description) ? job.description.join(', ') : job.description}</p>
+                        </div>
+                        {Array.isArray(job.keyResponsibilities) && job.keyResponsibilities.length > 0 && (
+                          <div style={{ marginBottom: 12 }}>
+                            <p><b>Key Responsibilities:</b> <ul>
+                              {job.keyResponsibilities.map((item, i) => (
+                                <li key={i}>{item}</li>
+                              ))}
+                            </ul></p>
+                          </div>
+                        )}
+                        {Array.isArray(job.qualifications) && job.qualifications.length > 0 && (
+                          <div style={{ marginBottom: 12 }}>
+                            <p>
+                              <b>Qualifications:</b>
+                              <ul>
+                                {job.qualifications.map((item, i) => (
+                                  <li key={i}>{item}</li>
+                                ))}
+                              </ul>
+                            </p>
+                          </div>
+                        )}
+                        {Array.isArray(job.whatWeOffer) && job.whatWeOffer.length > 0 && (
+                          <div style={{ marginBottom: 12 }}>
+                            <p>
+                              <b>What we Offer:</b>
+                              <ul>
+                                {job.whatWeOffer.map((item, i) => (
+                                  <li key={i}>{item}</li>
+                                ))}
+                              </ul>
+                            </p>
+                          </div>
+                        )}
+                        <div style={{ marginBottom: 12 }}>
+                          <p>
+                            <b>Threshold:</b> {job.threshold}
+                          </p>
+                        </div>
+                        <div style={{ marginBottom: 12 }}>
+                          <p>
+                            <b>Keywords:</b> {Array.isArray(job.keywords) ? job.keywords.join(', ') : job.keywords}
+                          </p>
+                        </div>
+                        {Array.isArray(job.gradedQualifications) && job.gradedQualifications.length > 0 && (
+                          <div style={{ marginBottom: 12 }}>
+                            <p>
+                              <b>Graded Qualifications:</b>
+                              <ul>
+                                {job.gradedQualifications.map((qual, i) => (
+                                  <li key={i}>{qual.attribute}: {qual.points}</li>
+                                ))}
+                              </ul>
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
         </div>
-        <div className='jobactions'>
-          <a
-            href="#"
-            onClick={e => { e.preventDefault(); setOpenDetailIdx(idx); }}
-            style={{ marginRight: '8px' }}
-          >
-            Details
-          </a>
-          <a
-            href="#"
-            onClick={e => { e.preventDefault(); handleRemoveJob(job._id); }}
-          >
-            Delete
-          </a>
-        </div>
-{openDetailIdx === idx && (
-  <div
-    className="jobdetailsmodal"
-    style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100vw',
-      height: '100vh',
-      background: 'rgba(0,0,0,0.4)',
-      zIndex: 20,
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center'
-    }}
-    onClick={() => setOpenDetailIdx(null)}
-  >
-    <div className='jobdetailscontentdarkgreen' style={{ position: 'relative' }}>
-      <button
-        onClick={() => setOpenDetailIdx(null)}
-        style={{
-          position: 'absolute',
-          top: '16px',
-          right: '24px',
-          fontSize: '20px',
-          fontWeight: 'bold',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          color: '#A2E494',
-          zIndex: 2,
-        }}
-        aria-label="Close"
-      >
-        ×
-      </button>
-      <div className="jobdetailscontent" onClick={e => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <h2 style={{ margin: 0 }}>{job.title}</h2>
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <p><b>Department:</b> {job.department}</p>
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <p><b>Employment Type:</b> {job.employmentType}</p>          
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <p>
-            <b>Work Schedule:</b> {job.workSchedule}
-          </p>
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <p><b>Work Setup:</b> {job.workSetup}</p>
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <p><b>Description:</b> {Array.isArray(job.description) ? job.description.join(', ') : job.description}</p>
-          
-        </div>
-        {Array.isArray(job.keyResponsibilities) && job.keyResponsibilities.length > 0 && (
-          <div style={{ marginBottom: 12 }}>
-            
-            <p><b>Key Responsibilities:</b> <ul>
-              {job.keyResponsibilities.map((item, i) => (
-                <li key={i}>{item}</li>
-              ))}
-            </ul></p>
-           
-          </div>
-        )}
-        {Array.isArray(job.qualifications) && job.qualifications.length > 0 && (
-          <div style={{ marginBottom: 12 }}>
-            <p>
-            <b>Qualifications:</b>
-            <ul>
-              {job.qualifications.map((item, i) => (
-                <li key={i}>{item}</li>
-              ))}
-            </ul>
-            </p>
-          </div>
-        )}
-        {Array.isArray(job.whatWeOffer) && job.whatWeOffer.length > 0 && (
-          <div style={{ marginBottom: 12 }}>
-            <p>            <b>What we Offer:</b>
-            <ul>
-              {job.whatWeOffer.map((item, i) => (
-                <li key={i}>{item}</li>
-              ))}
-            </ul></p>
-
-          </div>
-        )}
-        <div style={{ marginBottom: 12 }}>
-          <p>
-            <b>Threshold:</b> {job.threshold}
-          </p>
-          
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <p>
-            <b>Keywords:</b> {Array.isArray(job.keywords) ? job.keywords.join(', ') : job.keywords}
-          </p>
-        </div>
-        {Array.isArray(job.gradedQualifications) && job.gradedQualifications.length > 0 && (
-          <div style={{ marginBottom: 12 }}>
-            <p>
-            <b>Graded Qualifications:</b>
-            <ul>
-              {job.gradedQualifications.map((qual, i) => (
-                <li key={i}>{qual.attribute}: {qual.points}</li>
-              ))}
-            </ul>
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
-)}
-      </div>
-    ))
-  )}
-</div>
       </div>
       {showAddJob && (
         <>
@@ -641,125 +638,128 @@ function SetCriteria() {
                   </div>
                 </div>
               )}
-{criteriaPage === 5 && (
-  <div className='page5'>
-    <h1>Customize Criteria</h1>
-    <div className="keywords-textarea">
-      <label>Keywords to Search in Resume</label>
-      <div className="keywords-container">
-        {keywords.map((word, index) => (
-          <WordButton key={index} word={word} onRemove={removeKeyword} />
-        ))}
-      </div>
-      <textarea
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        onKeyDown={handleKeywordsKeyDown}
-        placeholder="Enter keywords separated by space or comma"
-      />
-    </div>
-    <div className="graded-qualifications">
-      <h2>Graded Qualifications</h2>
-      <div className="attribute-header">
-        <label>Attribute</label>
-        <label>Points (out of 20)</label>
-      </div>
-      {gradedQualifications.map((qual, idx) => (
-        <div className="attribute-row" key={idx}>
-          <input
-            type="text"
-            value={qual.attribute}
-            onChange={(e) => handleGradedQualificationChange(idx, 'attribute', e.target.value)}
-            placeholder="Attribute"
-          />
-          <input
-            type="number"
-            value={qual.points}
-            onChange={(e) =>
-              handleGradedQualificationChange(idx, 'points', Math.min(20, Math.max(0, e.target.value)))
-            }
-            min="0"
-            max="20"
-            placeholder="Points"
-          />
-          {idx > 0 && (
-            <button className="remove-button" onClick={() => handleRemoveGradedQualification(idx)}>
-              -
-            </button>
-          )}
-          {idx === gradedQualifications.length - 1 && (
-            <button className="add-button" onClick={handleAddGradedQualification}>
-              +
-            </button>
-          )}
-        </div>
-      ))}
-    </div>
-    <div className="threshold">
-      <label>Threshold</label>
-      <input
-        type="number"
-        value={threshold}
-        onChange={(e) => setThreshold(e.target.value)}
-        placeholder="Enter threshold score (0-15)"
-      />
-    </div>
-    <div className="button-container">
-      <button onClick={handlePrevPage}>Previous</button>
-      <button onClick={handleSubmit}>Submit</button>
-    </div>
-  </div>
-)}
-{criteriaPage === 6 && (
-  <div className='page6'>
-    <div className="criteriajobcard">
-      <h2 style={{ margin: '20px 20px 16px 20px' }}>
-        {jobData.title || 'Job Title'}
-      </h2>
-      <div className='tags' style={{ marginBottom: '16px' }}>
-        <a>{jobData.department || 'Department'}</a>
-        <a>{jobData.employmentType || 'Employment Type'}</a>
-        <a>{jobData.workSchedule || 'Work Schedule'}</a>
-        <a>{jobData.workSetup || 'Work Setup'}</a>
-      </div>
-      <div style={{ marginBottom: '16px' }}>
-        <b>Description:</b>
-        <div>{jobData.description || 'No description'}</div>
-      </div>
-      <div style={{ marginBottom: '16px' }}>
-        <b>Key Responsibilities:</b>
-        <ul>
-          {keyResponsibilities.filter(Boolean).map((item, i) => (
-            <li key={i}>{item}</li>
-          ))}
-        </ul>
-      </div>
-      <div style={{ marginBottom: '16px' }}>
-        <b>Qualifications:</b>
-        <ul>
-          {qualifications.filter(Boolean).map((item, i) => (
-            <li key={i}>{item}</li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <b>What we Offer:</b>
-        <ul>
-          {offers.filter(Boolean).map((item, i) => (
-            <li key={i}>{item}</li>
-          ))}
-        </ul>
-      </div>
-      <button
-        onClick={handleSubmit}
-        style={{ marginTop: '16px' }}
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? 'Submitting...' : 'Submit Job'}
-      </button>
-    </div>
-  </div>
-)}
+              {criteriaPage === 5 && (
+                <div className='page5'>
+                  <div className="scrollable-content">
+                    <h1>Customize Criteria</h1>
+                    <div className="keywords-textarea">
+                      <label>Keywords to Search in Resume</label>
+                      <div className="keywords-container">
+                        {keywords.map((word, index) => (
+                          <WordButton key={index} word={word} onRemove={removeKeyword} />
+                        ))}
+                      </div>
+                      <textarea
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onKeyDown={handleKeywordsKeyDown}
+                        placeholder="Enter keywords separated by space or comma"
+                      />
+                    </div>
+                    <div className="graded-qualifications">
+                      <h2>Graded Qualifications</h2>
+                      <div className="attribute-header">
+                        <label>Attribute and Points (out of 20)</label>
+                      </div>
+                      {gradedQualifications.map((qual, idx) => (
+                        <div className="attribute-row" key={idx}>
+                          <input
+                            type="text"
+                            value={qual.attribute}
+                            onChange={(e) => handleGradedQualificationChange(idx, 'attribute', e.target.value)}
+                            placeholder="Attribute"
+                          />
+                          <input
+                            type="number"
+                            value={qual.points}
+                            onChange={(e) =>
+                              handleGradedQualificationChange(idx, 'points', Math.min(20, Math.max(0, e.target.value)))
+                            }
+                            min="0"
+                            max="20"
+                            placeholder="Points"
+                          />
+                          {idx > 0 && (
+                            <button className="remove-button" onClick={() => handleRemoveGradedQualification(idx)}>
+                              -
+                            </button>
+                          )}
+                          {idx === gradedQualifications.length - 1 && (
+                            <button className="add-button" onClick={handleAddGradedQualification}>
+                              +
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="threshold">
+                      <label>Threshold</label>
+                      <input
+                        type="number"
+                        value={threshold}
+                        onChange={(e) => setThreshold(e.target.value)}
+                        placeholder="Enter threshold score (0-15)"
+                      />
+                    </div>
+                    <div className="button-container">
+
+                    </div>
+                  </div>
+                </div>
+              )}
+              {criteriaPage === 6 && (
+                <div className='page6'>
+                  <div className="criteriajobcard">
+                    <h2 style={{ margin: '20px 20px 16px 20px' }}>
+                      {jobData.title || 'Job Title'}
+                    </h2>
+                    <div className='tags' style={{ marginBottom: '16px',marginLeft:"25px" }}>
+                      <a>{jobData.department || 'Department'}</a>
+                      <a>{jobData.employmentType || 'Employment Type'}</a>
+                      <a>{jobData.workSchedule || 'Work Schedule'}</a>
+                      <a>{jobData.workSetup || 'Work Setup'}</a>
+                    </div>
+                    <div style={{marginLeft:"30px"}}>
+                      <div style={{ marginBottom: '16px' }}>
+                        <b>Description:</b>
+                        <div>{jobData.description || 'No description'}</div>
+                      </div>
+                      <div style={{ marginBottom: '16px' }}>
+                        <b>Key Responsibilities:</b>
+                        <ul>
+                          {keyResponsibilities.filter(Boolean).map((item, i) => (
+                            <li key={i} style={{listStyle:"none"}}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div style={{ marginBottom: '16px' }}>
+                        <b>Qualifications:</b>
+                        <ul>
+                          {qualifications.filter(Boolean).map((item, i) => (
+                            <li key={i} style={{listStyle:"none"}}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <b>What we Offer:</b>
+                        <ul>
+                          {offers.filter(Boolean).map((item, i) => (
+                            <li key={i} style={{listStyle:"none"}}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <button
+                        onClick={handleSubmit}
+                        style={{ marginTop: '16px' }}
+                        disabled={isSubmitting}
+                        className='submitjob'
+                      >
+                        {isSubmitting ? 'Submitting...' : 'Submit Job'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="criterianavigate">
               <ul><a onClick={handlePrevPage} className='left'></a></ul>
