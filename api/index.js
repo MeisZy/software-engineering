@@ -1067,6 +1067,24 @@ app.delete('/delete-applicant', async (req, res) => {
   }
 });
 
+// Delete interview endpoint
+app.delete('/interviews/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid interview ID' });
+    }
+    const interview = await Interviews.findByIdAndDelete(id);
+    if (!interview) {
+      return res.status(404).json({ message: 'Interview not found' });
+    }
+    res.status(200).json({ message: 'Interview deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting interview:', error);
+    res.status(500).json({ message: 'Server error while deleting interview' });
+  }
+});
+
 // Fetch notifications endpoint
 app.get('/notifications/:email', async (req, res) => {
   try {

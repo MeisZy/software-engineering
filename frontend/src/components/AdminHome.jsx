@@ -177,20 +177,30 @@ useEffect(() => {
     setInterviewLoading(false);
   };
 
-  const handleDeleteInterview = async (interviewId) => {
-    try {
-      const res = await fetch(`http://localhost:5000/interviews/${interviewId}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to delete interview');
-      setInterviewList(prev => prev.filter(iv => iv._id !== interviewId));
-      setInterviewError('');
-    } catch (err) {
-      setInterviewError(err.message || 'Failed to delete interview');
+const handleDeleteInterview = async (interviewId) => {
+  if (!interviewId) {
+    setInterviewError('Invalid interview ID');
+    setTimeout(() => setInterviewError(''), 3000);
+    return;
+  }
+  try {
+    const res = await fetch(`http://localhost:5000/interviews/${interviewId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || 'Failed to delete interview');
     }
-  };
+    setInterviewList(prev => prev.filter(iv => iv._id !== interviewId));
+    setInterviewError('');
+  } catch (err) {
+    console.error('Error deleting interview:', err);
+    setInterviewError(err.message || 'Failed to delete interview');
+    setTimeout(() => setInterviewError(''), 3000);
+  }
+};
+
 
  const handleApplicantChange = (e) => {
   const applicantId = e.target.value;
