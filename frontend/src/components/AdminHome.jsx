@@ -89,30 +89,39 @@ function AdminHome() {
     ),
   ].filter(suggestion => suggestion.value.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [jobsResponse, applicantsResponse, adminNotificationsResponse] = await Promise.all([
-          axios.get('http://localhost:5000/jobs'),
-          axios.get('http://localhost:5000/applicants'),
-          axios.get('http://localhost:5000/adminnotifications'),
-        ]);
-        setJobs(jobsResponse.data);
-        setApplicants(applicantsResponse.data);
-        setAdminNotifications(
-          adminNotificationsResponse.data.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          )
-        );
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching data:', err);
-        setError('Failed to load data. Please try again.');
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const [jobsResponse, applicantsResponse, adminNotificationsResponse] = await Promise.all([
+        axios.get('http://localhost:5000/jobs'),
+        axios.get('http://localhost:5000/applicants'),
+        axios.get('http://localhost:5000/adminnotifications'),
+      ]);
+      console.log('Fetched Applicants:', applicantsResponse.data); // Debugging log
+
+      setJobs(jobsResponse.data);
+      setApplicants(applicantsResponse.data);
+
+      // Check if OAuth accounts are present
+      const oauthAccounts = applicantsResponse.data.filter(applicant => 
+        applicant.email.includes('@google.com') // Adjust based on actual OAuth email pattern
+      );
+      console.log('OAuth Accounts:', oauthAccounts);
+
+      setAdminNotifications(
+        adminNotificationsResponse.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        )
+      );
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setError('Failed to load data. Please try again.');
+      setLoading(false);
+    }
+  };
+  fetchData();
+}, []);
 
   useEffect(() => {
     if (seeInterviews) {
@@ -183,20 +192,21 @@ function AdminHome() {
     }
   };
 
-  const handleApplicantChange = (e) => {
-    const applicantId = e.target.value;
-    setSelectedApplicant(applicantId);
+ const handleApplicantChange = (e) => {
+  const applicantId = e.target.value;
+  setSelectedApplicant(applicantId);
 
-    const applicantObj = applicants.find(app => app._id === applicantId);
-    if (applicantObj) {
-      setInterviewEmail(applicantObj.email);
-      const jobs = (applicantObj.positionAppliedFor || []).map(pos => pos.jobTitle);
-      setSelectedApplicantJobs(jobs);
-    } else {
-      setInterviewEmail('');
-      setSelectedApplicantJobs([]);
-    }
-  };
+  const applicantObj = applicants.find(app => app._id === applicantId);
+  if (applicantObj) {
+    setInterviewEmail(applicantObj.email);
+    const jobs = (applicantObj.positionAppliedFor || []).map(pos => pos.jobTitle);
+    setSelectedApplicantJobs(jobs);
+  } else {
+    console.log('Applicant not found:', applicantId);
+    setInterviewEmail('');
+    setSelectedApplicantJobs([]);
+  }
+};
 
   const handleAddApplicantToInterview = () => {
     if (!selectedApplicant) return;

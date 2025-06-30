@@ -117,7 +117,7 @@ const handleApply = async (jobTitle) => {
       jobTitle,
     });
     const { score } = response.data; // Get the score from the response
-    setApplicationMessage(`Applied successfully. Your score: ${score}`);
+    alert(`Applied to ${jobTitle} succsessfully`);
     setTimeout(() => setApplicationMessage(''), 3000);
     setOpenDetailIdx(null);
   } catch (error) {

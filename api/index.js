@@ -227,13 +227,14 @@ app.post('/google-login', async (req, res) => {
   try {
     const { email, fullName, picture } = req.body;
 
-    console.log('Google login request:', { email, fullName, picture });
-
+    // Check for required fields
     if (!email || !fullName) {
       return res.status(400).json({ message: 'Email and full name are required' });
     }
 
-    // Split fullName into firstName and lastName
+    console.log('Google login request:', { email, fullName, picture });
+
+    // Normalize full name
     const nameParts = fullName.trim().split(' ');
     const firstName = nameParts[0] || '';
     const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
@@ -241,6 +242,7 @@ app.post('/google-login', async (req, res) => {
 
     let applicant = await Applicants.findOne({ email });
     if (!applicant) {
+      // Create a new applicant if not found
       applicant = new Applicants({
         fullName: normalizedFullName,
         firstName,
@@ -258,12 +260,14 @@ app.post('/google-login', async (req, res) => {
         resume: { filePath: null, fileType: null }
       });
       await applicant.save();
-    } else if (!applicant.fullName || applicant.fullName === 'Unknown Google User') {
+      console.log('New applicant created:', applicant);
+    } else if (!applicant.fullName || applicant.fullName === 'Unknown User') {
       // Update existing applicant if fullName is missing or set to default
       applicant.fullName = normalizedFullName;
       applicant.firstName = firstName;
       applicant.lastName = lastName;
       await applicant.save();
+      console.log('Existing applicant updated:', applicant);
     }
 
     const userLog = new UserLogs({
