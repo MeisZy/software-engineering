@@ -132,51 +132,41 @@ useEffect(() => {
     }
   }, [seeInterviews]);
 
-  const handleAssignInterview = async () => {
-    if (!interviewEmail || !interviewDate || !interviewType || !selectedJobTitle) {
-      setInterviewError('All fields are required, including a job title. Please ensure the selected applicant has applied for a job.');
-      return;
-    }
-    if (selectedApplicantJobs.length === 0) {
-      setInterviewError('The selected applicant has no applied jobs. Please select a different applicant.');
-      return;
-    }
-    setInterviewLoading(true);
+const handleAssignInterview = async () => {
+  if (!interviewEmail || !interviewDate || !interviewType || !selectedJobTitle) {
+    setInterviewError('All fields are required, including a job title. Please ensure the selected applicant has applied for a job.');
+    return;
+  }
+  if (selectedApplicantJobs.length === 0) {
+    setInterviewError('The selected applicant has no applied jobs. Please select a different applicant.');
+    return;
+  }
+  setInterviewLoading(true);
+  setInterviewError('');
+  try {
+    const res = await fetch('http://localhost:5000/interviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: interviewEmail,
+        date: interviewDate,
+        type: interviewType,
+        jobTitle: selectedJobTitle
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to assign interview');
+    setInterviewList(prev => [...prev, { _id: data._id, ...data }]); // Use server-provided data
+    setInterviewEmail('');
+    setInterviewDate('');
+    setInterviewType('');
+    setSelectedJobTitle('');
     setInterviewError('');
-    try {
-      const res = await fetch('http://localhost:5000/interviews', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: interviewEmail,
-          date: interviewDate,
-          type: interviewType,
-          jobTitle: selectedJobTitle
-        })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to assign interview');
-      setInterviewList(prev => [
-        ...prev,
-        {
-          email: interviewEmail,
-          date: interviewDate,
-          type: interviewType,
-          jobTitle: selectedJobTitle,
-          notified: false
-        }
-      ]);
-      setInterviewEmail('');
-      setInterviewDate('');
-      setInterviewType('');
-      setSelectedJobTitle('');
-      setInterviewError('');
-    } catch (err) {
-      setInterviewError(err.message);
-    }
-    setInterviewLoading(false);
-  };
-
+  } catch (err) {
+    setInterviewError(err.message);
+  }
+  setInterviewLoading(false);
+};
 const handleDeleteInterview = async (interviewId) => {
   if (!interviewId) {
     setInterviewError('Invalid interview ID');
@@ -200,7 +190,6 @@ const handleDeleteInterview = async (interviewId) => {
     setTimeout(() => setInterviewError(''), 3000);
   }
 };
-
 
  const handleApplicantChange = (e) => {
   const applicantId = e.target.value;
