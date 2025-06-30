@@ -243,8 +243,7 @@ label{
 
 .interviewsproper {
   width: 90%;
-  min-height: 288px;
-  max-height: 500px; /* Increased from 340px */
+  height:360px;
   background-color: white;
   position: relative;
   margin: 0 auto;
@@ -254,6 +253,7 @@ label{
   transform: none;
   border: 2px solid black;
   overflow-y: auto;
+  font-size:12px;
 } 
 .interviewsproper h2{
   font-size:20px;

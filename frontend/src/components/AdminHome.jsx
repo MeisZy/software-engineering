@@ -1159,6 +1159,6 @@ const handleDeleteInterview = async (interviewId) => {
       </div>
     </>
   );
-}
+} 
 
 export default AdminHome;

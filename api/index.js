@@ -518,7 +518,7 @@ app.post('/send-message', async (req, res) => {
       });
     });
 
-    res.status(200).alert({ message: 'Message sent successfully' });
+    res.status(200).json({ message: 'Message sent successfully' });
   } catch (err) {
     console.error('Error in send-message endpoint:', {
       message: err.message,
@@ -1078,6 +1078,22 @@ app.delete('/interviews/:id', async (req, res) => {
     if (!interview) {
       return res.status(404).json({ message: 'Interview not found' });
     }
+
+    // Send cancellation email to the applicant
+    await transporter.sendMail({
+      from: `"Collectius Support" <${process.env.NODEMAILER_ADMIN}>`,
+      to: interview.email,
+      subject: 'Notice for Cancellation of Interview',
+      html: `
+        <h3>Interview Cancellation</h3>
+        <p>We hope this email finds you well. Unfortunately, your ${interview.type} interview for ${interview.jobTitle} on ${new Date(interview.date).toLocaleString()} was cancelled.</p>
+        <p>We wish you good luck on your future endeavours.</p>
+        <hr />
+        <p>Best regards,</p>
+        <p>The Collectius Team</p>
+      `,
+    });
+
     res.status(200).json({ message: 'Interview deleted successfully' });
   } catch (error) {
     console.error('Error deleting interview:', error);
@@ -1176,7 +1192,7 @@ app.get('/fix-applicant-scores', async (req, res) => {
   }
 });
 
-app.post('/interviews',upload.none(), async (req, res) => {
+app.post('/interviews', upload.none(), async (req, res) => {
 try {
     const { email, date, type, jobTitle } = req.body;
     if (!email || !date || !type || !jobTitle) {
