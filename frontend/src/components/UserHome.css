@@ -126,8 +126,7 @@ nav a:hover {
   background: #13714C;
   border-radius: 25px;
   z-index: 10;
-  border:1px solid black;
-
+  border: 1px solid black;
 }
 
 .reportsdetailsdarkgreen a {
@@ -137,17 +136,17 @@ nav a:hover {
 .reportsdetailslightgreen {
   background: #A2E494;
   display: flex;
-  flex-direction: column;      /* Add this */
-  align-items: flex-start;     /* Add this */
-  justify-content: flex-start; /* Add this */
-  border:1px solid black;   
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border: 1px solid black;
   position: relative;
   border-radius: 25px;
   margin-top: 0px;
   margin-left: 0px;
-  width: 98%; /* Makes inner content determine width */
+  width: 98%;
   height: 96%;
-  max-height: 100%; /* Ensures it doesn't exceed the container's height */
+  max-height: 100%;
   box-sizing: border-box;
 }
 
@@ -157,7 +156,7 @@ nav a:hover {
   align-self: flex-start;
   font-size: 2rem;
   font-weight: 600;
-  color: Black;
+  color: black;
   background: none;
   border: none;
   line-height: 1.2;
@@ -236,7 +235,7 @@ nav a:hover {
   align-self: flex-end;
   display: flex;
   align-items: center;
-  justify-content: "center";
+  justify-content: center;
   gap: 8px;
 }
 
@@ -256,19 +255,29 @@ nav a:hover {
   padding: 0;
 }
 
-.userjobdetailsinner h3 {
-  background-color:#A2E494;
-  color:black;
-  border:2px solid black;
-  padding:12px;
+.jobtitle-header {
+  background-color: #13714C;
+  color: white;
+  border: 2px solid black;
+  padding: 12px 24px;
 }
+
+.userjobdetailsinner h3 {
+  background-color: #A2E494;
+  color: black;
+  border: 2px solid black;
+  padding: 12px;
+}
+
 .userjobdetailsgrid {
   display: flex;
   flex-direction: column;
-  min-height: 340px; /* adjust as needed for your modal height */
+  min-height: 340px;
   position: relative;
-  padding-bottom: 64px; /* space for the buttons */
+  padding: 24px;
+  padding-bottom: 64px;
 }
+
 .userjobdetails {
   position: fixed;
   top: 0;
@@ -282,26 +291,40 @@ nav a:hover {
   z-index: 10;
 }
 
+.userjobdetailsblock ul {
+  list-style: none;
+  font-size: 20px;
+}
+
+h2 {
+  font-size: 36px;
+}
+
+.notif-header h2 {
+  color: black;
+  margin: 24px;
+}
+
 .userjobdetailsblock {
-  background: #13714C;
-  color: white;
+  background-color: #A2E494;
+  color: black;
   border-radius: 12px;
   padding: 24px;
   width: 640px;
-  height: 80vh;
+  height: 64vh;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
   z-index: 11;
-    border: 2px solid black;
+  border: 2px solid black;
   overflow-y: auto;
   position: relative;
 }
 
-.userjobdetailswrapper{
-  width:700px;
-  height:88vh;
+.userjobdetailswrapper {
+  width: 700px;
+  height: 88vh;
   background-color: #A2E494;
   border: 2px solid black;
-  border-radius:16px;
+  border-radius: 16px;
 }
 
 .joboption a {
@@ -346,7 +369,7 @@ nav a:hover {
 
 .submitarrow {
   width: 120px;
-  position: "absolute";
+  position: absolute;
   right: 0;
   bottom: 0;
   margin: 32px 0 0 0;
@@ -357,7 +380,21 @@ nav a:hover {
   gap: 8px;
 }
 
-.userjobdetailexit, .userjobdetailapply {
+.userjobdetailexit {
+  font-size: 30px;
+  font-weight: bold;
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+  position: absolute;
+  top: 12px;
+  right: 24px;
+  background: none;
+  border: none;
+  line-height: 1;
+}
+
+.userjobdetailapply {
   margin-top: 24px;
   background: white;
   color: #13714C;
@@ -365,8 +402,10 @@ nav a:hover {
   border-radius: 6px;
   padding: 8px 24px;
   font-weight: 600;
-  cursor: "pointer";
-  margin: 20px;
+  cursor: pointer;
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
 }
 
 .usersearch {
@@ -386,7 +425,6 @@ nav a:hover {
   padding: 8px 12px;
 }
 
-
 .suggestionsdropdown {
   position: absolute;
   top: 100%;
@@ -400,7 +438,7 @@ nav a:hover {
   list-style: none;
   max-height: 200px;
   overflow-y: auto;
-  z-index: 30; /* Higher than filters */
+  z-index: 30;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
@@ -415,18 +453,16 @@ nav a:hover {
   flex-direction: column;
   align-items: flex-start;
 }
+
 .suggestion-item:hover,
 .suggestion-item.highlighted {
   background: #13714C;
   color: white;
 }
+
 .suggestiontags span {
   font-size: 10px;
   padding: 2px;
-}
-.suggestion-item:hover, .suggestion-item.highlighted {
-  background: #13714C;
-  color: white;
 }
 
 .user-nav {
@@ -461,16 +497,15 @@ nav a:hover {
 .notification-icon {
   width: 40px;
   height: 40px;
-
 }
 
-.header-report{
+.header-report {
   display: flex;
-  justify-content: space-between; 
-  align-items: center; 
+  justify-content: space-between;
+  align-items: center;
   height: 25px;
   width: 100%;
-  padding: 19px 0; /* Equal top and bottom padding */
+  padding: 19px 0;
   background-color: #A2E494;
   border-top-left-radius: 25px;
   border-top-right-radius: 25px;
@@ -479,29 +514,29 @@ nav a:hover {
 
 .header-report h3 {
   font-size: 20px;
-  margin-left: 12px; /* Remove default margins from h3 */
-  padding: 0%;
+  margin-left: 12px;
+  padding: 0;
 }
 
-.reportsdetailscontent{
+.reportsdetailscontent {
   display: flex;
   flex-direction: column;
   position: relative;
   background-color: #f8f8f8;
-  padding: 0 24px ;
-  margin-top:-16px;
+  padding: 0 24px;
+  margin-top: -16px;
   margin-left: 0px;
- border-bottom-left-radius: 25px;
- border-bottom-right-radius: 25px;
-  width: 93.8%; /* Makes inner content determine width */
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+  width: 93.8%;
   height: 87%;
-  max-height: 100%; /* Ensures it doesn't exceed the container's height */
+  max-height: 100%;
 }
 
 .form-row {
   display: flex;
   justify-content: space-between;
-  align-items: baseline; /* Aligns label with text inside input */
+  align-items: baseline;
   gap: 1rem;
   margin-bottom: 1rem;
   border-bottom: 2px solid rgba(0, 0, 0, 0.3);
@@ -512,7 +547,7 @@ nav a:hover {
 .form-row label {
   width: 100px;
   font-size: 1rem;
-  line-height: 1.4; /* Optional: helps position vertically */
+  line-height: 1.4;
 }
 
 .form-row input[type="text"] {
@@ -522,21 +557,19 @@ nav a:hover {
   border: none;
   background: #f8f8f8;
   padding: 0.4rem 0.6rem;
-  margin: 0; /* Remove margin shifts */
+  margin: 0;
   margin-left: -25px;
   margin-right: 35px;
   outline: none;
   box-shadow: none;
 }
 
-.form-message{
+.form-message {
   display: flex;
   margin-bottom: 1rem;
   gap: 1rem;
   width: 750px;
   margin-left: -30px;
-
-
 }
 
 .form-message textarea {
@@ -553,10 +586,8 @@ nav a:hover {
   margin-left: -70px;
   outline: none;
   box-shadow: none;
-
-  /* Scrollbar styles (WebKit only) */
-  scrollbar-width: thin;            /* For Firefox */
-  scrollbar-color: #a2e494 #13714C; /* For Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #a2e494 #13714C;
 }
 
 .form-message textarea::-webkit-scrollbar {
@@ -571,16 +602,15 @@ nav a:hover {
 .form-message textarea::-webkit-scrollbar-thumb {
   background-color: #a2e494;
   border-radius: 4px;
-  border: 2px solid #f0f0f0; /* Creates space around thumb */
+  border: 2px solid #f0f0f0;
 }
 
-/* Add or update this block for .form-buttons */
 .form-buttons {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 12px;
-  margin-bottom: 40px;      /* Increase this value as needed */
+  margin-bottom: 40px;
   position: relative;
   z-index: 2;
 }
@@ -593,7 +623,106 @@ nav a:hover {
   position: absolute;
   right: 0;
   bottom: 0;
-  margin: 0 16px 16px 0; /* right and bottom spacing */
+  margin: 0 16px 16px 0;
   z-index: 2;
   background: transparent;
+}
+
+.notifications-container {
+  width: 600px;
+  height: 70vh;
+  background: #13714C;
+  border-radius: 25px;
+  border: 1px solid black;
+  display: flex;
+  z-index: 11;
+}
+
+.notiflightGreenBG {
+  background: #A2E494;
+  width: 98%;
+  height: 96%;
+  border-radius: 25px;
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.notifications-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #a2e494 #13714C;
+}
+
+.notifications-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notifications-content::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.notifications-content::-webkit-scrollbar-thumb {
+  background-color: #a2e494;
+  border-radius: 4px;
+  border: 2px solid #f0f0f0;
+}
+
+.notif-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: #A2E494;
+  border-bottom: 2px solid black;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.notifications-close {
+  font-size: 30px;
+  font-weight: bold;
+  color: black;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.notification-item {
+  padding: 8px 24px;
+  border-bottom: 1px solid #ddd;
+  background: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.mark-as-read {
+  background: #A2E494;
+  color: #13714C;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.NoNotif {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #888;
 }
