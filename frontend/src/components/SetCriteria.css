@@ -133,14 +133,30 @@ textarea{
     display: flex;
     align-items: center;
 }
-
 .keywords-textarea {
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
 }
+.keywords-textarea label {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+}
 
+.keywords-container {
+  min-height: 48px;
+  max-height: 96px;
+  overflow-y: auto;
+  padding: 8px;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 .keywords-textarea > div {
   min-height: 48px; /* Reserve space for at least one row of keywords */
   max-height: 96px; /* Prevent excessive growth */
@@ -159,12 +175,15 @@ textarea{
 /* Optionally, make the textarea always the same width and not affected by keyword buttons above */
 .keywords-textarea textarea {
   width: 100%;
-  min-height: 100px;
-  max-height: 160px;
-  box-sizing: border-box;
-  margin: 0;
-  display: block;
+  height: 100px;
+  font-size: 16px;
+  padding: 8px;
+  border: 2px solid black;
+  border-radius: 6px;
+  background: white;
+  resize: vertical;
 }
+
 
 .criteriascreencontent input {
     flex: 1;
@@ -213,6 +232,22 @@ textarea{
 	border-top: 15px solid transparent;
 	border-left: 25px solid #A2E494;
 	border-bottom: 15px solid transparent;
+}
+
+.page5 h1 {
+  color: white;
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.page5 h2 {
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
 }
 .page5 h1,
 .page4 h1,
@@ -318,12 +353,13 @@ textarea{
     left:0;
 }
 
-.page5{
-    padding: 20px; 
-    width: 400px;
-    height: 528px;
-    margin: 0;
-    left: 0;
+.page5 {
+  padding: 20px;
+  width: 512px;
+  height: 528px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .criteriajobcard {
@@ -350,10 +386,26 @@ textarea{
     left:0;
 }
 
-.button-container button{
-    margin:20px;
-    width:100px;
-    
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.button-container button {
+  width: 120px;
+  height: 40px;
+  font-size: 16px;
+  background-color: #A2E494;
+  border: 2px solid black;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.graded-qualifications {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .page6 .keywords-textarea {
@@ -374,10 +426,46 @@ textarea{
     margin-top: 20px;
 }
 
+.attribute-header {
+  display: grid;
+  grid-template-columns: 1fr 80px;
+  gap: 12px;
+}
+
+  .attribute-header label {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+  }
+
+  .attribute-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 32px 32px;
+  gap: 12px;
+  align-items: center;
+}
+
 .page6 .graded-qualifications .attribute-row {
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+.attribute-row input[type="text"] {
+  height: 32px;
+  font-size: 16px;
+  border: 2px solid black;
+  border-radius: 6px;
+  padding: 0 8px;
+}
+
+.attribute-row input[type="number"] {
+  height: 32px;
+  font-size: 16px;
+  border: 2px solid black;
+  border-radius: 6px;
+  text-align: center;
+  padding: 0 8px;
 }
 
 .page6 .graded-qualifications input[type="text"] {
@@ -498,6 +586,43 @@ textarea{
   justify-content: flex-end;
   align-items: center;
   padding-right: 16px;
+}
+
+.threshold {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.threshold label {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+}
+
+.threshold input {
+  width: 100%;
+  height: 32px;
+  font-size: 16px;
+  border: 2px solid black;
+  border-radius: 6px;
+  padding: 0 8px;
+}
+
+
+.add-button,
+.remove-button {
+  width: 32px;
+  height: 32px;
+  border: 2px solid black;
+  background-color: black;
+  color: white;
+  font-size: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .jobactions a {

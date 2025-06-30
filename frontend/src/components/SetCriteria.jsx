@@ -643,13 +643,10 @@ function SetCriteria() {
               )}
 {criteriaPage === 5 && (
   <div className='page5'>
-    <div className='customizewrapper'>
     <h1>Customize Criteria</h1>
     <div className="keywords-textarea">
-      <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>
-        Which words to look out for in the applicant's resume?
-      </label>
-      <div style={{ display: 'flex', padding: '10px', backgroundColor: 'white', flexWrap: 'wrap' }}>
+      <label>Keywords to Search in Resume</label>
+      <div className="keywords-container">
         {keywords.map((word, index) => (
           <WordButton key={index} word={word} onRemove={removeKeyword} />
         ))}
@@ -659,22 +656,14 @@ function SetCriteria() {
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeywordsKeyDown}
         placeholder="Enter keywords separated by space or comma"
-        style={{
-          width: '100%',
-          height: '100px',
-          fontSize: '16px',
-          padding: '8px',
-          border: '2px solid black',
-          borderRadius: '6px',
-          background: 'white',
-          resize: 'vertical'
-        }}
       />
     </div>
     <div className="graded-qualifications">
-      <h2 style={{ fontSize: '24px', color: 'white', marginBottom: '16px' }}>Graded Qualifications</h2>
-      <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>Attribute</label>
-      <label style={{ fontSize: '20px', fontWeight: '600', color: 'white' }}>Points (out of 20)</label>
+      <h2>Graded Qualifications</h2>
+      <div className="attribute-header">
+        <label>Attribute</label>
+        <label>Points (out of 20)</label>
+      </div>
       {gradedQualifications.map((qual, idx) => (
         <div className="attribute-row" key={idx}>
           <input
@@ -682,13 +671,6 @@ function SetCriteria() {
             value={qual.attribute}
             onChange={(e) => handleGradedQualificationChange(idx, 'attribute', e.target.value)}
             placeholder="Attribute"
-            style={{
-              flex: 1,
-              height: '32px',
-              fontSize: '16px',
-              border: '2px solid black',
-              borderRadius: '6px'
-            }}
           />
           <input
             type="number"
@@ -699,46 +681,32 @@ function SetCriteria() {
             min="0"
             max="20"
             placeholder="Points"
-            style={{
-              width: '80px',
-              height: '32px',
-              fontSize: '16px',
-              border: '2px solid black',
-              borderRadius: '6px',
-              textAlign: 'center'
-            }}
           />
           {idx > 0 && (
-            <div className='removebuttonwrap'>
-              <a onClick={() => handleRemoveGradedQualification(idx)}>-</a>
-            </div>
+            <button className="remove-button" onClick={() => handleRemoveGradedQualification(idx)}>
+              -
+            </button>
           )}
-      <div className='addbuttonwrap'>
-        <a onClick={handleAddGradedQualification}>+</a>
-      </div>
+          {idx === gradedQualifications.length - 1 && (
+            <button className="add-button" onClick={handleAddGradedQualification}>
+              +
+            </button>
+          )}
         </div>
       ))}
     </div>
-    <div className='threshold'>
+    <div className="threshold">
       <label>Threshold</label>
       <input
-        type='number'
+        type="number"
         value={threshold}
         onChange={(e) => setThreshold(e.target.value)}
-        placeholder='Enter threshold score (0-15)'
-        style={{
-          width: '100%',
-          height: '32px',
-          fontSize: '16px',
-          border: '2px solid black',
-          borderRadius: '6px'
-        }}
+        placeholder="Enter threshold score (0-15)"
       />
     </div>
-    <div className='button-container'>
+    <div className="button-container">
       <button onClick={handlePrevPage}>Previous</button>
       <button onClick={handleSubmit}>Submit</button>
-    </div>
     </div>
   </div>
 )}
