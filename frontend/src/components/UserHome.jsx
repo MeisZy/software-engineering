@@ -98,7 +98,7 @@ function UserHome() {
     navigate('/help');
   };
 
-  const handleAbout = () => {
+    const handleAbout = () => {
     navigate('/about');
   };
 
@@ -110,22 +110,22 @@ function UserHome() {
     }
   };
 
-  const handleApply = async (jobTitle) => {
-    try {
-      const response = await axios.post('http://localhost:5000/apply', {
-        email: userEmail,
-        jobTitle,
-      });
-      const { score } = response.data;
-      alert(`Applied to ${jobTitle} successfully`);
-      setTimeout(() => setApplicationMessage(''), 3000);
-      setOpenDetailIdx(null);
-    } catch (error) {
-      console.error('Error applying for job:', error);
-      setApplicationMessage(error.response?.data?.message || 'Failed to apply. Please try again.');
-      setTimeout(() => setApplicationMessage(''), 3000);
-    }
-  };
+const handleApply = async (jobTitle) => {
+  try {
+    const response = await axios.post('http://localhost:5000/apply', {
+      email: userEmail,
+      jobTitle,
+    });
+    const { score } = response.data; // Get the score from the response
+    setApplicationMessage(`Applied successfully. Your score: ${score}`);
+    setTimeout(() => setApplicationMessage(''), 3000);
+    setOpenDetailIdx(null);
+  } catch (error) {
+    console.error('Error applying for job:', error);
+    setApplicationMessage(error.response?.data?.message || 'Failed to apply. Please try again.');
+    setTimeout(() => setApplicationMessage(''), 3000);
+  }
+};
 
   const handleReportSubmit = async (e) => {
     e.preventDefault();
@@ -184,6 +184,8 @@ function UserHome() {
     setTimeout(() => setShowSuggestions(false), 100);
   };
 
+
+
   const handleMarkAsRead = async (notificationId) => {
     try {
       await axios.put(`http://localhost:5000/notifications/${notificationId}/read`);
@@ -227,22 +229,25 @@ function UserHome() {
     return true;
   });
 
-  const handleProfile = () => {
-    navigate('/profile');
-  };
-
+  const handleProfile = () =>{
+    navigate('/profile')
+  }
   return (
     <>
       <nav className="user-nav">
         <div className="user-nav-left">
-          <a href="/profile">
-            <img src={profilePic || Placeholder} alt="Profile" />
-          </a>
+         {/*  <img src={profilePic || Placeholder} alt="Profile" />*/}
+            <a href="/profile">
+              <img src={profilePic || Placeholder} alt="Profile" />
+            </a>
           <span className="usergreeting">Welcome, {userEmail}!</span>
           <a href="#" onClick={(e) => { e.preventDefault(); setShowReportForm(true); }}>Report a Problem</a>
           <a href="#" onClick={handleFAQs}>Help</a>
           <a href="#" onClick={handleAbout}>About</a>
-          <a href="#" onClick={handleProfile}>Settings</a>
+          <a href="#" onClick={handleProfile}>Profile</a>
+        
+          {/*   <a href="#" onClick={handleProfile}>Settings</a>  />*/}
+          
         </div>
         <div className="user-nav-right">
           <div style={{ position: 'relative', display: 'inline-block' }}>
@@ -254,7 +259,7 @@ function UserHome() {
               onClick={() => setShowNotifications(!showNotifications)}
             />
             {notifications.filter(n => !n.isRead).length > 0 && (
-              <span className="notification-count" style={{ position: 'absolute', top: '2px', right: '-8px' }}>
+              <span className="notification-count" style={{ position: 'absolute', top: '7.2px', right: '-8px',backgroundColor:"#A2E494",color:"black" }}>
                 {notifications.filter(n => !n.isRead).length}
               </span>
             )}
@@ -262,6 +267,7 @@ function UserHome() {
           <a className="logout" onClick={handleLogout}>Logout</a>
         </div>
       </nav>
+
 
       <div className='usercontainer'>
         <div className='userleftcomp'>
@@ -301,7 +307,7 @@ function UserHome() {
               paddingBottom: "24px",
               paddingTop: "25px",
               fontSize: "24px",
-              color: "black"
+              color:"black"
             }}>Filters</h2>
             <h4 style={{ fontSize: "14px", fontWeight: "600" }}>Working Schedule</h4>
             {workingSchedule.map(option => (
@@ -356,81 +362,98 @@ function UserHome() {
             </div>
           )}
 
+          {/*Notification  */}
+
           {showNotifications && (
             <div
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100vw',
-                height: '100vh',
-                background: 'rgba(0,0,0,0.4)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: 10,
-              }}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              background: 'rgba(0,0,0,0.4)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 10,
+          }}
+            
             > 
+            <div
+              className="notifications-containerUser"
+              onClick={() => setShowNotifications(false)}
+            >
+              <div className='notiflightGreenBGUser'>
               <div
-                className="notifications-container"
-                onClick={() => setShowNotifications(false)}
+                className="notifications-content"
+                onClick={e => e.stopPropagation()}
               >
-                <div className='notiflightGreenBG'>
-                  <div
-                    className="notifications-content"
-                    onClick={e => e.stopPropagation()}
+                <div className= "notif-header" >
+                  <h2>Notifications</h2>
+                  <button
+                    onClick={() => setShowNotifications(false)}
+                                    style={{
+                  fontSize: '30px',
+                  marginRight: '19px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: 'none',
+                                    }}
                   >
-                    <div className="notif-header">
-                      <h2>Notifications</h2>
-                      <button
-                        className="notifications-close"
-                        onClick={() => setShowNotifications(false)}
-                      >
-                        ×
-                      </button>
-                    </div>
-                    {notifications.length === 0 ? (
-                      <div className='NoNotif'>
-                        <p>No notifications available.</p> 
-                      </div>
-                    ) : (
-                      <div className="notifications-list">
-                        {notifications.map(notification => (
-                          <div
-                            key={notification._id}
-                            className="notification-item"
-                          >
-                            <div>
-                              <p style={{ margin: 0, fontWeight: notification.isRead ? 'normal' : 'bold' }}>
-                                {notification.message}
-                              </p>
-                              <span style={{ fontSize: '12px', color: '#888' }}>
-                                {new Date(notification.createdAt).toLocaleString('en-US', {
-                                  year: 'numeric',
-                                  month: '2-digit',
-                                  day: '2-digit',
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                })}
-                              </span>
-                            </div>
-                            {!notification.isRead && (
-                              <button
-                                onClick={() => handleMarkAsRead(notification._id)}
-                                className="mark-as-read"
-                              >
-                                Mark as Read
-                              </button>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                    ×
+                  </button>
+
                 </div>
+                
+         <div className='MainContentNotif'>
+                {notifications.length === 0 ? (
+                  <div className='NoNotif'>
+                    
+                   <p>No notifications available.</p> 
+                    
+                    </div>
+                ) : (
+                  <ul className='notification-listUser'>
+                    {notifications.map(notification => (
+                      <li  key={notification._id   }  
+                        className="notification-itemUser"
+                      >
+                        <div className='notification-contentUser'> 
+                          <p  className='messageUser' style={{ margin: 0, fontWeight: notification.isRead ? 'normal' : 'bold' }}>
+                            {notification.message}
+                          </p>
+                          <span className='timestampUser'>
+
+                            {new Date(notification.createdAt).toLocaleString('en-US', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                        </div>
+                        {!notification.isRead && (
+                          <button
+                            onClick={() => handleMarkAsRead(notification._id)}
+                              className="mark-read-btnUser"
+                          >
+                            Mark as Read
+                          </button>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                 </div>
               </div>
             </div>
+            </div>
+          </div>
           )}
+
 
           {loading ? (
             <div style={{ padding: '32px', color: '#888' }}>Loading jobs...</div>
@@ -461,57 +484,70 @@ function UserHome() {
                       </div>
                     </div>
                     {openDetailIdx === idx && (
-                      <div className="userjobdetails" onClick={() => setOpenDetailIdx(null)}>
-                        <div className='jobdetails-wrapper'> 
-                          <div className="userjobdetailsblock" onClick={e => e.stopPropagation()}>
+                            /* After opening job details button */
+                  <div className="userjobdetails" onClick={() => setOpenDetailIdx(null)}>
+                       <div className='jobdetails-wrapper'> 
+                        <div className="userjobdetailsblock" onClick={e => e.stopPropagation()}>
+                          <div className = "jobtitle-Header">
+                            <h3 style={{ marginLeft: '25px' }}>
+                              {job.title}
+                            </h3>
                             <a
-                              className="userjobdetailexit"
+                              style={{
+                                fontSize: '2rem',
+                                fontWeight: 'bold',
+                                color: 'black',
+                                textDecoration: 'none',
+                                cursor: 'pointer',
+                                marginLeft: '24px',
+                                marginRight:'24px',
+                                lineHeight: '1',
+                              }}
                               onClick={() => setOpenDetailIdx(null)}
                               aria-label="Close"
-                              style={{ marginTop: "10px", color: "black" }}
                             >
                               ×
                             </a>
-                            <div className="jobtitle-header" style={{ width: "512px" }}>
-                              <h3 style={{ marginLeft: '25px' }}>
-                                {job.title}
-                              </h3>
-                            </div>
-                            <div className="userjobdetailsgrid">
-                              <p style={{ marginTop: '20px' }}><b>Department:</b> {job.department}</p>
-                              <p><b>Work Schedule:</b> {job.workSchedule}</p>
-                              <p><b>Work Setup:</b> {job.workSetup}</p>
-                              <p><b>Employment Type:</b> {job.employmentType}</p>
-                              <p><b>Description:</b></p>
-                              <p>{job.description.join(', ')}</p>
-                              <p><b>Key Responsibilities:</b></p>
-                              <ul>
-                                {job.keyResponsibilities.map((item, i) => (
-                                  <li key={i}>{item}</li>
-                                ))}
-                              </ul>
-                              <p><b>Qualifications:</b></p>
-                              <ul>
-                                {job.qualifications.map((item, i) => (
-                                  <li key={i}>{item}</li>
-                                ))}
-                              </ul>
-                              <p><b>What we Offer:</b></p>
-                              <ul>
-                                {job.whatWeOffer.map((item, i) => (
-                                  <li key={i}>{item}</li>
-                                ))}
-                              </ul>
-                              <button
-                                className='userjobdetailapply'
-                                onClick={() => handleApply(job.title)}
-                              >
-                                Apply
-                              </button>
-                            </div>
+                          </div>
+
+
+                          <div className="userjobdetailsgrid">
+                            <p style={{ marginTop: '20px' }}><b>Department:</b> {job.department}</p>
+                            <p><b>Work Schedule:</b> {job.workSchedule}</p>
+                            <p><b>Work Setup:</b> {job.workSetup}</p>
+                            <p><b>Employment Type:</b> {job.employmentType}</p>
+                            <p><b>Description:</b></p>
+                            <p> {job.description.join(', ')}</p>
+                            <p><b>Key Responsibilities:</b></p>
+                            <ul>
+                              {job.keyResponsibilities.map((item, i) => (
+                                <li key={i}>{item}</li>
+                              ))}
+                            </ul>
+                            <p><b>Qualifications:</b></p>
+                            <ul>
+                              {job.qualifications.map((item, i) => (
+                                <li key={i}>{item}</li>
+                              ))}
+                            </ul>
+                            <p><b>What we Offer:</b></p>
+                            <ul>
+                              {job.whatWeOffer.map((item, i) => (
+                                <li key={i}>{item}</li>
+                              ))}
+                            </ul>
+  
+                            <button
+                              className='userjobdetailapply'
+                              onClick={() => handleApply(job.title)}
+
+                            >
+                              Apply
+                            </button>
                           </div>
                         </div>
                       </div>
+                  </div>
                     )}
                   </div>
                 ))
@@ -522,41 +558,43 @@ function UserHome() {
       </div>
       {showReportForm && (
         <div
+
           style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            background: 'rgba(0,0,0,0.4)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 10,
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              background: 'rgba(0,0,0,0.4)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 10,
           }}
         >
-          <div className="reportsdetailsdarkgreen">
-            <div className="reportsdetailslightgreen">
-              <div className='header-report'>
-                <h3 style={{ padding: '16px 24px', margin: 0 }}>Report a Problem</h3>
-                <a
-                  style={{
-                    fontSize: '30px',
-                    marginRight: '19px',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    border: 'none',
-                    background: 'none',
-                  }}
-                  onClick={() => setShowReportForm(false)}
-                  aria-label="Close"
-                >
-                  ×
-                </a>
-              </div>
-              <div className='reportsdetailscontent'>
-                <form className="reportsdetailsgrid" onSubmit={handleReportSubmit} style={{ padding: '0 24px' }}>
-                  <div className='form-row'>
+        <div className="reportsdetailsdarkgreen">
+          <div className="reportsdetailslightgreen">
+            <div className='header-report'>
+              <h3>Report a Problem</h3>
+              <a
+                style={{
+                  fontSize: '30px',
+                  marginRight: '19px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: 'none',
+                }}
+                onClick={() => setShowReportForm(false)}
+                aria-label="Close"
+              >
+                ×
+              </a>
+            </div>
+
+            <div className='reportsdetailscontent'>
+              <form className="reportsdetailsgrid" onSubmit={handleReportSubmit} style={{ padding: '0 24px' }}>
+                <div className='form-row'>
                     <label>Subject</label>
                     <input
                       type="text"
@@ -564,27 +602,27 @@ function UserHome() {
                       onChange={(e) => setReportSubject(e.target.value)}
                       placeholder="Enter subject"
                     />
-                  </div>
-                  <div className='form-message'>
-                    <label>Message</label>
-                    <textarea
-                      value={reportMessage}
-                      onChange={(e) => setReportMessage(e.target.value)}
-                      placeholder="Describe the problem"
-                    />
-                  </div>
+                </div>
+                <div className='form-message'>
+                  <label>Message</label>
+                  <textarea
+                    value={reportMessage}
+                    onChange={(e) => setReportMessage(e.target.value)}
+                    placeholder="Describe the problem"
+                  />
+                </div>
                   <div className='form-buttons'>
                     <button
                       type="submit"
-                      className="reportSubmit"
+
                     >
                       Submit
                     </button>
                   </div>
-                </form>
-              </div>
+              </form>
             </div>
           </div>
+        </div>
         </div>
       )}
     </>

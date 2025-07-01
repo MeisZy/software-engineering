@@ -447,7 +447,7 @@ const handleDeleteInterview = async (interviewId) => {
               onClick={() => setShowNotifications(!showNotifications)}
             />
             {adminNotifications.filter(n => !n.isRead).length > 0 && (
-              <span className="notification-count" style={{ position: 'absolute', top: '-8px', right: '-8px' }}>
+              <span className="notification-count" style={{ position: 'absolute', top: '7.2px', right: '-8px',backgroundColor:"#A2E494",color:"black" }}>
                 {adminNotifications.filter(n => !n.isRead).length}
               </span>
             )}
