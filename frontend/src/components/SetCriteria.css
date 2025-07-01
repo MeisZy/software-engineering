@@ -644,16 +644,75 @@ textarea {
 }
 
 .jobdetailscontent {
-  background-color: #A2E494;
-  border-radius: 20px;
-  padding: 32px;
-  width: 720px;
-  height: 732px;
-  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-top: -20px;
+  margin-left: 0;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+  width: 100%; /* make full use of parent */
+  height: 87%;
+  max-height: 100%;
   overflow-y: auto;
-  position: absolute;
-  top: 0;
-  left: 0;
+  box-sizing: border-box;
+  flex-grow: 1;
+  scrollbar-color: #13714C #A2E494; /* Firefox */
+  padding-right: 8px; /* Optional: avoid text being overlapped by scrollbar */
+  padding: 0 24px 0 24px; /* <-- This adds padding left and right */
+  text-align: justify;
+}
+
+.jobdetailscontent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.jobdetailscontent::-webkit-scrollbar-track {
+  background: #A2E494;
+  border-radius: 25px;
+}
+
+.jobdetailscontent::-webkit-scrollbar-thumb {
+  background-color: #13714C;
+  border-radius: 4px;
+  border: 2px solid #A2E494;
+}
+
+.jobdetailscontent p,
+.jobdetailscontent ul,
+.jobdetailscontent li {
+  font-size: 15px;
+  line-height: 1.6; /* or use 24px for fixed size */
+  padding-left: 16px; /* for indentation if needed */
+  
+}
+
+
+
+.jobdetailscontent  ul {
+  list-style-position: inside;
+  padding-left: 16px;
+}
+
+.managejobDetailsHeader{
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    height: 25px;
+    width: 100%;
+    padding: 19px 0; /* Equal top and bottom padding */
+    background-color: #A2E494;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    margin: 0 0 16px 0;
+}
+
+.managejobDetailsHeader h2{
+  font-size: 20px;
+  margin-left: 30px; /* Remove default margins from h3 */
+  padding: 0%;
+  font-weight: 600;
+
 }
 
 .jobdetailscontent h2 {
@@ -665,11 +724,32 @@ textarea {
 }
 
 .jobdetailscontentdarkgreen {
-  width: 832px;
-  height: 832px;
-  border-radius: 20px;
-  background-color: #13714C;
+  z-index: 11; /* Above .userjobdetails */
+  position: relative;
+  overflow: visible;
+  background: white;
+  display: flex;
+  flex-direction: column;      /* Add this */
+  align-items: flex-start;     /* Add this */
+  justify-content: flex-start; /* Add this */
+  border:1px solid black;   
+  border-radius: 25px;
+  border-bottom-right-radius: 0px;
+  height: 96%;
+  max-height: 100%; /* Ensures it doesn't exceed the container's height */
+  box-sizing: border-box;
+  width:97%;
 }
-.tags{
-    
+.jobdetailscontent-MainWrapper{
+  display: relative;
+  position: fixed;
+  top: 16%;
+  left: 30%;
+  height: 70%;
+  max-height: 100vh;
+  width: 800px;
+  background: #13714C;
+  border-radius: 25px;
+  z-index: 10;
+  border:1px solid black;
 }
