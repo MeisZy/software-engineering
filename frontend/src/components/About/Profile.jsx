@@ -1,4 +1,3 @@
-// ...existing imports...
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -9,11 +8,24 @@ function Profile() {
   const [applicantData, setApplicantData] = useState(null);
   const [error, setError] = useState('');
   const [file, setFile] = useState(null);
-  
-  const navigate = useNavigate();
+  const [editableFields, setEditableFields] = useState({
+    birthdate: '',
+    gender: '',
+    city: '',
+    stateProvince: '',
+    mobileNumber: '',
+  });
+  const [isEditing, setIsEditing] = useState({
+    birthdate: false,
+    gender: false,
+    city: false,
+    stateProvince: false,
+    mobileNumber: false,
+  });
 
+  const navigate = useNavigate();
   const userEmail = localStorage.getItem('userEmail');
-  const userName = localStorage.getItem('userName') || 'Unknown User'; // Fallback
+  const userName = localStorage.getItem('userName') || 'Unknown User';
   const profilePic = localStorage.getItem('profilePic');
 
   useEffect(() => {
@@ -27,19 +39,20 @@ function Profile() {
       try {
         const response = await axios.get(`http://localhost:5000/applicants/${userEmail}`);
         if (response.data) {
-          // Clean extractedSkills
-          response.data.extractedSkills = response.data.extractedSkills
-            ? response.data.extractedSkills
-                .map(skill => skill.replace(/^[•\-\u2022\s]+/, '').replace(/[^\w\s]/g, '').trim())
-                .filter(skill => skill.length > 0)
+          const data = response.data;
+          data.extractedSkills = data.extractedSkills
+            ? data.extractedSkills.map(skill => skill.replace(/^[•\-\u2022\s]+/, '').replace(/[^\w\s]/g, '').trim()).filter(skill => skill.length > 0)
             : [];
-          // Ensure fullName is valid
-          response.data.fullName = response.data.fullName || 'Unknown User';
-          setApplicantData(response.data);
-          // Update localStorage if fullName has changed
-          if (response.data.fullName !== userName) {
-            localStorage.setItem('userName', response.data.fullName);
-          }
+          data.fullName = data.fullName || 'Unknown User';
+
+          setApplicantData(data);
+          setEditableFields({
+            birthdate: data.birthdate || '',
+            gender: data.gender || '',
+            city: data.city || '',
+            stateProvince: data.stateProvince || '',
+            mobileNumber: data.mobileNumber || '',
+          });
           setError('');
         } else {
           setApplicantData(null);
@@ -61,20 +74,16 @@ function Profile() {
       setFile(selectedFile);
       const formData = new FormData();
       formData.append('resume', selectedFile);
-      formData.append('email', userEmail); // Ensure email is sent to associate resume
+      formData.append('email', userEmail);
 
       try {
         const response = await axios.post('http://localhost:5000/upload-resume', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        // Clean extractedSkills to remove bullets and non-word characters
-        if (response.data && response.data.applicant && response.data.applicant.extractedSkills) {
-          response.data.applicant.extractedSkills = response.data.applicant.extractedSkills.map(skill =>
-            skill.replace(/^[•\-\u2022\s]+/, '').replace(/[^\w\s]/g, '').trim()
-          ).filter(skill => skill.length > 0);
+        if (response.data && response.data.applicant) {
+          setApplicantData(response.data.applicant);
+          setError('');
         }
-        setApplicantData(response.data.applicant);
-        setError('');
       } catch (err) {
         console.error('Error uploading resume:', err);
         setError('Failed to upload resume. Please try again.');
@@ -84,29 +93,57 @@ function Profile() {
     }
   };
 
+  const handleToggleEdit = (field) => {
+    setIsEditing(prev => ({
+      ...prev,
+      [field]: !prev[field],
+    }));
+    if (isEditing[field]) {
+      setEditableFields(prev => ({
+        ...prev,
+        [field]: applicantData[field] || '',
+      }));
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const response = await axios.put(`http://localhost:5000/applicants/${userEmail}`, editableFields);
+      setApplicantData(response.data);
+      setError('Information updated successfully.');
+      setIsEditing({
+        birthdate: false,
+        gender: false,
+        city: false,
+        stateProvince: false,
+        mobileNumber: false,
+      });
+    } catch (err) {
+      console.error('Error updating information:', err);
+      setError('Failed to update information.');
+    }
+  };
+
   const handleLogout = () => {
-    // Clear localStorage to prevent data leakage
     localStorage.removeItem('userName');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('profilePic');
     setApplicantData(null);
     setFile(null);
     setError('');
-    navigate('/'); // Redirect to login page
+    navigate('/');
   };
 
-return (
+  return (
     <>
       <Navbar />
       <div className="profile-page">
         <div className="profile-card">
           <div className="profile-main">
             <div className="profile-left">
-              {profilePic && (
-                <img src={profilePic} alt="Profile" className="profile-pic" />
-              )}
+              {profilePic && <img src={profilePic} alt="Profile" className="profile-pic" />}
               <div className="profile-info">
-                <h2>{applicantData?.fullName || userName}</h2> {/* Prefer applicantData.fullName */}
+                <h2>{applicantData?.fullName || userName}</h2>
                 <p>{userEmail || 'No email available'}</p>
                 <button className="resume-button" onClick={() => document.getElementById('resume-upload').click()}>
                   Upload Resume
@@ -123,10 +160,36 @@ return (
                 </button>
               </div>
             </div>
-            <div className="profile-right">
-              {error && <p className="error">{error}</p>}
-              {file && <p>Selected file: {file.name}</p>}
-            </div>
+<div className="profile-right">
+  {error && <p className="error">{error}</p>}
+  {file && <p>Selected file: {file.name}</p>}
+  {applicantData && (
+    <>
+      {['birthdate', 'gender', 'city', 'stateProvince', 'mobileNumber'].map((field) => (
+        <div key={field} style={{ marginBottom: '10px' }}>
+          <strong>{field.charAt(0).toUpperCase() + field.slice(1)}:</strong>
+          <span style={{ marginLeft: '10px' }}>
+            <input
+              type="text"
+              value={editableFields[field] || applicantData[field] || 'Not provided'}
+              onChange={(e) => setEditableFields(prev => ({ ...prev, [field]: e.target.value }))}
+              readOnly={!isEditing[field]}
+              style={{ padding: '5px', border: isEditing[field] ? '1px solid #ccc' : 'none', background: isEditing[field] ? '#fff' : 'transparent' }}
+            />
+            <button
+              className="edit-button"
+              onClick={() => handleToggleEdit(field)}
+              style={{ marginLeft: '10px' }}
+            >
+              {isEditing[field] ? 'Cancel' : 'Edit'}
+            </button>
+          </span>
+        </div>
+      ))}
+      <button className="resume-button" onClick={handleSave}>Save</button>
+    </>
+  )}
+</div>
           </div>
           <div className="preview-container">
             <h3>Resume Preview</h3>

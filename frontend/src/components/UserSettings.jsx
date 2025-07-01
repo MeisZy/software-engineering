@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Placeholder from '../components/images/pfp_placeholder.png';
 import Notification from './images/notification.png';
-import './UserHome.css';
+import './UserSettings.css';
 
-function UserHome() {
+function UserSettings() {
   const workingSchedule = [
     { label: 'Full Time', id: 'fulltime' },
     { label: 'Part Time', id: 'parttime' },
@@ -591,4 +591,4 @@ function UserHome() {
   );
 }
 
-export default UserHome;
+export default UserSettings;

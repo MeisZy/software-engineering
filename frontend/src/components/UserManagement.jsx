@@ -133,29 +133,31 @@ const handleStatusChange = async (email, jobTitle, newStatus) => {
                 Download All Applicants
               </a>
             </div>
+    
+    <div className='table-applicants'>
             {error && <div style={{ color: 'red', padding: '16px' }}>{error}</div>}
             {applicants.length === 0 && !error && (
               <div style={{ padding: '16px', color: '#888' }}>No applicants available.</div>
             )}
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '16px' }}>
-<thead>
-  <tr>
-    <th style={{ padding: '8px', border: '1px solid #13714C' }}>Email</th>
-    <th style={{ padding: '8px', border: '1px solid #13714C' }}>Position Applied</th>
-    <th style={{ padding: '8px', border: '1px solid #13714C' }}>Score</th>
-    <th style={{ padding: '8px', border: '1px solid #13714C', width: '130px' }}>Status</th>
-    <th style={{ padding: '8px', border: '1px solid #13714C', width: '120px' }}>Action</th>
-  </tr>
-</thead>
+            <table className="table-header">
+              <thead>
+                <tr>
+                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Email</th>
+                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Position Applied</th>
+                  <th style={{ padding: '8px', border: '1px solid #13714C' }}>Score</th>
+                  <th style={{ padding: '8px', border: '1px solid #13714C', width: '130px' }}>Status</th>
+                  <th style={{ padding: '8px', border: '1px solid #13714C', width: '120px' }}>Action</th>
+                </tr>
+              </thead>
               <tbody>
                 {applicants.map(applicant =>
-  (applicant.positionAppliedFor || []).map((pos, idx) => (
-    <tr key={`${applicant._id}-${pos.jobTitle}`}>
-      {idx === 0 ? (
-        <td
-          rowSpan={applicant.positionAppliedFor.length}
-          style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'middle',fontSize:"14px" }}
-        >
+                 (applicant.positionAppliedFor || []).map((pos, idx) => (
+                   <tr key={`${applicant._id}-${pos.jobTitle}`}>
+                     {idx === 0 ? (
+                   <td
+                       rowSpan={applicant.positionAppliedFor.length}
+                       style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'middle',fontSize:"14px" }}
+                     >
           {applicant.email}
         </td>
       ) : null}
@@ -189,6 +191,8 @@ const handleStatusChange = async (email, jobTitle, newStatus) => {
 )}
               </tbody>
             </table>
+    </div>
+
           </div>
         </div>
       </div>

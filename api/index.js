@@ -788,7 +788,6 @@ app.get('/applicants', async (req, res) => {
   }
 });
 
-// Fetch single applicant endpoint
 app.get('/applicants/:email', async (req, res) => {
   try {
     const { email } = req.params;
@@ -796,29 +795,32 @@ app.get('/applicants/:email', async (req, res) => {
       return res.status(400).json({ message: 'Email is required' });
     }
     const applicant = await Applicants.findOne({ email });
-    if (!applicant) {
+    const jobApplicant = await JobApplicants.findOne({ email });
+    if (!applicant && !jobApplicant) {
       return res.status(200).json(null);
     }
-    res.status(200).json({
-      fullName: applicant.fullName,
-      firstName: applicant.firstName,
-      middleName: applicant.middleName,
-      lastName: applicant.lastName,
-      email: applicant.email,
-      mobileNumber: applicant.mobileNumber,
-      birthdate: applicant.birthdate,
-      gender: applicant.gender,
-      city: applicant.city,
-      stateProvince: applicant.stateProvince,
-      resume: applicant.resume,
-      extractedSkills: applicant.extractedSkills,
-    });
+    const response = {
+      fullName: applicant?.fullName || jobApplicant?.fullName || 'Unknown User',
+      firstName: applicant?.firstName || jobApplicant?.firstName || '',
+      middleName: applicant?.middleName || jobApplicant?.middleName || '',
+      lastName: applicant?.lastName || jobApplicant?.lastName || '',
+      email: applicant?.email || jobApplicant?.email || email,
+      mobileNumber: applicant?.mobileNumber || jobApplicant?.mobileNumber || '',
+      birthdate: applicant?.birthdate || jobApplicant?.birthdate || '',
+      gender: applicant?.gender || jobApplicant?.gender || '',
+      city: applicant?.city || jobApplicant?.city || '',
+      stateProvince: applicant?.stateProvince || jobApplicant?.stateProvince || '',
+      resume: applicant?.resume || { filePath: null, fileType: null },
+      extractedSkills: applicant?.extractedSkills || [],
+      positionAppliedFor: jobApplicant?.positionAppliedFor || [],
+      scores: jobApplicant?.scores || {},
+    };
+    res.status(200).json(response);
   } catch (err) {
     console.error('Error fetching applicant:', err);
     res.status(500).json({ message: err.message });
   }
 });
-
 // Delete a specific job application for an applicant
 app.put('/delete-job-application', async (req, res) => {
   try {
@@ -1110,6 +1112,63 @@ app.get('/notifications/:email', async (req, res) => {
     res.status(200).json(notifications);
   } catch (err) {
     console.error('Error fetching notifications:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.put('/applicants/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    const { birthdate, gender, city, stateProvince, mobileNumber } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const applicant = await Applicants.findOne({ email });
+    const jobApplicant = await JobApplicants.findOne({ email });
+
+    if (!applicant && !jobApplicant) {
+      return res.status(404).json({ message: 'Applicant not found' });
+    }
+
+    const updateData = {};
+    if (birthdate) updateData.birthdate = birthdate;
+    if (gender) updateData.gender = gender;
+    if (city) updateData.city = city;
+    if (stateProvince) updateData.stateProvince = stateProvince;
+    if (mobileNumber) updateData.mobileNumber = mobileNumber.replace(/[^\d]/g, '').slice(-10);
+
+    if (applicant) {
+      await Applicants.updateOne({ email }, { $set: updateData });
+    }
+    if (jobApplicant) {
+      await JobApplicants.updateOne({ email }, { $set: updateData });
+    }
+
+    const updatedApplicant = await Applicants.findOne({ email });
+    const updatedJobApplicant = await JobApplicants.findOne({ email });
+
+    const response = {
+      fullName: updatedApplicant?.fullName || updatedJobApplicant?.fullName || 'Unknown User',
+      firstName: updatedApplicant?.firstName || updatedJobApplicant?.firstName || '',
+      middleName: updatedApplicant?.middleName || updatedJobApplicant?.middleName || '',
+      lastName: updatedApplicant?.lastName || updatedJobApplicant?.lastName || '',
+      email: updatedApplicant?.email || updatedJobApplicant?.email || email,
+      mobileNumber: updatedApplicant?.mobileNumber || updatedJobApplicant?.mobileNumber || '',
+      birthdate: updatedApplicant?.birthdate || updatedJobApplicant?.birthdate || '',
+      gender: updatedApplicant?.gender || updatedJobApplicant?.gender || '',
+      city: updatedApplicant?.city || updatedJobApplicant?.city || '',
+      stateProvince: updatedApplicant?.stateProvince || updatedJobApplicant?.stateProvince || '',
+      resume: updatedApplicant?.resume || { filePath: null, fileType: null },
+      extractedSkills: updatedApplicant?.extractedSkills || [],
+      positionAppliedFor: updatedJobApplicant?.positionAppliedFor || [],
+      scores: updatedJobApplicant?.scores || {},
+    };
+
+    res.status(200).json(response);
+  } catch (err) {
+    console.error('Error updating applicant:', err);
     res.status(500).json({ message: err.message });
   }
 });

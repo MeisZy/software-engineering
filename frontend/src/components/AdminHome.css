@@ -1,5 +1,4 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
   html, body {
     margin: 0;
@@ -71,10 +70,6 @@ nav {
   .verticalfilter{
     display:relative;
     background-color:#A2E494;
-  }
-
-  .verticalfilter h2{
-    color:black;
   }
 
 
@@ -165,19 +160,16 @@ nav {
   font-weight:600;
 }
 
-label{
-  font-size:20px;
-}
-
 .interviewscover {
   position: fixed;
   top: 50%;
   left: 50%;
   width: 800px;
-  height: 600px; /* Increased from 512px */
+  height: 512px;
   z-index: 10;
   background-color: #13714C;
   transform: translate(-50%, -50%);
+  /* Remove centering of child, allow absolute positioning inside */
   overflow: hidden;
   border:2px solid black;
 }
@@ -187,19 +179,33 @@ label{
   top: 0;
   left: 0;
   width: 768px;
-  height: 600px; /* Increased from 512px */
+  height: 512px;
   box-sizing: border-box;
   background-color: #A2E494;
   border: 2px solid black;
   margin: 0;
   padding: 0;
-  overflow: hidden;
 }
 
-.notifications-container {
+.applicantsrendering td{
+  font-size:12px;
+  padding:10px;
+}
+.interviewswrapper a{
+font-size:24px;
+margin:10px;
+}
+
+tbody td{
+  font-size:16px;
+}
+
+/*Update June 28, 2025*/
+
+.notifications-containerAdmin {
   position: fixed;
   top: 16%;
-  left: 24%;
+  left: 30%;
   height: 70%;
   max-height: 100vh;
   width: 800px;
@@ -208,7 +214,27 @@ label{
   z-index: 10;
   border: 1px solid black;
 }
-.notifications-content{
+
+
+.notiflightGreenBGAdmin {
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border: 1px solid black;
+  position: relative;
+  border-radius: 25px;
+  margin-top: 0px;
+  margin-left: 0px; /* Corrected from 'px' */
+  width: 98%;
+  height: 96%;
+  max-height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/*.notifications-contentAdmin{
   position: absolute;
   top: 0;
   left: 0;
@@ -219,7 +245,135 @@ label{
   border: 2px solid black;
   margin: 0;
   padding: 0;
+}*/
+
+
+.notif-HeaderAdmin {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center; 
+  height: 25px;
+  width: 100%;
+  padding: 19px 0; /* Equal top and bottom padding */
+  background-color: #A2E494;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
+  margin: 0 0 16px 0;
+
 }
+
+.notif-HeaderAdmin h2 {
+  font-size: 20px;
+  margin-left: 35px;
+  padding: 0%;
+  font-weight: 600;
+
+}
+
+.NoNotif1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  color: red;
+}
+
+.notification-listAdmin {
+  list-style: none;
+  padding: 0;
+  width: 600px;   /* or use a fixed width for consistency */
+  width: 98%;
+  max-height: 500px;   
+  margin-left: 15px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #a2e494 #13714C;
+  margin-right: -20px;
+  margin-top: -17px;
+
+}
+.notification-listAdmin::-webkit-scrollbar {
+  width: 8px;
+  margin-top: -20px;
+}
+
+.notification-listAdmin::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.notification-listAdmin::-webkit-scrollbar-thumb {
+  background-color: #a2e494;
+  border-radius: 4px;
+  border: 2px solid #f0f0f0;
+}
+
+.notification-itemAdmin {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  position: relative;
+  width: 100%;
+}
+
+.messageAdmin {
+  margin: 5px;
+  font-weight: normal;
+  display: block;
+  font-size: 15px;
+  
+}
+
+.notification-contentAdmin {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align messages to the left */
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+.notification-contentAdmin p {
+  max-width: 95%;            /* Limits width */
+  font-size: 15px;
+  margin: 10px;
+  font-weight: normal;
+  display: block;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+    text-align: justify; /* <-- Add this */
+}
+
+.unreadAdmin {
+  font-weight: bold;
+  display: block;
+}
+
+.timestampAdmin {
+  font-size: 12px;
+  color: #888;
+  display: block;
+  margin-top: 0;
+}
+
+.mark-read-btn {
+  background: #A2E494;
+  color: #13714C;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 8px;
+  cursor: pointer;
+  margin-top: 10px;       /* Add spacing from message text */
+  align-self: flex-start; /* Optional: align to the left if inside a flex container */
+  margin-left: 20px;
+}
+
+/*Until here*/
 
 .interviews-close-btn {
   position: absolute;
@@ -236,43 +390,26 @@ label{
   padding: 0;
 }
 
-.interviewsproper a{
+.interviewsproper th{
   font-size:16px;
-  margin-left:20px;
 }
 
 .interviewsproper {
   width: 90%;
   height:360px;
   background-color: white;
-  position: relative;
-  margin: 0 auto;
-  top: 50px;
-  left: 0;
-  right: 0;
-  transform: none;
-  border: 2px solid black;
-  overflow-y: auto;
-  font-size:12px;
-} 
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border:2px solid black;
+}
+
 .interviewsproper h2{
   font-size:20px;
   margin:20px;
 }
 
-
-
-  .userjobdetailsbutton button{
-    background: #A2E494;
-    color: #13714C;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 500;
-    transition: background-color 0.3s, color 0.3s;
-  }
 
   .custom-checkbox input[type="checkbox"] {
     opacity: 0;
@@ -370,6 +507,83 @@ label{
     align-items: center; /* Center vertically */
     padding: 0 -0px; /* Add some padding for aesthetics */
 }
+
+/*Updated July 1, 2025*/
+
+.applicantinstance {
+  overflow-y: auto;
+  padding: 0 16px;
+  margin-top: -20px;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+  width: 100%;
+  box-sizing: border-box;
+  scrollbar-color: #13714C #A2E494; /* Firefox */
+  text-align: justify;
+  max-height: 100%; /* allow flex container to define limit */
+  height: 96%;   /* adjust here for taller list */
+
+}
+
+
+.applicantinstance li{
+  font-size: 15px;
+  list-style: none;
+  line-height: 1.6; /* or use 24px for fixed size */
+  padding-left: 16px; /* for indentation if needed */
+  margin-top: 10px;
+  border-bottom: 2px solid rgba(128, 128, 128, 0.5);;
+  
+}
+
+
+.applicant-line {
+  font-size: 15px;
+  list-style: none;
+  line-height: 1.6;
+  padding: 8px 16px;
+  margin-top: 20px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.5);
+}
+
+.applicant-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Adminviewdetailsbutton-group{
+  display: flex;
+  gap: 8px;
+}
+
+.viewdetails {
+  padding: 4px 8px;
+  font-size: 12px;
+  background-color: #A2E494;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.viewdetails:active {
+  background-color: #13714C;
+}
+
+.Adminviewdetailsbutton-group button {
+  padding: 2px 8px;
+  font-size: 12px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+/* Until here */
+
+
 .applicantdetailwrap {
   padding: 24px;
   background: white;
@@ -381,6 +595,8 @@ label{
   border: 1px solid #13714C;
   margin-top: 12px;
 }
+
+
 
 .applicantdetailwrap span {
   margin: 0;
@@ -405,19 +621,7 @@ label{
     cursor:pointer;
     border-radius:  25px;
   }
-.viewdetails{
-  margin-left:12px;
-  padding: 2px 8px;
-  font-size:12px;
-  z-index:1;
-  background-color: #A2E494;
-  border:2px solid black;
-  cursor:pointer;
-}
 
-.viewdetails a:active{
-  background-color: #13714C;  
-}
   .joboption a:hover{
     background-color: #A2E494;
     color: black;
@@ -447,98 +651,144 @@ label{
     font-weight:500;
     font-size:16px;
     text-align: left;
-    color:black;
+    color:black;  
   }
 
   .jobcard p{
     position:relative;
   }
 
+/*Updated July 1, 2025*/
 .jobdetails {
   position: fixed;
-  top: 40%; left: 20%; right: 0; bottom: 25%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 5;
-  height:200px;
-}
-.jobdetailsblock {
-  border-radius: 12px;
-  height: 600px;
-  width: 1000px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 10px;
-  background: #13714C;
-  box-sizing: border-box;
-}
-
-.jobdetailsblock p{
-  font-size:20px;
-  margin:20px;
-}
-.jobdetailsblock ul{
-  font-size: 16px;
-  margin-left:20px;
-  width:320px;
-}
-.jobdetailsblock h3 {
-  color: white;
-  font-weight: 600;
-  max-width: 400px;
-  font-size: clamp(1.2rem, 2.5vw, 2rem);
-  background-color: #13714C;
-  border: 1px solid black;
-  padding: 12px 20px;      
-  margin: 0;             
-  line-height: 1.2;
-  width: fit-content;
-  overflow-wrap: break-word;
-  border-radius:16px;
-}
-
-.jobdetailsgrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  width: 100%;
-}
-
-.jobdetailsapply {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    margin-left: 20px;
-    margin-right:30px;
-    color: black;
-    align-self: flex-start; 
-}
-
-.applicantslistcontainer {
-  position: fixed;
-  top: 40%;
-  left: 20%;
-  right: 0;
-  bottom: 25%;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
-  height: 200px;
 }
 
-.applicantsgrid{
+
+.jobdetailsblock {
+  display: relative;
+  position: fixed;
+  top: 16%;
+  left: 30%;
+  height: 70%;
+  max-height: 100vh;
+  width: 800px;
+  background: #13714C;
+  border-radius: 25px;
+  z-index: 10;
   border:1px solid black;
-  width:900px;  
-  height: 420px;
-  margin-left:32px;
-  margin-right:20px;
-  background-color: white;
 }
+
+.jobdetailsbody-wrap{
+  z-index: 11; /* Above .userjobdetails */
+  position: relative;
+  overflow: visible;
+  background: white;
+  display: flex;
+  flex-direction: column;      /* Add this */
+  align-items: flex-start;     /* Add this */
+  justify-content: flex-start; /* Add this */
+  border:1px solid black;   
+  border-radius: 25px;
+  border-bottom-right-radius: 0px;
+  height: 96%;
+  max-height: 100%; /* Ensures it doesn't exceed the container's height */
+  box-sizing: border-box;
+  width:97%;
+}
+
+.jobdetailsbody-wrap-Header{
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    height: 25px;
+    width: 100%;
+    padding: 19px 0; /* Equal top and bottom padding */
+    background-color: #A2E494;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    margin: 0 0 16px 0;
+}
+
+.jobdetailsbody-wrap-Header h3 {
+  font-size: 20px;
+  margin-left: 30px; /* Remove default margins from h3 */
+  padding: 0%;
+
+}
+
+.Adminjobdetailsgrid p,
+.Adminjobdetailsgrid ul,
+.Adminjobdetailsgridli {
+  font-size: 15px;
+  line-height: 1.6; /* or use 24px for fixed size */
+  padding-left: 16px; /* for indentation if needed */
+}
+
+.Adminjobdetailsgrid ul {
+  list-style-position: inside;
+  padding-left: 16px;
+}
+
+
+.Adminjobdetailsgrid {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-top: -20px;
+  margin-left: 0;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+  width: 100%; /* make full use of parent */
+  height: 87%;
+  max-height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+  flex-grow: 1;
+  scrollbar-color: #13714C #A2E494; /* Firefox */
+  padding-right: 8px; /* Optional: avoid text being overlapped by scrollbar */
+  padding: 0 24px 0 24px; /* <-- This adds padding left and right */
+  text-align: justify;
+}
+
+.AdminjobdetailsClose-btn{
+    margin-top: 20px;
+  margin-bottom: 20px;
+  background: #A2E494;
+  color: #13714C;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 150px;
+  align-self: center;      
+}
+
+
+  /* Until here for job Details in Home page */ 
+
+  /* Updated July 1, 2025*/
+.applicantslistcontainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}    /* Until here  */ 
 
 .adminsearch {
   position: relative;
@@ -610,6 +860,75 @@ label{
   cursor: pointer;
 }
 
+.interview-form-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  margin: 20px;
+  flex-wrap: wrap;
+}
+
+.interview-form-row .form-item {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+
+.form-item button{
+  margin-top:25px;
+}
+
+.interview-form-row label {
+  font-size: 16px;
+  color: black;
+  margin-bottom: 8px;
+}
+
+.interview-form-row select,
+.interview-form-row input {
+  width: 100%;
+  max-width: 200px;
+  padding: 8px;
+  font-size: 14px;
+  border: 2px solid #13714C;
+  border-radius: 6px;
+  background: #f8fff8;
+  color: #222;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.interview-form-row select:focus,
+.interview-form-row input:focus {
+  border: 2px solid #A2E494;
+  box-shadow: 0 0 0 2px #A2E49433;
+}
+
+.interview-form-row button {
+  background: #A2E494;
+  color: #13714C;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s, color 0.3s;
+  align-self: flex-end;
+}
+
+.interview-form-row button:hover {
+  background: #13714C;
+  color: white;
+}
+
+.interview-form-row button:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
 .adminsearch-inputwrap {
   position: relative;
   width: 256px;
@@ -637,7 +956,7 @@ label{
   position: absolute;
   top: 0;
   right: 0;
-  background: #7bd48a;
+  background: #E94F37;
   color: white;
   border-radius: 50%;
   font-size: 12px;
@@ -760,110 +1079,162 @@ th:nth-child(3),
 td:nth-child(3) {
   width: 40%; /* Activity column */
 }
+/* __________-________________________________________________ */
+/* Updated */
 .messagedetailsdarkgreen{
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform: translate(-50%, -50%);
-  width: 600px;
-  height: 640px;
-  z-index: 5;
-  background-color: #13714C;
-  border-radius:20px;
-  border:2px solid black;
+  position: fixed;
+  top: 16%;
+  left: 30%;
+  height: 70%;
+  max-height: 100vh;
+  width: 800px;
+  background: #13714C;
+  border-radius: 25px;
+  z-index: 10;
+  border:1px solid black;
+
 }
 
 .messagedetailslightgreen{
-  width:580px;
-  height:620px;
-  background-color: #A2E494;
-  border-radius:20px;
-  border:2px solid black;
-}
-.messagedetailslightgreen h3{
-  font-weight:400;
+  background: white;
+  display: flex;
+  flex-direction: column;      /* Add this */
+  align-items: flex-start;     /* Add this */
+  justify-content: flex-start; /* Add this */
+  border:1px solid black;   
+  position: relative;
+  border-radius: 25px;
+  margin-top: 0px;
+  margin-left: 0px;
+  width: 98%; /* Makes inner content determine width */
+  height: 96%;
+  max-height: 100%; /* Ensures it doesn't exceed the container's height */
+  box-sizing: border-box;
 }
 
-.messagedetailsgrid label{
-  font-size:16px;
+.messageHeader{
+  display: flex;
+  justify-content: space-between; 
+  align-items: center; 
+  height: 25px;
+  width: 100%;
+  padding: 19px 0; /* Equal top and bottom padding */
+  background-color: #A2E494;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
+  margin: 0 0 16px 0;
 }
+
+.messageHeader h3{
+  font-size: 20px;
+  margin-left: 12px; /* Remove default margins from h3 */
+  padding: 0%;
+
+}
+
+
+.form-row-message-recipient,
+.form-row-message-subject{
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline; /* Aligns label with text inside input */
+  gap: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+  width: 750px;
+  margin-left: 0px;
+  margin-bottom: -10px;
+}
+
+.form-row-message-recipient label,
+.form-row-message-subject label,
+.form-row-messageDetails label {
+  width: 100px;
+  font-size: 1rem;
+  line-height: 1.4; /* Optional: helps position vertically */
+  font-weight: 600;
+}
+
+.form-row-message-recipient input[type="email"],
+.form-row-message-subject input[type="text"] {
+  flex: 1;
+  width: 400px;
+  font-size: 1rem;
+  border: none;
+  background: white;
+  padding: 0.4rem 0.6rem;
+  margin: 0; /* Remove margin shifts */
+  margin-left: -25px;
+  margin-right: 35px;
+  outline: none;
+  box-shadow: none;
+}
+
+.form-row-messageDetails{
+  display: flex;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  width: 750px;
+  margin-left: -0px;
+
+}
+
+.form-row-messageDetails textarea {
+  width: 100%;
+  height: 230px;
+  font-size: 16px;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  resize: vertical;
+  background: none;
+  margin-top: 20px;
+  margin-right: 20px;
+  margin-left: -70px;
+  outline: none;
+  box-shadow: none;
+
+  /* Scrollbar styles (WebKit only) */
+  scrollbar-width: thin;            /* For Firefox */
+  scrollbar-color: #a2e494 #13714C; /* For Firefox */
+}
+
+.form-row-messageDetails textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.form-row-messageDetails textarea::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.form-row-messageDetails textarea::-webkit-scrollbar-thumb {
+  background-color: #a2e494;
+  border-radius: 4px;
+  border: 2px solid #f0f0f0; /* Creates space around thumb */
+}
+
+  .userjobdetailsbutton{
+    background: #A2E494;
+    color: #13714C;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s, color 0.3s;
+    display: flex;
+    justify-content: center;
+    margin-right: 30px;
+    margin-top: -10px;      /* Increase this value as needed */
+    position: relative;
+  }
 
 .messagedetailsgrid{
   gap:20px;
+  padding:0 24px ;
+
 }
 
-.interview-form-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 16px;
-  margin: 20px;
-  flex-wrap: wrap;
-}
-
-.interview-form-row .form-item {
-  display: flex;
-  flex-direction: column;
-  min-width: 150px;
-}
-
-.form-item button{
-  margin-top:25px;
-}
-
-.interview-form-row label {
-  font-size: 16px;
-  color: black;
-  margin-bottom: 8px;
-}
-
-.interview-form-row select,
-.interview-form-row input {
-  width: 100%;
-  max-width: 200px;
-  padding: 8px;
-  font-size: 14px;
-  border: 2px solid #13714C;
-  border-radius: 6px;
-  background: #f8fff8;
-  color: #222;
-  outline: none;
-  transition: border 0.2s, box-shadow 0.2s;
-}
-
-.interview-form-row select:focus,
-.interview-form-row input:focus {
-  border: 2px solid #A2E494;
-  box-shadow: 0 0 0 2px #A2E49433;
-}
-
-.interview-form-row button {
-  background: #A2E494;
-  color: #13714C;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.3s, color 0.3s;
-  align-self: flex-end;
-}
-
-.interview-form-row button:hover {
-  background: #13714C;
-  color: white;
-}
-
-.interview-form-row button:disabled {
-  background: #ccc;
-  color: #666;
-  cursor: not-allowed;
-}
-
-.interview-error {
-  color: red;
-  font-size: 14px;
-  margin-top: 8px;
-  margin-left: 20px;
-}
+/*updated until here*/

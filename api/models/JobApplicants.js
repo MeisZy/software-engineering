@@ -15,7 +15,7 @@ const jobApplicantSchema = new mongoose.Schema({
   positionAppliedFor: [{ jobTitle: String, status: String }],
   birthdate: Date,
   gender: String,
-  city: String,
+  city: String, 
   stateProvince: String,
   applicationStage: String,
   scores: { type: Object, default: {} },

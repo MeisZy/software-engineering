@@ -59,7 +59,10 @@ nav {
   box-sizing: border-box;
   margin-top: 50px;
   margin-left: 320px;
+
 }
+
+/*Updated June 29, 2025*/
 
 .managementheader{
   display: flex;
@@ -93,8 +96,113 @@ nav {
   padding-bottom: 0px;
   overflow-y: auto;
   overflow-x: hidden;
+
 }
 
+.table-allapplicants {
+  width: 1200px;
+  height: 90vh;
+  background-color: white;
+  border: 1px solid black;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+/* Both tables (header and body) */
+.table-header,
+.table-body {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+/* Header Row */
+.table-header th {
+  background-color: #13714C;
+  color: white;
+  padding: 8px;
+  border: 1px solid black;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Body Rows */
+.table-body td {
+  padding: 8px;
+  text-align: center;
+  border: 1px solid black;
+  word-wrap: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/* Scrollable body container */
+.scrollable-tbody {
+  height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Match column widths exactly */
+.table-header th:nth-child(1),
+.table-body td:nth-child(1) { width: 25%; }
+
+.table-header th:nth-child(2),
+.table-body td:nth-child(2) { width: 30%; }
+
+.table-header th:nth-child(3),
+.table-body td:nth-child(3) { width: 20%; }
+
+.table-header th:nth-child(4),
+.table-body td:nth-child(4) { width: 20%; }
+
+.table-header th:nth-child(5),
+.table-body td:nth-child(5) { width: 10%; }
+
+/* Scrollbar styling (optional) */
+.scrollable-tbody::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-tbody::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+.scrollable-tbody::-webkit-scrollbar-thumb {
+  background-color: #a2e494;
+  border-radius: 4px;
+  border: 2px solid #f0f0f0;
+}
+
+
+.table-allapplicants select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 0px;
+  padding: 8px;
+
+}
+
+.table-allapplicants select:hover {
+  background-color: #e8f7eb; /* Light green when hovering */
+}
+
+.delete-btn{
+  background: #A2E494;
+  color: #13714C;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 80px;
+  height: 30px;
+  font-weight: 600;
+  font-size: 15px;
+  display: block;         /* Needed for margin: auto to work */
+  margin: 0 auto;         /* Horizontally center */
+}
+
+/*Until here_________________________________*/
 .managementinstance {
   display: flex;
   flex-direction: row;

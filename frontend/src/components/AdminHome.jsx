@@ -134,11 +134,11 @@ useEffect(() => {
 
 const handleAssignInterview = async () => {
   if (!interviewEmail || !interviewDate || !interviewType || !selectedJobTitle) {
-    setInterviewError('All fields are required, including a job title. Please ensure the selected applicant has applied for a job.');
+    alert('All fields are required, including a job title. Please ensure the selected applicant has applied for a job.');
     return;
   }
   if (selectedApplicantJobs.length === 0) {
-    setInterviewError('The selected applicant has no applied jobs. Please select a different applicant.');
+    alert('The selected applicant has no applied jobs. Please select a different applicant.');
     return;
   }
   setInterviewLoading(true);
@@ -297,7 +297,7 @@ const handleDeleteInterview = async (interviewId) => {
 
   const handleLogout = () => navigate('/');
   const handleSetCriteria = () => navigate('/setcriteria');
-  const handleFAQs = () => navigate('/questions');
+  const handleFAQs = () => navigate('/helpAdmin');
   const handleMaintainance = () => navigate('/adminmaintainance');
 
   const handleCheckboxChange = (id, setState, state) => {
@@ -576,96 +576,79 @@ const handleDeleteInterview = async (interviewId) => {
               )}
             </div>
           )}
+      
+{/*Notifications Updated June 28, 2025*/}
+
           {showNotifications && (
-            <div
-              className="notifications-container"
-              onClick={() => setShowNotifications(false)}
+
+           <div
               style={{
-                position: 'fixed',
-                top: '50%',
-                left: '50%',
-                width: '800px',
-                height: '468px',
-                zIndex: 10,
-                backgroundColor: '#13714C',
-                transform: 'translate(-50%, -50%)',
-                overflowY: 'auto',
-                border: '2px solid black',
-              }}
-            >
-              <div
-                className="notifications-content"
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '768px',
-                  height: '480px',
-                  boxSizing: 'border-box',
-                  backgroundColor: '#A2E494',
-                  border: '2px solid black',
-                  margin: 0,
-                  padding: 0,
-                }}
-                onClick={e => e.stopPropagation()}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', fontSize: "24px" }}>
-                  <h2 style={{color:"black"}}>Notifications</h2>
-                  <button
-                    onClick={() => setShowNotifications(false)}
-                    style={{
-                      fontSize: '1.5rem',
-                      fontWeight: 'bold',
-                      cursor: 'pointer',
-                      border: 'none',
-                      background: 'none',
-                    }}
-                  >
-                    ×
-                  </button>
-                </div>
-                {notificationsError && <div style={{ color: 'red', marginBottom: '16px' }}>{notificationsError}</div>}
-                {adminNotifications.length === 0 ? (
-                  <div style={{ padding: '16px', color: '#888' }}>No notifications available.</div>
-                ) : (
-                  <ul style={{ listStyle: 'none', padding: 0 }}>
-                    {adminNotifications.map(notification => (
-                      <li
-                        key={notification._id}
-                        style={{
-                          padding: '8px',
-                          borderBottom: '1px solid #ddd',
-                          background: notification.isRead ? '#f4f4f4' : '#fff',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <div>
-                          <p style={{ margin: 0, fontWeight: notification.isRead ? 'normal' : 'bold' }}>
-                            {notification.message}
-                          </p>
-                          <span style={{ fontSize: '12px', color: '#888' }}>
-                            {notification.time || new Date(notification.createdAt).toLocaleString('en-US', {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: '2-digit',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                          </span>
-                        </div>
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              background: 'rgba(0,0,0,0.4)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 10,
+          }}
+           >
+
+          <div
+            className="notifications-containerAdmin"
+            onClick={() => setShowNotifications(false)}
+
+          >
+
+    <div className='notiflightGreenBGAdmin'     
+     onClick={e => e.stopPropagation()}>
+      <div className='notif-HeaderAdmin'>
+        <h2>Notifications</h2>
+        <button
+          onClick={() => setShowNotifications(false)}
+          style={{
+            /*Updated Jue 28,2025*/
+                  fontSize: '30px',
+                  marginRight: '19px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: 'none',
+          }}
+        >
+          ×
+        </button>
+      </div>
+
+         <div className='MainContentNotif'>
+              {notificationsError && <div style={{ color: 'red', marginBottom: '16px' }}>{notificationsError}</div>}
+              {adminNotifications.length === 0 ? (
+                    <div className='NoNotif1'>No notifications available.</div>
+                  ) : (
+                    <ul className="notification-listAdmin">
+                      {adminNotifications.map(notification => (
+                        <li  key={notification._id} className="notification-itemAdmin">
+                 <div className="notification-contentAdmin">
+                      <p className='messageAdmin' style={{ margin: 0, fontWeight: notification.isRead ? 'normal' : 'bold' }}>
+                        {notification.message}
+                      </p>
+                      <span className="timestampAdmin">
+                        {notification.time || new Date(notification.createdAt).toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </div>
+
                         {!notification.isRead && (
                           <button
                             onClick={() => handleMarkAdminNotificationAsRead(notification._id)}
-                            style={{
-                              background: '#A2E494',
-                              color: '#13714C',
-                              border: 'none',
-                              borderRadius: '4px',
-                              padding: '4px 8px',
-                              cursor: 'pointer',
-                            }}
+                              className="mark-read-btn"
                           >
                             Mark as Read
                           </button>
@@ -674,9 +657,12 @@ const handleDeleteInterview = async (interviewId) => {
                     ))}
                   </ul>
                 )}
-              </div>
-            </div>
-          )}
+           </div>
+          </div>
+        </div>
+      </div>
+)}
+     {/*Until here*/}   
           {showUserLogs && (
             <div
               className="userlogs-container"
@@ -755,102 +741,123 @@ const handleDeleteInterview = async (interviewId) => {
               </div>
             </div>
           )}
+ {/*View Applicants in admin home*/}
           {openApplicantsIdx !== null && (
             <div className="applicantslistcontainer" onClick={() => setOpenApplicantsIdx(null)}>
               <div
                 className="jobdetailsblock"
                 onClick={e => e.stopPropagation()}
-                style={{
-                  backgroundImage: `url(${Details})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
-                }}
+
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gridColumn: '1 / span 2' }}>
+                <div className='jobdetailsbody-wrap'>
+                <div className = "jobdetailsbody-wrap-Header">
                   <h3 style={{ marginBottom: 0 }}>
                     {filteredJobOpenings[openApplicantsIdx]?.title || 'Job Title'}
                   </h3>
-                  <button
-                    className='jobdetailsapply'
+                  <a
+                      style={{
+                      fontSize: '2rem',
+                      fontWeight: 'bold',
+                      color: 'black',
+                      textDecoration: 'none',
+                      cursor: 'pointer',
+                      marginLeft: '24px',
+                      marginRight:'24px',
+                      lineHeight: '1',
+                      }}
                     onClick={() => setOpenApplicantsIdx(null)}
                     aria-label="Close"
-                    style={{ fontSize: '2rem', fontWeight: 'bold', cursor: 'pointer' }}
+
                   >
                     ×
-                  </button>
+                  </a>
                 </div>
-                <div className="applicantsgrid">
+
+
                   <div className='applicantinstance'>
                     <ul>
-                    {applicants
-                      .filter(applicant =>
-                        (applicant.positionAppliedFor || []).some(
-                          pos => pos.jobTitle === filteredJobOpenings[openApplicantsIdx]?.title
+                      {applicants
+                        .filter(applicant =>
+                          (applicant.positionAppliedFor || []).some(
+                            pos => pos.jobTitle === filteredJobOpenings[openApplicantsIdx]?.title
+                          )
                         )
-                      )
-                      .map((applicant, idx) => (
-                        <li key={applicant._id} style={{ marginBottom: "16px", listStyle: "none" }}>
-                          <b>{applicant.fullName}</b>
-                          <a className="viewdetails" onClick={() => setOpenApplicantDetailIdx(idx)}>
-                            View Details
-                          </a>
-                          <button onClick={() => handleDeleteApplicant(applicant._id)} style={{ marginLeft: '8px' }}>
-                            Delete
-                          </button>
-                          {openApplicantDetailIdx === idx && (
-                            <div className='applicantdetailwrap'>
-                              <span>Email: {applicant.email}</span>
-                              <span>Mobile: {applicant.mobileNumber}</span>
-                              <span>Jobs Applied For: {(applicant.positionAppliedFor || []).map(pos => pos.jobTitle).join(', ')}</span>
-                              <span>Birthdate: {new Date(applicant.birthdate).toISOString().split('T')[0]}</span>
-                              <span>Gender: {applicant.gender}</span>
-                              <span>City: {applicant.city}</span>
-                              <span>State/Province: {applicant.stateProvince}</span>
-                              <span>Status: {applicant.status}</span>
-                              <span>Stage: {applicant.applicationStage}</span>
-                              <span>Skills: {(applicant.resume && applicant.resume.filePath) ? applicant.resume.filePath : ''}</span>
-                              <button
-                                style={{ marginTop: "8px", fontSize: "12px", width: "100px" }}
-                                onClick={() => setOpenApplicantDetailIdx(null)}
-                                type="button"
-                              >
-                                Close
+                        .map((applicant, idx) => (
+                    <li key={applicant._id} className="applicant-line">
+                          <div className="applicant-content">
+                            <b>{applicant.fullName}</b>
+                            <div className="Adminviewdetailsbutton-group">
+                              <a className="viewdetails" onClick={() => setOpenApplicantDetailIdx(idx)}>
+                                View Details
+                              </a>
+                              <button onClick={() => handleDeleteApplicant(applicant._id)}>
+                                Delete
                               </button>
                             </div>
-                          )}
-                        </li>
-                    ))}
+                          </div>
+
+                            {openApplicantDetailIdx === idx && (
+                              <div className='applicantdetailwrap'>
+                                <span>Email: {applicant.email}</span>
+                                <span>Mobile: {applicant.mobileNumber}</span>
+                                <span>Jobs Applied For: {(applicant.positionAppliedFor || []).map(pos => pos.jobTitle).join(', ')}</span>
+                                <span>Birthdate: {new Date(applicant.birthdate).toISOString().split('T')[0]}</span>
+                                <span>Gender: {applicant.gender}</span>
+                                <span>City: {applicant.city}</span>
+                                <span>State/Province: {applicant.stateProvince}</span>
+                                <span>Status: {applicant.status}</span>
+                                <span>Stage: {applicant.applicationStage}</span>
+                                <span>Skills: {(applicant.resume && applicant.resume.filePath) ? applicant.resume.filePath : ''}</span>
+                                <button
+                                  style={{ marginTop: "8px", fontSize: "12px", width: "100px" }}
+                                  onClick={() => setOpenApplicantDetailIdx(null)}
+                                  type="button"
+                                >
+                                  Close
+                                </button>
+                              </div>
+                            )}
+                          </li>
+                      ))}
                     </ul>
-                  </div>
                 </div>
               </div>
+                 </div>
             </div>
           )}
+
+          {/*View Details Homepage*/}      {/*Updated July 1, 2025*/}
+          
           {openDetailIdx !== null && (
   <div className="jobdetails" onClick={() => setOpenDetailIdx(null)}>
-    <div className="jobdetailsdarkgreen">
-      <div className="jobdetailslightgreen"></div>
-    </div>
     <div
       className="jobdetailsblock"
       onClick={e => e.stopPropagation()}
-      style={{
-        backgroundImage: `url(${Details})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gridColumn: '1 / span 2' }}>
-        <h3 style={{ marginBottom: 0 }}>
+      <div className='jobdetailsbody-wrap'>
+      <div className = "jobdetailsbody-wrap-Header">
+        <h3>
           {filteredJobOpenings[openDetailIdx]?.title || 'Job Title'}
         </h3>
-        <a className='jobdetailsapply' onClick={() => setOpenDetailIdx(null)} aria-label="Close">
+        <a 
+            style={{
+          fontSize: '2rem',
+          fontWeight: 'bold',
+          color: 'black',
+          textDecoration: 'none',
+          cursor: 'pointer',
+          marginLeft: '24px',
+          marginRight:'24px',
+          lineHeight: '1',
+        }}
+         onClick={() => setOpenDetailIdx(null)} aria-label="Close">
           ×
         </a>
       </div>
-      <div className="jobdetailsgrid">
-        <div>
-          <p><b>Department:</b> {filteredJobOpenings[openDetailIdx]?.department || 'N/A'}</p>
+
+      <div className="Adminjobdetailsgrid">
+
+          <p style={{ marginTop: '20px' }}><b>Department:</b> {filteredJobOpenings[openDetailIdx]?.department || 'N/A'}</p>
           <p><b>Work Schedule:</b> {filteredJobOpenings[openDetailIdx]?.workSchedule}</p>
           <p><b>Work Setup:</b> {filteredJobOpenings[openDetailIdx]?.workSetup}</p>
           <p><b>Employment Type:</b> {filteredJobOpenings[openDetailIdx]?.employmentType}</p>
@@ -861,8 +868,7 @@ const handleDeleteInterview = async (interviewId) => {
               <li key={i}>{item}</li>
             )) || <li>N/A</li>}
           </ul>
-        </div>
-        <div>
+
           <p><b>Qualifications:</b></p>
           <ul>
             {filteredJobOpenings[openDetailIdx]?.qualifications.map((item, i) => (
@@ -883,30 +889,49 @@ const handleDeleteInterview = async (interviewId) => {
               <li key={index}>{qual.attribute}: {qual.points}</li>
             )) || <li>N/A</li>}
           </ul>
-          <button
+          <button className='AdminjobdetailsClose-btn'
             onClick={() => setOpenDetailIdx(null)}
-            style={{ marginTop: "32px" }}
+
           >
             Close
           </button>
-        </div>
+
+      </div>
       </div>
     </div>
   </div>
 )}
+
+       {/*Send a Message from admin*/}
           {showMessageForm && (
+
+        <div
+               /* Updated */ 
+          style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              background: 'rgba(0,0,0,0.4)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 10,
+          }}
+        >
             <div className="messagedetailsdarkgreen">
               <div className="messagedetailslightgreen" >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <div className = "messageHeader"style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                   <h3 style={{ padding: '16px 24px', margin: 0 }}>Send Email</h3>
                   <a
                     style={{
-                      fontSize: '1.5rem',
-                      fontWeight: 'bold',
-                      color: 'black',
-                      textDecoration: 'none',
-                      cursor: 'pointer',
-                      marginRight: '24px',
+                  fontSize: '30px',
+                  marginRight: '19px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: 'none',
                     }}
                     onClick={() => setShowMessageForm(false)}
                     aria-label="Close"
@@ -914,25 +939,34 @@ const handleDeleteInterview = async (interviewId) => {
                     ×
                   </a>
                 </div>
+
+       {/* Updated */ } 
                 <form className="messagedetailsgrid" onSubmit={handleMessageSubmit} style={{ padding: '0 24px' }}>
+                  <div className='form-row-message-recipient'>
                   <label htmlFor="recipient">Recipient:</label>
                   <input
                     type="email"
                     id="recipient"
                     value={messageRecipient}
                     onChange={(e) => setMessageRecipient(e.target.value)}
-                    placeholder="Enter recipient email"
+                    placeholder="Enter Recipient Email"
                     required
                   />
-                  <label htmlFor="subject">Subject:</label>
-                  <input
-                    type="text"
-                    id="subject"
-                    value={messageSubject}
-                    onChange={(e) => setMessageSubject(e.target.value)}
-                    placeholder="Enter subject"
-                    required
-                  />
+                 </div>
+
+                  <div className='form-row-message-subject'>
+                      <label htmlFor="subject">Subject:</label>
+                      <input
+                        type="text"
+                        id="subject"
+                        value={messageSubject}
+                        onChange={(e) => setMessageSubject(e.target.value)}
+                        placeholder="Enter subject"
+                        required
+                      />
+                  </div>
+
+                <div className='form-row-messageDetails'>
                   <label htmlFor="body">Message:</label>
                   <textarea
                     id="body"
@@ -940,36 +974,22 @@ const handleDeleteInterview = async (interviewId) => {
                     onChange={(e) => setMessageBody(e.target.value)}
                     placeholder="Enter your message"
                     required
-                    style={{ height: '100px', resize: 'vertical' }}
+  
                   />
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-                    <button
-                      type="button"
-                      className="userjobdetailsbutton"
-                      onClick={() => setShowMessageForm(false)}
-                      style={{
-                        marginRight: '8px',
-                        background: 'white',
-                        color: '#13714C',
-                        border: '1px solid #13714C',
-                        padding: '8px 16px',
-                        borderRadius: '6px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Close
-                    </button>
+                </div>
                     <button
                       type="submit"
-                      className="userjobdetailsbutton" style={{borderRadius: '6px'}}
+                      className="userjobdetailsbutton" 
                     >
                       Send
                     </button>
-                  </div>
+
                 </form>
               </div>
             </div>
+            </div>
           )}
+
           {seeInterviews && (
             <div className="interviewscover">
               <div className="interviewswrapper">
@@ -1074,9 +1094,9 @@ const handleDeleteInterview = async (interviewId) => {
                           <tbody>
                             {interviewList.map((iv, idx) => (
                               <tr key={iv._id || idx}>
-                                <td>{iv.email}</td>
-                                <td>{iv.date ? new Date(iv.date).toLocaleString() : ''}</td>
-                                <td>{iv.type}</td>
+                                <td style={{fontSize:"16px"}}>{iv.email}</td>
+                                <td style={{fontSize:"16px"}}>{iv.date ? new Date(iv.date).toLocaleString() : ''}</td>
+                                <td style={{fontSize:"16px"}}>{iv.type}</td>
                                 <td>
                                   <button
                                     onClick={() => handleDeleteInterview(iv._id)}
@@ -1140,7 +1160,7 @@ const handleDeleteInterview = async (interviewId) => {
                           </thead>
                           <tbody>
                             {applicants.map((a, idx) => (
-                              <tr key={idx}>
+                              <tr className='applicantsrendering' key={idx}>
                                 <td>{a.email}</td>
                                 <td>{a.fullName}</td>
                                 <td>{(a.positionAppliedFor || []).map(pos => pos.jobTitle).join(', ')}</td>
