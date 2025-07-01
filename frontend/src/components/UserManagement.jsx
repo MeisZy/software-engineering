@@ -24,24 +24,28 @@ function UserManagement() {
   }, []);
 
 const handleStatusChange = async (email, jobTitle, newStatus) => {
+  console.log('Updating status to:', newStatus); // Debug log
   try {
-    await axios.put('http://localhost:5000/update-applicant-status', {
+    const response = await axios.put('http://localhost:5000/update-applicant-status', {
       email,
       jobTitle,
       status: newStatus,
     });
-    setApplicants(prev =>
-      prev.map(applicant =>
-        applicant.email === email
-          ? {
-              ...applicant,
-              positionAppliedFor: applicant.positionAppliedFor.map(pos =>
-                pos.jobTitle === jobTitle ? { ...pos, status: newStatus } : pos
-              ),
-            }
-          : applicant
-      )
-    );
+
+    if (response.status === 200) {
+      setApplicants(prev =>
+        prev.map(applicant =>
+          applicant.email === email
+            ? {
+                ...applicant,
+                positionAppliedFor: applicant.positionAppliedFor.map(pos =>
+                  pos.jobTitle === jobTitle ? { ...pos, status: newStatus } : pos
+                ),
+              }
+            : applicant
+        )
+      );
+    }
   } catch (error) {
     console.error('Error updating status:', error);
     setError('Failed to update status. Please try again.');

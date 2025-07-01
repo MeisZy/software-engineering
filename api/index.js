@@ -923,49 +923,50 @@ if (fileType === 'pdf') {
   }
 });
 
-// Update applicant status endpoint
 app.put('/update-applicant-status', async (req, res) => {
   try {
-    const { email, date, type, jobTitle } = req.body;
+    const { email, jobTitle, status } = req.body;  // Destructure status
 
-if (!email || !date || !type || !jobTitle) {
-  return res.status(400).json({ message: 'Email, date, type, and jobTitle are required.' });
-}
+    // Validate required fields
+    if (!email || !jobTitle || !status) {
+      return res.status(400).json({ message: 'Email, jobTitle, and status are required.' });
+    }
 
-    if (!['Rejected', 'Accepted', 'Pending'].includes(status)) {
-  return res.status(400).json({ message: 'Invalid status value' });
-}
+    // Validate the status value
+    const validStatuses = ['Rejected', 'Accepted', 'Pending'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: 'Invalid status value' });
+    }
+
+    // Find the applicant
     const jobApplicant = await JobApplicants.findOne({ email });
     if (!jobApplicant) {
       return res.status(404).json({ message: 'Applicant not found' });
     }
 
-    const applicant = await Applicants.findOne({ email });
-    if (applicant && !jobApplicant.fullName) {
-      jobApplicant.fullName = applicant.fullName || 'Unknown Applicant';
-    }
-
-    // Update status for the specific jobTitle in positionAppliedFor
-    let found = false;
-    jobApplicant.positionAppliedFor = jobApplicant.positionAppliedFor.map(pos => {
-      if (pos.jobTitle === jobTitle) {
-        found = true;
-        return { ...pos, status };
-      }
-      return pos;
-    });
-    if (!found) {
-      // If not found, add it
+    // Update the status for the specific jobTitle
+    const position = jobApplicant.positionAppliedFor.find(pos => pos.jobTitle === jobTitle);
+    if (position) {
+      position.status = status;  // Update existing status
+    } else {
+      // If not found, add a new position entry
       jobApplicant.positionAppliedFor.push({ jobTitle, status });
     }
-    await jobApplicant.save();
+
+    await jobApplicant.save();  // Save changes
 
     // Improved user notification message
-    const userMsg =
-      status === 'Accepted'
-        ? `We Hope this email finds you well. We're delighted to inform you that your application status for "${jobTitle}" has been ${status}.`
-        : `We Hope this email finds you well. We regret to inform you that your application status for "${jobTitle}" has been ${status}.`;
+    let userMsg;
 
+    if (status === 'Accepted') {
+      userMsg = `We hope this email finds you well. We're delighted to inform you that your application status for "${jobTitle}" has been ${status}.`;
+    } else if (status === 'Rejected') {
+      userMsg = `We regret to inform you that your application status for "${jobTitle}" has been ${status}.`;
+    } else if (status === 'Pending') {
+      userMsg = `Your application for "${jobTitle}" is currently under review. We will notify you once a decision has been made.`;
+    }
+
+    // Save notification for user
     await new Notifications({
       email,
       message: userMsg,
@@ -990,9 +991,6 @@ if (!email || !date || !type || !jobTitle) {
     res.status(200).json({ message: 'Applicant status updated successfully', applicant: jobApplicant });
   } catch (error) {
     console.error('Error updating applicant status:', error);
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({ message: `Validation error: ${error.message}` });
-    }
     res.status(500).json({ message: 'Server error while updating applicant status' });
   }
 });

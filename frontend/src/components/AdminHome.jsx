@@ -782,44 +782,44 @@ const handleDeleteInterview = async (interviewId) => {
                 <div className="applicantsgrid">
                   <div className='applicantinstance'>
                     <ul>
-                      {applicants
-                        .filter(applicant =>
-                          (applicant.positionAppliedFor || []).some(
-                            pos => pos.jobTitle === filteredJobOpenings[openApplicantsIdx]?.title
-                          )
+                    {applicants
+                      .filter(applicant =>
+                        (applicant.positionAppliedFor || []).some(
+                          pos => pos.jobTitle === filteredJobOpenings[openApplicantsIdx]?.title
                         )
-                        .map((applicant, idx) => (
-                          <li key={applicant._id} style={{ marginBottom: "16px", listStyle: "none" }}>
-                            <b>{applicant.fullName}</b>
-                            <a className="viewdetails" onClick={() => setOpenApplicantDetailIdx(idx)}>
-                              View Details
-                            </a>
-                            <button onClick={() => handleDeleteApplicant(applicant._id)} style={{ marginLeft: '8px' }}>
-                              Delete
-                            </button>
-                            {openApplicantDetailIdx === idx && (
-                              <div className='applicantdetailwrap'>
-                                <span>Email: {applicant.email}</span>
-                                <span>Mobile: {applicant.mobileNumber}</span>
-                                <span>Jobs Applied For: {(applicant.positionAppliedFor || []).map(pos => pos.jobTitle).join(', ')}</span>
-                                <span>Birthdate: {new Date(applicant.birthdate).toISOString().split('T')[0]}</span>
-                                <span>Gender: {applicant.gender}</span>
-                                <span>City: {applicant.city}</span>
-                                <span>State/Province: {applicant.stateProvince}</span>
-                                <span>Status: {applicant.status}</span>
-                                <span>Stage: {applicant.applicationStage}</span>
-                                <span>Skills: {(applicant.resume && applicant.resume.filePath) ? applicant.resume.filePath : ''}</span>
-                                <button
-                                  style={{ marginTop: "8px", fontSize: "12px", width: "100px" }}
-                                  onClick={() => setOpenApplicantDetailIdx(null)}
-                                  type="button"
-                                >
-                                  Close
-                                </button>
-                              </div>
-                            )}
-                          </li>
-                        ))}
+                      )
+                      .map((applicant, idx) => (
+                        <li key={applicant._id} style={{ marginBottom: "16px", listStyle: "none" }}>
+                          <b>{applicant.fullName}</b>
+                          <a className="viewdetails" onClick={() => setOpenApplicantDetailIdx(idx)}>
+                            View Details
+                          </a>
+                          <button onClick={() => handleDeleteApplicant(applicant._id)} style={{ marginLeft: '8px' }}>
+                            Delete
+                          </button>
+                          {openApplicantDetailIdx === idx && (
+                            <div className='applicantdetailwrap'>
+                              <span>Email: {applicant.email}</span>
+                              <span>Mobile: {applicant.mobileNumber}</span>
+                              <span>Jobs Applied For: {(applicant.positionAppliedFor || []).map(pos => pos.jobTitle).join(', ')}</span>
+                              <span>Birthdate: {new Date(applicant.birthdate).toISOString().split('T')[0]}</span>
+                              <span>Gender: {applicant.gender}</span>
+                              <span>City: {applicant.city}</span>
+                              <span>State/Province: {applicant.stateProvince}</span>
+                              <span>Status: {applicant.status}</span>
+                              <span>Stage: {applicant.applicationStage}</span>
+                              <span>Skills: {(applicant.resume && applicant.resume.filePath) ? applicant.resume.filePath : ''}</span>
+                              <button
+                                style={{ marginTop: "8px", fontSize: "12px", width: "100px" }}
+                                onClick={() => setOpenApplicantDetailIdx(null)}
+                                type="button"
+                              >
+                                Close
+                              </button>
+                            </div>
+                          )}
+                        </li>
+                    ))}
                     </ul>
                   </div>
                 </div>
@@ -827,73 +827,73 @@ const handleDeleteInterview = async (interviewId) => {
             </div>
           )}
           {openDetailIdx !== null && (
-            <div className="jobdetails" onClick={() => setOpenDetailIdx(null)}>
-              <div className="jobdetailsdarkgreen">
-                <div className="jobdetailslightgreen"></div>
-              </div>
-              <div
-                className="jobdetailsblock"
-                onClick={e => e.stopPropagation()}
-                style={{
-                  backgroundImage: `url(${Details})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gridColumn: '1 / span 2' }}>
-                  <h3 style={{ marginBottom: 0 }}>
-                    {filtered.vafilteredJobOpenings[openDetailIdx]?.title || 'Job Title'}
-                  </h3>
-                  <a className='jobdetailsapply' onClick={() => setOpenDetailIdx(null)} aria-label="Close">
-                    ×
-                  </a>
-                </div>
-                <div className="jobdetailsgrid">
-                  <div>
-                    <p><b>Department:</b> {filteredJobOpenings[openDetailIdx]?.department || 'N/A'}</p>
-                    <p><b>Work Schedule:</b> {filteredJobOpenings[openDetailIdx]?.workSchedule}</p>
-                    <p><b>Work Setup:</b> {filteredJobOpenings[openDetailIdx]?.workSetup}</p>
-                    <p><b>Employment Type:</b> {filteredJobOpenings[openDetailIdx]?.employmentType}</p>
-                    <p><b>Description:</b> {filteredJobOpenings[openDetailIdx]?.description.join(', ')}</p>
-                    <p><b>Key Responsibilities:</b></p>
-                    <ul>
-                      {filteredJobOpenings[openDetailIdx]?.keyResponsibilities.map((item, i) => (
-                        <li key={i}>{item}</li>
-                      )) || <li>N/A</li>}
-                    </ul>
-                  </div>
-                  <div>
-                    <p><b>Qualifications:</b></p>
-                    <ul>
-                      {filteredJobOpenings[openDetailIdx]?.qualifications.map((item, i) => (
-                        <li key={i}>{item}</li>
-                      )) || <li>N/A</li>}
-                    </ul>
-                    <p><b>What we Offer:</b></p>
-                    <ul>
-                      {filteredJobOpenings[openDetailIdx]?.whatWeOffer.map((item, i) => (
-                        <li key={i}>{item}</li>
-                      )) || <li>N/A</li>}
-                    </ul>
-                    <p><b>Threshold:</b> {filteredJobOpenings[openDetailIdx]?.threshold || 'N/A'}</p>
-                    <p><b>Keywords:</b> {filteredJobOpenings[openDetailIdx]?.keywords.join(', ') || 'N/A'}</p>
-                    <p><b>Graded Qualifications:</b></p>
-                    <ul>
-                      {filteredJobOpenings[openDetailIdx]?.gradedQualifications.map((qual, index) => (
-                        <li key={index}>{qual.attribute}: {qual.points}</li>
-                      )) || <li>N/A</li>}
-                    </ul>
-                    <button
-                      onClick={() => setOpenDetailIdx(null)}
-                      style={{ marginTop: "32px" }}
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+  <div className="jobdetails" onClick={() => setOpenDetailIdx(null)}>
+    <div className="jobdetailsdarkgreen">
+      <div className="jobdetailslightgreen"></div>
+    </div>
+    <div
+      className="jobdetailsblock"
+      onClick={e => e.stopPropagation()}
+      style={{
+        backgroundImage: `url(${Details})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gridColumn: '1 / span 2' }}>
+        <h3 style={{ marginBottom: 0 }}>
+          {filteredJobOpenings[openDetailIdx]?.title || 'Job Title'}
+        </h3>
+        <a className='jobdetailsapply' onClick={() => setOpenDetailIdx(null)} aria-label="Close">
+          ×
+        </a>
+      </div>
+      <div className="jobdetailsgrid">
+        <div>
+          <p><b>Department:</b> {filteredJobOpenings[openDetailIdx]?.department || 'N/A'}</p>
+          <p><b>Work Schedule:</b> {filteredJobOpenings[openDetailIdx]?.workSchedule}</p>
+          <p><b>Work Setup:</b> {filteredJobOpenings[openDetailIdx]?.workSetup}</p>
+          <p><b>Employment Type:</b> {filteredJobOpenings[openDetailIdx]?.employmentType}</p>
+          <p><b>Description:</b> {filteredJobOpenings[openDetailIdx]?.description.join(', ')}</p>
+          <p><b>Key Responsibilities:</b></p>
+          <ul>
+            {filteredJobOpenings[openDetailIdx]?.keyResponsibilities.map((item, i) => (
+              <li key={i}>{item}</li>
+            )) || <li>N/A</li>}
+          </ul>
+        </div>
+        <div>
+          <p><b>Qualifications:</b></p>
+          <ul>
+            {filteredJobOpenings[openDetailIdx]?.qualifications.map((item, i) => (
+              <li key={i}>{item}</li>
+            )) || <li>N/A</li>}
+          </ul>
+          <p><b>What we Offer:</b></p>
+          <ul>
+            {filteredJobOpenings[openDetailIdx]?.whatWeOffer.map((item, i) => (
+              <li key={i}>{item}</li>
+            )) || <li>N/A</li>}
+          </ul>
+          <p><b>Threshold:</b> {filteredJobOpenings[openDetailIdx]?.threshold || 'N/A'}</p>
+          <p><b>Keywords:</b> {filteredJobOpenings[openDetailIdx]?.keywords.join(', ') || 'N/A'}</p>
+          <p><b>Graded Qualifications:</b></p>
+          <ul>
+            {filteredJobOpenings[openDetailIdx]?.gradedQualifications.map((qual, index) => (
+              <li key={index}>{qual.attribute}: {qual.points}</li>
+            )) || <li>N/A</li>}
+          </ul>
+          <button
+            onClick={() => setOpenDetailIdx(null)}
+            style={{ marginTop: "32px" }}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
           {showMessageForm && (
             <div className="messagedetailsdarkgreen">
               <div className="messagedetailslightgreen" >
