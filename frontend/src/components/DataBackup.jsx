@@ -7,17 +7,19 @@ function DataBackup() {
   
   const navigate = useNavigate();
 
-  const handleHomePage = () => {
-    navigate('/');
+  const handleAdminMaintainance = () => {
+    navigate('/adminmaintainance');
   };
-
   return (
     <>
         <nav>
-            <a onClick={handleHomePage}>Collectius  </a>
+            <a onClick={handleAdminMaintainance}>Collectius  </a>
         </nav>
         <div className='maintainanceleftcomp'>
-            <li onClick={handleHomePage}>Back</li>
+            <li onClick={handleAdminMaintainance}>Back</li>
+        </div>
+        <div className='maintainancerightcomp'>
+            test
         </div>
 
     </>
