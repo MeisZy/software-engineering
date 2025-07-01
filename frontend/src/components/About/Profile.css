@@ -4,7 +4,7 @@
   align-items: center;
   min-height: 100vh;
   background-color: #f7fafc;
-  padding: 20px;
+  padding: 10vh;
 }
 
 .profile-card {
@@ -83,8 +83,9 @@
   background-color: #3182ce;
 }
 
-strong{
-  font-size:20px;
+strong {
+  font-size: 20px;
+  min-width: 120px; /* Ensure labels align consistently */
 }
 
 .edit-button {
@@ -92,15 +93,59 @@ strong{
   border: none;
   font-size: 18px;
   cursor: pointer;
-  color: #718096;
+  opacity:0;
+  padding: 5px 5px;
+  width: 100%;
+  text-align: center;
 }
+
 .edit-button:hover {
-  color: #2d3748;
+  color: #000000;
+  opacity:1;
 }
 
 .profile-right {
   flex: 1;
   padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-right-content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.fields-column {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.field-row strong{
+  font-size:14px;
+}
+
+
+.buttons-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.save-button {
+  margin-top: 20px;
+  align-self: flex-end;
 }
 
 .profile-right p {

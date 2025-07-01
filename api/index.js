@@ -799,8 +799,15 @@ app.get('/applicants/:email', async (req, res) => {
     if (!applicant && !jobApplicant) {
       return res.status(200).json(null);
     }
+    // Construct fullName from firstName and lastName if fullName is missing or invalid
+    let fullName = applicant?.fullName || jobApplicant?.fullName;
+    if (!fullName || fullName.includes('google user')) {
+      const firstName = applicant?.firstName || jobApplicant?.firstName || '';
+      const lastName = applicant?.lastName || jobApplicant?.lastName || '';
+      fullName = `${firstName} ${lastName}`.trim() || email.split('@')[0].replace(/\./g, ' ').replace(/^\w/, c => c.toUpperCase());
+    }
     const response = {
-      fullName: applicant?.fullName || jobApplicant?.fullName || 'Unknown User',
+      fullName,
       firstName: applicant?.firstName || jobApplicant?.firstName || '',
       middleName: applicant?.middleName || jobApplicant?.middleName || '',
       lastName: applicant?.lastName || jobApplicant?.lastName || '',
@@ -1149,8 +1156,16 @@ app.put('/applicants/:email', async (req, res) => {
     const updatedApplicant = await Applicants.findOne({ email });
     const updatedJobApplicant = await JobApplicants.findOne({ email });
 
+    // Construct fullName for response
+    let fullName = updatedApplicant?.fullName || updatedJobApplicant?.fullName;
+    if (!fullName || fullName.includes('google user')) {
+      const firstName = updatedApplicant?.firstName || updatedJobApplicant?.firstName || '';
+      const lastName = updatedApplicant?.lastName || updatedJobApplicant?.lastName || '';
+      fullName = `${firstName} ${lastName}`.trim() || email.split('@')[0].replace(/\./g, ' ').replace(/^\w/, c => c.toUpperCase());
+    }
+
     const response = {
-      fullName: updatedApplicant?.fullName || updatedJobApplicant?.fullName || 'Unknown User',
+      fullName,
       firstName: updatedApplicant?.firstName || updatedJobApplicant?.firstName || '',
       middleName: updatedApplicant?.middleName || updatedJobApplicant?.middleName || '',
       lastName: updatedApplicant?.lastName || updatedJobApplicant?.lastName || '',
@@ -1172,7 +1187,6 @@ app.put('/applicants/:email', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
 // Mark notification as read endpoint
 app.put('/notifications/:id/read', async (req, res) => {
   try {

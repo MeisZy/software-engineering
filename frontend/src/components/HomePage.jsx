@@ -24,12 +24,21 @@ function HomePage() {
       const userEmail = decoded.email;
       const profilePic = decoded.picture;
 
-      // Sanitize fullName
-      if (!fullName || typeof fullName !== 'string') {
-        fullName = 'Unknown User';
-      } else {
-        fullName = fullName.replace(/[^\w\s]/g, '').trim(); // Remove special characters
-        if (!fullName) fullName = 'Unknown User';
+      // Construct fullName from given_name and family_name if name is missing
+      if (!fullName || typeof fullName !== 'string' || fullName.trim() === '') {
+        const givenName = decoded.given_name || '';
+        const familyName = decoded.family_name || '';
+        fullName = `${givenName} ${familyName}`.trim();
+        if (!fullName) {
+          // Fallback to email prefix (e.g., "john.doe" from "john.doe@gmail.com")
+          fullName = userEmail.split('@')[0].replace(/\./g, ' ').replace(/^\w/, c => c.toUpperCase());
+        }
+      }
+
+      // Sanitize fullName, allowing accented characters
+      fullName = fullName.replace(/[^\w\sáéíóúñÁÉÍÓÚÑ-]/g, '').trim();
+      if (!fullName) {
+        fullName = userEmail.split('@')[0].replace(/\./g, ' ').replace(/^\w/, c => c.toUpperCase());
       }
 
       if (userEmail) {

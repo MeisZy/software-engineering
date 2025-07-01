@@ -110,7 +110,7 @@ function Profile() {
     try {
       const response = await axios.put(`http://localhost:5000/applicants/${userEmail}`, editableFields);
       setApplicantData(response.data);
-      setError('Information updated successfully.');
+      alert('Information updated successfully.');
       setIsEditing({
         birthdate: false,
         gender: false,
@@ -160,36 +160,47 @@ function Profile() {
                 </button>
               </div>
             </div>
-<div className="profile-right">
-  {error && <p className="error">{error}</p>}
-  {file && <p>Selected file: {file.name}</p>}
-  {applicantData && (
-    <>
-      {['birthdate', 'gender', 'city', 'stateProvince', 'mobileNumber'].map((field) => (
-        <div key={field} style={{ marginBottom: '10px' }}>
-          <strong>{field.charAt(0).toUpperCase() + field.slice(1)}:</strong>
-          <span style={{ marginLeft: '10px' }}>
-            <input
-              type="text"
-              value={editableFields[field] || applicantData[field] || 'Not provided'}
-              onChange={(e) => setEditableFields(prev => ({ ...prev, [field]: e.target.value }))}
-              readOnly={!isEditing[field]}
-              style={{ padding: '5px', border: isEditing[field] ? '1px solid #ccc' : 'none', background: isEditing[field] ? '#fff' : 'transparent' }}
-            />
-            <button
-              className="edit-button"
-              onClick={() => handleToggleEdit(field)}
-              style={{ marginLeft: '10px' }}
-            >
-              {isEditing[field] ? 'Cancel' : 'Edit'}
-            </button>
-          </span>
-        </div>
-      ))}
-      <button className="resume-button" onClick={handleSave}>Save</button>
-    </>
-  )}
-</div>
+            <div className="profile-right">
+              {error && <p className="error">{error}</p>}
+              {file && <p>Selected file: {file.name}</p>}
+              {applicantData && (
+                <div className="profile-right-content">
+                  <div className="fields-column">
+                    {['birthdate', 'gender', 'city', 'stateProvince', 'mobileNumber'].map((field) => (
+                      <div key={field} className="field-row">
+                        <strong>{field.charAt(0).toUpperCase() + field.slice(1)}:</strong>
+                        <input
+                          type="text"
+                          value={editableFields[field] || applicantData[field] || 'Not provided'}
+                          onChange={(e) => setEditableFields(prev => ({ ...prev, [field]: e.target.value }))}
+                          readOnly={!isEditing[field]}
+                          style={{ 
+                            padding: '5px', 
+                            border: isEditing[field] ? '1px solid #ccc' : 'none', 
+                            background: isEditing[field] ? '#fff' : 'transparent',
+                            marginLeft: '10px',
+                            width: '120px',
+                            border:"2px solid black"
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="buttons-column">
+                    {['birthdate', 'gender', 'city', 'stateProvince', 'mobileNumber'].map((field) => (
+                      <button
+                        key={field}
+                        className="edit-button"
+                        onClick={() => handleToggleEdit(field)} style={{marginLeft:"20px"}}
+                      >
+                        {isEditing[field] ? 'Cancel' : 'Edit'}
+                      </button>
+                    ))}
+                  </div>
+                  <button className="resume-button save-button" onClick={handleSave}>Save</button>
+                </div>
+              )}
+            </div>
           </div>
           <div className="preview-container">
             <h3>Resume Preview</h3>
