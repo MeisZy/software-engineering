@@ -49,17 +49,33 @@ function AdminMaintainance() {
           <li>User Support</li>
           <li>Data Backup</li>
         </div>
+
+        {/*Updated June 29, 2025*/}
         <div className='maintainancerightcomp'>
           <div className='backupcontainer'>
-            <div className='backupheader'></div>
+            <div className='backupheader'>
+            
+             <h2>Applicant</h2>
+              <h2 style={{marginRight: '60px'}}>Operation</h2>
+            </div>
+            <div className='backupContent'>
             {error && <div style={{ color: 'red', padding: '16px' }}>{error}</div>}
             {applicants.length === 0 && !error && <div style={{ padding: '16px', color: '#888' }}>No applicants available.</div>}
             {applicants.map((applicant) => (
               <ul className='maintainanceinstance' key={applicant._id}>
                 <label>{applicant.email}</label>
-                <a onClick={() => handleDownload(applicant)}>download</a>
+
+             {/* <a onClick={() => handleDownload(applicant)}>Download</a>*/}  
+
+                  <button
+                    onClick={() => handleDownload(applicant)}
+                    className="download-btn"
+                  >
+                    Download
+                  </button>
               </ul>
             ))}
+             </div>
           </div>
         </div>
       </div>
