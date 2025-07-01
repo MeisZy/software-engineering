@@ -18,6 +18,7 @@
   import UserManagement from './components/UserManagement.jsx';
   import HelpAdmin from './components/HelpAdmin.jsx';
   import AdminAddAccount from './components/AdminAddAccount.jsx';
+  import DataBackup from './components/DataBackup.jsx'
   import './App.css';
 
   function App() {
@@ -41,6 +42,7 @@
             <Route path="/usermanagement" element={<UserManagement />} />
             <Route path="/helpadmin" element={<HelpAdmin />} />
             <Route path="/adminaddaccount" element={<AdminAddAccount/>}/>
+            <Route path="/databackup" element={<DataBackup/>}/>
           </Routes>
       </>
     );

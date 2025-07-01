@@ -130,7 +130,7 @@ const handleStatusChange = async (email, jobTitle, newStatus) => {
                 onClick={handleDownloadAll}
                 style={{ cursor: 'pointer', color: '#13714C', textDecoration: 'none', fontWeight: '600' }}
               >
-                Download All Applicants
+                Application Status
               </a>
             </div>
     
@@ -191,7 +191,7 @@ const handleStatusChange = async (email, jobTitle, newStatus) => {
 )}
               </tbody>
             </table>
-    </div>
+        </div>
 
           </div>
         </div>

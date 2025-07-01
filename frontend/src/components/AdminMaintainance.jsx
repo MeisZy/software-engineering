@@ -24,6 +24,12 @@ function AdminMaintainance() {
   const handleUserManagement = () => {
     navigate('/usermanagement');
   }
+  const handleAdminAddAccount = () => {
+    navigate('/adminaddaccount');
+  }
+  const handleDataBackup = () => {
+    navigate('/databackup');
+  }
 
   const handleDownload = (applicant) => {
     const jsonData = JSON.stringify(applicant, null, 2);
@@ -47,7 +53,8 @@ function AdminMaintainance() {
         <div className='maintainanceleftcomp'>
           <li onClick={handleUserManagement}>User Management</li>
           <li>User Support</li>
-          <li>Data Backup</li>
+          <li onClick={handleDataBackup}>Data Backup</li>
+          <li onClick={handleAdminAddAccount}>Add User</li>
         </div>
 
         {/*Updated June 29, 2025*/}
