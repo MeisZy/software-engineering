@@ -154,7 +154,7 @@ const handleStatusChange = async (email, jobTitle, newStatus) => {
       {idx === 0 ? (
         <td
           rowSpan={applicant.positionAppliedFor.length}
-          style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'middle' }}
+          style={{ padding: '8px', border: '1px solid #13714C', verticalAlign: 'middle',fontSize:"14px" }}
         >
           {applicant.email}
         </td>

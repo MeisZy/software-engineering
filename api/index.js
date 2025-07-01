@@ -718,8 +718,8 @@ app.post('/apply', async (req, res) => {
     // Improved admin notification message
     const adminMsg =
       status === 'Accepted'
-        ? `${applicant.fullName || applicant.email} was Accepted after applying for "${jobTitle}".`
-        : `${applicant.fullName || applicant.email} was Rejected after applying for "${jobTitle}".`;
+        ? `${applicant.fullName || applicant.email} was Accepted past initial screening after applying for "${jobTitle}".`
+        : `${applicant.fullName || applicant.email} was Rejected past initial screening after applying for "${jobTitle}".`;
 
     await AdminNotifications.create({
       message: adminMsg,

@@ -254,7 +254,7 @@ function UserHome() {
               onClick={() => setShowNotifications(!showNotifications)}
             />
             {notifications.filter(n => !n.isRead).length > 0 && (
-              <span className="notification-count" style={{ position: 'absolute', top: '-8px', right: '-8px' }}>
+              <span className="notification-count" style={{ position: 'absolute', top: '2px', right: '-8px' }}>
                 {notifications.filter(n => !n.isRead).length}
               </span>
             )}

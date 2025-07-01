@@ -10,7 +10,6 @@ function Navbar() {
       <ul>
       <CustomLink to ='/Help'>Help</CustomLink>
       <CustomLink to ='/About'>About</CustomLink>
-      <CustomLink to ='#'>Slider</CustomLink>
       </ul>
    </nav>
     </>
