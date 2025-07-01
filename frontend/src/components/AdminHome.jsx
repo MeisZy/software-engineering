@@ -427,7 +427,7 @@ const handleDeleteInterview = async (interviewId) => {
           <a href="/" className="logo-link">
             <img src={Logo} alt="Logo" className="logo" />
           </a>
-          <a href="javascript:void(0);">Admin</a>
+          <a href="javascript:void(0);" style={{fontSize:"20px"}}>Admin</a>
         </div>
         <div className="admin-nav-center">
           <a onClick={handleMaintainance}>Settings</a>
@@ -452,7 +452,7 @@ const handleDeleteInterview = async (interviewId) => {
               </span>
             )}
           </div>
-          <a className="logout" onClick={handleLogout}>Logout</a>
+          <a className="logout" onClick={handleLogout} style={{fontSize:"20px"}}>Logout</a>
         </div>
       </nav>
       <div className='components'>

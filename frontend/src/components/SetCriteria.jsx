@@ -337,9 +337,9 @@ function SetCriteria() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <img src={profilePic || Placeholder} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
-          <a>Manage Jobs</a>
+          <a style={{fontSize:"20px"}}>Manage Jobs</a>
         </div>
-        <a onClick={handleReturn} style={{ cursor: 'pointer' }}>Back</a>
+        <a onClick={handleReturn} style={{ cursor: 'pointer', fontSize:"20px" }}>Back</a>
       </nav>
       <div>
         <div className="criteria">

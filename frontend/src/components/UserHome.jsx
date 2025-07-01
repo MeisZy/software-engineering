@@ -241,10 +241,10 @@ const handleApply = async (jobTitle) => {
               <img src={profilePic || Placeholder} alt="Profile" />
             </a>
           <span className="usergreeting">Welcome, {userEmail}!</span>
-          <a href="#" onClick={(e) => { e.preventDefault(); setShowReportForm(true); }}>Report a Problem</a>
-          <a href="#" onClick={handleFAQs}>Help</a>
-          <a href="#" onClick={handleAbout}>About</a>
-          <a href="#" onClick={handleProfile}>Profile</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); setShowReportForm(true); }}>Report a Problem</a>
+            <a href="#" onClick={handleFAQs}>Help</a>
+            <a href="#" onClick={handleAbout}>About</a>
+            <a href="#" onClick={handleProfile}>Profile</a>
         
           {/*   <a href="#" onClick={handleProfile}>Settings</a>  />*/}
           
