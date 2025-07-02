@@ -590,7 +590,7 @@ tbody td{
 .applicantdetailwrap {
   padding: 24px;
   background: white;
-  width: 800px;
+  width: 720px;
   display: flex;
   flex-direction: column;
   gap: 12px; /* space between each detail */
@@ -602,7 +602,7 @@ tbody td{
 
 
 .applicantdetailwrap span {
-  margin: 0;
+  margin: 5px;
   font-size: 16px;
   display: block;
   color: #222;

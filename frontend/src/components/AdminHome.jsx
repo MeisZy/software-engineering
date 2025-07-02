@@ -89,39 +89,30 @@ function AdminHome() {
     ),
   ].filter(suggestion => suggestion.value.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5);
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const [jobsResponse, applicantsResponse, adminNotificationsResponse] = await Promise.all([
-        axios.get('http://localhost:5000/jobs'),
-        axios.get('http://localhost:5000/applicants'),
-        axios.get('http://localhost:5000/adminnotifications'),
-      ]);
-      console.log('Fetched Applicants:', applicantsResponse.data); // Debugging log
-
-      setJobs(jobsResponse.data);
-      setApplicants(applicantsResponse.data);
-
-      // Check if OAuth accounts are present
-      const oauthAccounts = applicantsResponse.data.filter(applicant => 
-        applicant.email.includes('@google.com') // Adjust based on actual OAuth email pattern
-      );
-      console.log('OAuth Accounts:', oauthAccounts);
-
-      setAdminNotifications(
-        adminNotificationsResponse.data.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        )
-      );
-      setLoading(false);
-    } catch (err) {
-      console.error('Error fetching data:', err);
-      setError('Failed to load data. Please try again.');
-      setLoading(false);
-    }
-  };
-  fetchData();
-}, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [jobsResponse, applicantsResponse, adminNotificationsResponse] = await Promise.all([
+          axios.get('http://localhost:5000/jobs'),
+          axios.get('http://localhost:5000/applicants'),
+          axios.get('http://localhost:5000/adminnotifications'),
+        ]);
+        setJobs(jobsResponse.data);
+        setApplicants(applicantsResponse.data);
+        setAdminNotifications(
+          adminNotificationsResponse.data.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          )
+        );
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Failed to load data. Please try again.');
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (seeInterviews) {
@@ -132,80 +123,80 @@ useEffect(() => {
     }
   }, [seeInterviews]);
 
-const handleAssignInterview = async () => {
-  if (!interviewEmail || !interviewDate || !interviewType || !selectedJobTitle) {
-    alert('All fields are required, including a job title. Please ensure the selected applicant has applied for a job.');
-    return;
-  }
-  if (selectedApplicantJobs.length === 0) {
-    alert('The selected applicant has no applied jobs. Please select a different applicant.');
-    return;
-  }
-  setInterviewLoading(true);
-  setInterviewError('');
-  try {
-    const res = await fetch('http://localhost:5000/interviews', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: interviewEmail,
-        date: interviewDate,
-        type: interviewType,
-        jobTitle: selectedJobTitle
-      })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Failed to assign interview');
-    setInterviewList(prev => [...prev, { _id: data._id, ...data }]); // Use server-provided data
-    setInterviewEmail('');
-    setInterviewDate('');
-    setInterviewType('');
-    setSelectedJobTitle('');
-    setInterviewError('');
-  } catch (err) {
-    setInterviewError(err.message);
-  }
-  setInterviewLoading(false);
-};
-const handleDeleteInterview = async (interviewId) => {
-  if (!interviewId) {
-    setInterviewError('Invalid interview ID');
-    setTimeout(() => setInterviewError(''), 3000);
-    return;
-  }
-  try {
-    const res = await fetch(`http://localhost:5000/interviews/${interviewId}`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.message || 'Failed to delete interview');
+  const handleAssignInterview = async () => {
+    if (!interviewEmail || !interviewDate || !interviewType || !selectedJobTitle) {
+      alert('All fields are required, including a job title. Please ensure the selected applicant has applied for a job.');
+      return;
     }
-    setInterviewList(prev => prev.filter(iv => iv._id !== interviewId));
+    if (selectedApplicantJobs.length === 0) {
+      alert('The selected applicant has no applied jobs. Please select a different applicant.');
+      return;
+    }
+    setInterviewLoading(true);
     setInterviewError('');
-  } catch (err) {
-    console.error('Error deleting interview:', err);
-    setInterviewError(err.message || 'Failed to delete interview');
-    setTimeout(() => setInterviewError(''), 3000);
-  }
-};
+    try {
+      const res = await fetch('http://localhost:5000/interviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: interviewEmail,
+          date: interviewDate,
+          type: interviewType,
+          jobTitle: selectedJobTitle
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to assign interview');
+      setInterviewList(prev => [...prev, { _id: data._id, ...data }]);
+      setInterviewEmail('');
+      setInterviewDate('');
+      setInterviewType('');
+      setSelectedJobTitle('');
+      setInterviewError('');
+    } catch (err) {
+      setInterviewError(err.message);
+    }
+    setInterviewLoading(false);
+  };
 
- const handleApplicantChange = (e) => {
-  const applicantId = e.target.value;
-  setSelectedApplicant(applicantId);
+  const handleDeleteInterview = async (interviewId) => {
+    if (!interviewId) {
+      setInterviewError('Invalid interview ID');
+      setTimeout(() => setInterviewError(''), 3000);
+      return;
+    }
+    try {
+      const res = await fetch(`http://localhost:5000/interviews/${interviewId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to delete interview');
+      }
+      setInterviewList(prev => prev.filter(iv => iv._id !== interviewId));
+      setInterviewError('');
+    } catch (err) {
+      console.error('Error deleting interview:', err);
+      setInterviewError(err.message || 'Failed to delete interview');
+      setTimeout(() => setInterviewError(''), 3000);
+    }
+  };
 
-  const applicantObj = applicants.find(app => app._id === applicantId);
-  if (applicantObj) {
-    setInterviewEmail(applicantObj.email);
-    const jobs = (applicantObj.positionAppliedFor || []).map(pos => pos.jobTitle);
-    setSelectedApplicantJobs(jobs);
-  } else {
-    console.log('Applicant not found:', applicantId);
-    setInterviewEmail('');
-    setSelectedApplicantJobs([]);
-  }
-};
+  const handleApplicantChange = (e) => {
+    const applicantId = e.target.value;
+    setSelectedApplicant(applicantId);
+
+    const applicantObj = applicants.find(app => app._id === applicantId);
+    if (applicantObj) {
+      setInterviewEmail(applicantObj.email);
+      const jobs = (applicantObj.positionAppliedFor || []).map(pos => pos.jobTitle);
+      setSelectedApplicantJobs(jobs);
+    } else {
+      setInterviewEmail('');
+      setSelectedApplicantJobs([]);
+    }
+  };
 
   const handleAddApplicantToInterview = () => {
     if (!selectedApplicant) return;
@@ -266,7 +257,6 @@ const handleDeleteInterview = async (interviewId) => {
       setMessageSubject('');
       setMessageBody('');
     } catch (error) {
-      console.error('Error sending message:', error.response?.data || error.message);
       setMessageStatus(error.response?.data?.message || 'Failed to send message. Please try again.');
     } finally {
       setTimeout(() => setMessageStatus(''), 3000);
@@ -324,7 +314,6 @@ const handleDeleteInterview = async (interviewId) => {
       if (suggestion.type === 'job') {
         const jobIndex = jobs.findIndex(job => job._id === suggestion.id);
         if (jobIndex === -1) {
-          console.error(`Job not found for ID: ${suggestion.id}, Title: ${suggestion.value}`);
           setError('Selected job not found.');
           setTimeout(() => setError(''), 3000);
           return;
@@ -335,13 +324,11 @@ const handleDeleteInterview = async (interviewId) => {
         const applicantIndex = applicants.findIndex(applicant => applicant._id === suggestion.id);
 
         if (jobIndex === -1) {
-          console.error(`Job not found for Title: ${suggestion.jobTitle}`);
           setError('Job associated with applicant not found.');
           setTimeout(() => setError(''), 3000);
           return;
         }
         if (applicantIndex === -1) {
-          console.error(`Applicant not found for ID: ${suggestion.id}, Email: ${suggestion.email}`);
           setError('Selected applicant not found.');
           setTimeout(() => setError(''), 3000);
           return;
@@ -351,7 +338,6 @@ const handleDeleteInterview = async (interviewId) => {
         setOpenApplicantDetailIdx(applicantIndex);
       }
     } catch (err) {
-      console.error('Error handling suggestion click:', err);
       setError('An error occurred while processing your selection.');
       setTimeout(() => setError(''), 3000);
     }
@@ -378,7 +364,6 @@ const handleDeleteInterview = async (interviewId) => {
       setUserLogs(response.data);
       setLogsError('');
     } catch (err) {
-      console.error('Error fetching user logs:', err);
       setLogsError('Failed to load user logs. Please try again.');
     }
   };
@@ -447,7 +432,7 @@ const handleDeleteInterview = async (interviewId) => {
               onClick={() => setShowNotifications(!showNotifications)}
             />
             {adminNotifications.filter(n => !n.isRead).length > 0 && (
-              <span className="notification-count" style={{ position: 'absolute', top: '7.2px', right: '-8px',backgroundColor:"#A2E494",color:"black" }}>
+              <span className="notification-count" style={{ position: 'absolute', top: '7.2px', right: '-8px', backgroundColor:"#A2E494", color:"black" }}>
                 {adminNotifications.filter(n => !n.isRead).length}
               </span>
             )}
@@ -576,96 +561,80 @@ const handleDeleteInterview = async (interviewId) => {
               )}
             </div>
           )}
-      
-{/*Notifications Updated June 28, 2025*/}
-
           {showNotifications && (
-
-           <div
+            <div
               style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              width: '100vw',
-              height: '100vh',
-              background: 'rgba(0,0,0,0.4)',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              zIndex: 10,
-          }}
-           >
-
-          <div
-            className="notifications-containerAdmin"
-            onClick={() => setShowNotifications(false)}
-
-          >
-
-    <div className='notiflightGreenBGAdmin'     
-     onClick={e => e.stopPropagation()}>
-      <div className='notif-HeaderAdmin'>
-        <h2>Notifications</h2>
-        <button
-          onClick={() => setShowNotifications(false)}
-          style={{
-            /*Updated Jue 28,2025*/
-                  fontSize: '30px',
-                  marginRight: '19px',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  border: 'none',
-                  background: 'none',
-          }}
-        >
-          ×
-        </button>
-      </div>
-
-         <div className='MainContentNotif'>
-              {notificationsError && <div style={{ color: 'red', marginBottom: '16px' }}>{notificationsError}</div>}
-              {adminNotifications.length === 0 ? (
-                    <div className='NoNotif1'>No notifications available.</div>
-                  ) : (
-                    <ul className="notification-listAdmin">
-                      {adminNotifications.map(notification => (
-                        <li  key={notification._id} className="notification-itemAdmin">
-                 <div className="notification-contentAdmin">
-                      <p className='messageAdmin' style={{ margin: 0, fontWeight: notification.isRead ? 'normal' : 'bold' }}>
-                        {notification.message}
-                      </p>
-                      <span className="timestampAdmin">
-                        {notification.time || new Date(notification.createdAt).toLocaleString('en-US', {
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </span>
-                    </div>
-
-                        {!notification.isRead && (
-                          <button
-                            onClick={() => handleMarkAdminNotificationAsRead(notification._id)}
-                              className="mark-read-btn"
-                          >
-                            Mark as Read
-                          </button>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-           </div>
-          </div>
-        </div>
-      </div>
-)}
-     {/*Until here*/}   
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                background: 'rgba(0,0,0,0.4)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 10,
+              }}
+            >
+              <div className="notifications-containerAdmin" onClick={() => setShowNotifications(false)}>
+                <div className='notiflightGreenBGAdmin' onClick={e => e.stopPropagation()}>
+                  <div className='notif-HeaderAdmin'>
+                    <h2>Notifications</h2>
+                    <button
+                      onClick={() => setShowNotifications(false)}
+                      style={{
+                        fontSize: '30px',
+                        marginRight: '19px',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        border: 'none',
+                        background: 'none',
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className='MainContentNotif'>
+                    {notificationsError && <div style={{ color: 'red', marginBottom: '16px' }}>{notificationsError}</div>}
+                    {adminNotifications.length === 0 ? (
+                      <div className='NoNotif1'>No notifications available.</div>
+                    ) : (
+                      <ul className="notification-listAdmin">
+                        {adminNotifications.map(notification => (
+                          <li key={notification._id} className="notification-itemAdmin">
+                            <div className="notification-contentAdmin">
+                              <p className='messageAdmin' style={{ margin: 0, fontWeight: notification.isRead ? 'normal' : 'bold' }}>
+                                {notification.message}
+                              </p>
+                              <span className="timestampAdmin">
+                                {notification.time || new Date(notification.createdAt).toLocaleString('en-US', {
+                                  year: 'numeric',
+                                  month: '2-digit',
+                                  day: '2-digit',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })}
+                              </span>
+                            </div>
+                            {!notification.isRead && (
+                              <button
+                                onClick={() => handleMarkAdminNotificationAsRead(notification._id)}
+                                className="mark-read-btn"
+                              >
+                                Mark as Read
+                              </button>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           {showUserLogs && (
             <div
-              className="userlogs-container"
               style={{
                 position: 'fixed',
                 top: 0,
@@ -741,39 +710,31 @@ const handleDeleteInterview = async (interviewId) => {
               </div>
             </div>
           )}
- {/*View Applicants in admin home*/}
           {openApplicantsIdx !== null && (
             <div className="applicantslistcontainer" onClick={() => setOpenApplicantsIdx(null)}>
-              <div
-                className="jobdetailsblock"
-                onClick={e => e.stopPropagation()}
-
-              >
+              <div className="jobdetailsblock" onClick={e => e.stopPropagation()}>
                 <div className='jobdetailsbody-wrap'>
-                <div className = "jobdetailsbody-wrap-Header">
-                  <h3 style={{ marginBottom: 0 }}>
-                    {filteredJobOpenings[openApplicantsIdx]?.title || 'Job Title'}
-                  </h3>
-                  <a
+                  <div className="jobdetailsbody-wrap-Header">
+                    <h3 style={{ marginBottom: 0 }}>
+                      {filteredJobOpenings[openApplicantsIdx]?.title || 'Job Title'}
+                    </h3>
+                    <a
                       style={{
-                      fontSize: '2rem',
-                      fontWeight: 'bold',
-                      color: 'black',
-                      textDecoration: 'none',
-                      cursor: 'pointer',
-                      marginLeft: '24px',
-                      marginRight:'24px',
-                      lineHeight: '1',
+                        fontSize: '2rem',
+                        fontWeight: 'bold',
+                        color: 'black',
+                        textDecoration: 'none',
+                        cursor: 'pointer',
+                        marginLeft: '24px',
+                        marginRight: '24px',
+                        lineHeight: '1',
                       }}
-                    onClick={() => setOpenApplicantsIdx(null)}
-                    aria-label="Close"
-
-                  >
-                    ×
-                  </a>
-                </div>
-
-
+                      onClick={() => setOpenApplicantsIdx(null)}
+                      aria-label="Close"
+                    >
+                      ×
+                    </a>
+                  </div>
                   <div className='applicantinstance'>
                     <ul>
                       {applicants
@@ -783,178 +744,200 @@ const handleDeleteInterview = async (interviewId) => {
                           )
                         )
                         .map((applicant, idx) => (
-                    <li key={applicant._id} className="applicant-line">
-                          <div className="applicant-content">
-                            <b>{applicant.fullName}</b>
-                            <div className="Adminviewdetailsbutton-group">
-                              <a className="viewdetails" onClick={() => setOpenApplicantDetailIdx(idx)}>
-                                View Details
-                              </a>
-                              <button onClick={() => handleDeleteApplicant(applicant._id)}>
-                                Delete
-                              </button>
-                            </div>
-                          </div>
-
-                            {openApplicantDetailIdx === idx && (
-                              <div className='applicantdetailwrap'>
-                                <span>Email: {applicant.email}</span>
-                                <span>Mobile: {applicant.mobileNumber}</span>
-                                <span>Jobs Applied For: {(applicant.positionAppliedFor || []).map(pos => pos.jobTitle).join(', ')}</span>
-                                <span>Birthdate: {new Date(applicant.birthdate).toISOString().split('T')[0]}</span>
-                                <span>Gender: {applicant.gender}</span>
-                                <span>City: {applicant.city}</span>
-                                <span>State/Province: {applicant.stateProvince}</span>
-                                <span>Status: {applicant.status}</span>
-                                <span>Stage: {applicant.applicationStage}</span>
-                                <span>Skills: {(applicant.resume && applicant.resume.filePath) ? applicant.resume.filePath : ''}</span>
-                                <button
-                                  style={{ marginTop: "8px", fontSize: "12px", width: "100px" }}
-                                  onClick={() => setOpenApplicantDetailIdx(null)}
-                                  type="button"
+                          <li key={applicant._id} className="applicant-line">
+                            <div className="applicant-content">
+                              <b>{applicant.fullName}</b>
+                              <div className="Adminviewdetailsbutton-group">
+                                <a
+                                  className="viewdetails"
+                                  onClick={() => setOpenApplicantDetailIdx(idx)}
                                 >
-                                  Close
+                                  View Details
+                                </a>
+                                <button onClick={() => handleDeleteApplicant(applicant._id)}>
+                                  Delete
                                 </button>
                               </div>
-                            )}
+                            </div>
                           </li>
-                      ))}
+                        ))}
                     </ul>
+                  </div>
                 </div>
               </div>
-                 </div>
             </div>
           )}
-
-          {/*View Details Homepage*/}      {/*Updated July 1, 2025*/}
-          
-          {openDetailIdx !== null && (
-  <div className="jobdetails" onClick={() => setOpenDetailIdx(null)}>
-    <div
-      className="jobdetailsblock"
-      onClick={e => e.stopPropagation()}
-    >
-      <div className='jobdetailsbody-wrap'>
-      <div className = "jobdetailsbody-wrap-Header">
-        <h3>
-          {filteredJobOpenings[openDetailIdx]?.title || 'Job Title'}
-        </h3>
-        <a 
-            style={{
-          fontSize: '2rem',
-          fontWeight: 'bold',
-          color: 'black',
-          textDecoration: 'none',
-          cursor: 'pointer',
-          marginLeft: '24px',
-          marginRight:'24px',
-          lineHeight: '1',
-        }}
-         onClick={() => setOpenDetailIdx(null)} aria-label="Close">
-          ×
-        </a>
-      </div>
-
-      <div className="Adminjobdetailsgrid">
-
-          <p style={{ marginTop: '20px' }}><b>Department:</b> {filteredJobOpenings[openDetailIdx]?.department || 'N/A'}</p>
-          <p><b>Work Schedule:</b> {filteredJobOpenings[openDetailIdx]?.workSchedule}</p>
-          <p><b>Work Setup:</b> {filteredJobOpenings[openDetailIdx]?.workSetup}</p>
-          <p><b>Employment Type:</b> {filteredJobOpenings[openDetailIdx]?.employmentType}</p>
-          <p><b>Description:</b> {filteredJobOpenings[openDetailIdx]?.description.join(', ')}</p>
-          <p><b>Key Responsibilities:</b></p>
-          <ul>
-            {filteredJobOpenings[openDetailIdx]?.keyResponsibilities.map((item, i) => (
-              <li key={i}>{item}</li>
-            )) || <li>N/A</li>}
-          </ul>
-
-          <p><b>Qualifications:</b></p>
-          <ul>
-            {filteredJobOpenings[openDetailIdx]?.qualifications.map((item, i) => (
-              <li key={i}>{item}</li>
-            )) || <li>N/A</li>}
-          </ul>
-          <p><b>What we Offer:</b></p>
-          <ul>
-            {filteredJobOpenings[openDetailIdx]?.whatWeOffer.map((item, i) => (
-              <li key={i}>{item}</li>
-            )) || <li>N/A</li>}
-          </ul>
-          <p><b>Threshold:</b> {filteredJobOpenings[openDetailIdx]?.threshold || 'N/A'}</p>
-          <p><b>Keywords:</b> {filteredJobOpenings[openDetailIdx]?.keywords.join(', ') || 'N/A'}</p>
-          <p><b>Graded Qualifications:</b></p>
-          <ul>
-            {filteredJobOpenings[openDetailIdx]?.gradedQualifications.map((qual, index) => (
-              <li key={index}>{qual.attribute}: {qual.points}</li>
-            )) || <li>N/A</li>}
-          </ul>
-          <button className='AdminjobdetailsClose-btn'
-            onClick={() => setOpenDetailIdx(null)}
-
-          >
-            Close
-          </button>
-
-      </div>
-      </div>
-    </div>
-  </div>
-)}
-
-       {/*Send a Message from admin*/}
-          {showMessageForm && (
-
-        <div
-               /* Updated */ 
-          style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              width: '100vw',
-              height: '100vh',
-              background: 'rgba(0,0,0,0.4)',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              zIndex: 10,
-          }}
-        >
-            <div className="messagedetailsdarkgreen">
-              <div className="messagedetailslightgreen" >
-                <div className = "messageHeader"style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                  <h3 style={{ padding: '16px 24px', margin: 0 }}>Send Email</h3>
-                  <a
-                    style={{
-                  fontSize: '30px',
-                  marginRight: '19px',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  border: 'none',
-                  background: 'none',
-                    }}
-                    onClick={() => setShowMessageForm(false)}
-                    aria-label="Close"
-                  >
-                    ×
-                  </a>
+          {openApplicantDetailIdx !== null && (
+            <div className="viewApplicantDetails" onClick={() => setOpenApplicantDetailIdx(null)}>
+              <div className="jobdetailsblock" onClick={e => e.stopPropagation()}>
+                <div className="jobdetailsbody-wrap">
+                  <div className="jobdetailsbody-wrap-Header">
+                    <h3>Applicant Details</h3>
+                    <a
+                      style={{
+                        fontSize: '2rem',
+                        fontWeight: 'bold',
+                        color: 'black',
+                        textDecoration: 'none',
+                        cursor: 'pointer',
+                        marginLeft: '24px',
+                        marginRight: '24px',
+                        lineHeight: '1',
+                      }}
+                      onClick={() => setOpenApplicantDetailIdx(null)}
+                      aria-label="Close"
+                    >
+                      ×
+                    </a>
+                  </div>
+                  <div className="applicantdetailwrap">
+                    {applicants
+                      .filter(applicant =>
+                        (applicant.positionAppliedFor || []).some(
+                          pos => pos.jobTitle === filteredJobOpenings[openApplicantsIdx]?.title
+                        )
+                      )
+                      .map((applicant, idx) => (
+                        openApplicantDetailIdx === idx && (
+                          <div key={applicant._id}>
+                            <span><strong>Full Name:</strong> {applicant.fullName || 'N/A'}</span>
+                            <span><strong>First Name:</strong> {applicant.firstName || 'N/A'}</span>
+                            <span><strong>Middle Name:</strong> {applicant.middleName || 'N/A'}</span>
+                            <span><strong>Last Name:</strong> {applicant.lastName || 'N/A'}</span>
+                            <span><strong>Email:</strong> {applicant.email || 'N/A'}</span>
+                            <span><strong>Mobile Number:</strong> {applicant.mobileNumber || 'N/A'}</span>
+                            <span><strong>Positions Applied For:</strong> {(applicant.positionAppliedFor || []).map(pos => `${pos.jobTitle} (${pos.status})`).join(', ') || 'N/A'}</span>
+                            <span><strong>Birthdate:</strong> {applicant.birthdate ? new Date(applicant.birthdate).toISOString().split('T')[0] : 'N/A'}</span>
+                            <span><strong>Gender:</strong> {applicant.gender || 'N/A'}</span>
+                            <span><strong>City:</strong> {applicant.city || 'N/A'}</span>
+                            <span><strong>State/Province:</strong> {applicant.stateProvince || 'N/A'}</span>
+                            <span><strong>Application Stage:</strong> {applicant.applicationStage || 'N/A'}</span>
+                            <span><strong>Scores:</strong> {Object.keys(applicant.scores || {}).length > 0 ? JSON.stringify(applicant.scores) : 'N/A'}</span>
+                            <button
+                              style={{ fontSize: "12px", width: "80px",padding:"20px",height:"20px",display:"flex",backgroundColor:"#A2E494",textAlign:"center",borderRadius:"20px" }}
+                              onClick={() => setOpenApplicantDetailIdx(null)}s
+                              type="button"
+                            >
+                              <p style={{display:"flex",justifyContent:"center",alignItems:"center",color:"#13714C"}}>Close</p>
+                            </button>
+                          </div>
+                        )
+                      ))}
+                  </div>
                 </div>
-
-       {/* Updated */ } 
-                <form className="messagedetailsgrid" onSubmit={handleMessageSubmit} style={{ padding: '0 24px' }}>
-                  <div className='form-row-message-recipient'>
-                  <label htmlFor="recipient">Recipient:</label>
-                  <input
-                    type="email"
-                    id="recipient"
-                    value={messageRecipient}
-                    onChange={(e) => setMessageRecipient(e.target.value)}
-                    placeholder="Enter Recipient Email"
-                    required
-                  />
-                 </div>
-
-                  <div className='form-row-message-subject'>
+              </div>
+            </div>
+          )}
+          {openDetailIdx !== null && (
+            <div className="jobdetails" onClick={() => setOpenDetailIdx(null)}>
+              <div className="jobdetailsblock" onClick={e => e.stopPropagation()}>
+                <div className='jobdetailsbody-wrap'>
+                  <div className="jobdetailsbody-wrap-Header">
+                    <h3>{filteredJobOpenings[openDetailIdx]?.title || 'Job Title'}</h3>
+                    <a
+                      style={{
+                        fontSize: '2rem',
+                        fontWeight: 'bold',
+                        color: 'black',
+                        textDecoration: 'none',
+                        cursor: 'pointer',
+                        marginLeft: '24px',
+                        marginRight: '24px',
+                        lineHeight: '1',
+                      }}
+                      onClick={() => setOpenDetailIdx(null)}
+                      aria-label="Close"
+                    >
+                      ×
+                    </a>
+                  </div>
+                  <div className="Adminjobdetailsgrid">
+                    <p style={{ marginTop: '20px' }}><b>Department:</b> {filteredJobOpenings[openDetailIdx]?.department || 'N/A'}</p>
+                    <p><b>Work Schedule:</b> {filteredJobOpenings[openDetailIdx]?.workSchedule}</p>
+                    <p><b>Work Setup:</b> {filteredJobOpenings[openDetailIdx]?.workSetup}</p>
+                    <p><b>Employment Type:</b> {filteredJobOpenings[openDetailIdx]?.employmentType}</p>
+                    <p><b>Description:</b> {filteredJobOpenings[openDetailIdx]?.description.join(', ') || 'N/A'}</p>
+                    <p><b>Key Responsibilities:</b></p>
+                    <ul>
+                      {filteredJobOpenings[openDetailIdx]?.keyResponsibilities.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      )) || <li>N/A</li>}
+                    </ul>
+                    <p><b>Qualifications:</b></p>
+                    <ul>
+                      {filteredJobOpenings[openDetailIdx]?.qualifications.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      )) || <li>N/A</li>}
+                    </ul>
+                    <p><b>What we Offer:</b></p>
+                    <ul>
+                      {filteredJobOpenings[openDetailIdx]?.whatWeOffer.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      )) || <li>N/A</li>}
+                    </ul>
+                    <p><b>Threshold:</b> {filteredJobOpenings[openDetailIdx]?.threshold || 'N/A'}</p>
+                    <p><b>Keywords:</b> {filteredJobOpenings[openDetailIdx]?.keywords.join(', ') || 'N/A'}</p>
+                    <p><b>Graded Qualifications:</b></p>
+                    <ul>
+                      {filteredJobOpenings[openDetailIdx]?.gradedQualifications.map((qual, index) => (
+                        <li key={index}>{qual.attribute}: {qual.points}</li>
+                      )) || <li>N/A</li>}
+                    </ul>
+                    <button className='AdminjobdetailsClose-btn' onClick={() => setOpenDetailIdx(null)}>
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {showMessageForm && (
+            <div
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                background: 'rgba(0,0,0,0.4)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 10,
+              }}
+            >
+              <div className="messagedetailsdarkgreen">
+                <div className="messagedetailslightgreen">
+                  <div className="messageHeader" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <h3 style={{ padding: '16px 24px', margin: 0 }}>Send Email</h3>
+                    <a
+                      style={{
+                        fontSize: '30px',
+                        marginRight: '19px',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        border: 'none',
+                        background: 'none',
+                      }}
+                      onClick={() => setShowMessageForm(false)}
+                      aria-label="Close"
+                    >
+                      ×
+                    </a>
+                  </div>
+                  <form className="messagedetailsgrid" onSubmit={handleMessageSubmit} style={{ padding: '0 24px' }}>
+                    <div className='form-row-message-recipient'>
+                      <label htmlFor="recipient">Recipient:</label>
+                      <input
+                        type="email"
+                        id="recipient"
+                        value={messageRecipient}
+                        onChange={(e) => setMessageRecipient(e.target.value)}
+                        placeholder="Enter Recipient Email"
+                        required
+                      />
+                    </div>
+                    <div className='form-row-message-subject'>
                       <label htmlFor="subject">Subject:</label>
                       <input
                         type="text"
@@ -964,32 +947,25 @@ const handleDeleteInterview = async (interviewId) => {
                         placeholder="Enter subject"
                         required
                       />
-                  </div>
-
-                <div className='form-row-messageDetails'>
-                  <label htmlFor="body">Message:</label>
-                  <textarea
-                    id="body"
-                    value={messageBody}
-                    onChange={(e) => setMessageBody(e.target.value)}
-                    placeholder="Enter your message"
-                    required
-  
-                  />
-                </div>
-                    <button
-                      type="submit"
-                      className="userjobdetailsbutton" 
-                    >
+                    </div>
+                    <div className='form-row-messageDetails'>
+                      <label htmlFor="body">Message:</label>
+                      <textarea
+                        id="body"
+                        value={messageBody}
+                        onChange={(e) => setMessageBody(e.target.value)}
+                        placeholder="Enter your message"
+                        required
+                      />
+                    </div>
+                    <button type="submit" className="userjobdetailsbutton">
                       Send
                     </button>
-
-                </form>
+                  </form>
+                </div>
               </div>
             </div>
-            </div>
           )}
-
           {seeInterviews && (
             <div className="interviewscover">
               <div className="interviewswrapper">
@@ -1082,13 +1058,13 @@ const handleDeleteInterview = async (interviewId) => {
                       {interviewError && <div className="interview-error">{interviewError}</div>}
                       <h2 style={{ color: "black" }}>Scheduled Interviews</h2>
                       <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '600px', borderCollapse: 'collapse', fontSize:"12px" ,textAlign:"center"}}>
+                        <table style={{ width: '600px', borderCollapse: 'collapse', fontSize:"10px" ,textAlign:"center"}}>
                           <thead>
                             <tr>
-                              <th>Email</th>
-                              <th>Date (dd/mm/yyyy)</th>
-                              <th>Type</th>
-                              <th>Action</th>
+                              <th style={{padding:"10px", fontSize:"10px"}}>Email</th>
+                              <th style={{padding:"10px", fontSize:"10px"}}>Date (dd/mm/yyyy)</th>
+                              <th style={{padding:"10px", fontSize:"10px"}}>Type</th>
+                              <th style={{padding:"10px", fontSize:"10px"}}>Action</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -1179,6 +1155,6 @@ const handleDeleteInterview = async (interviewId) => {
       </div>
     </>
   );
-} 
+}
 
 export default AdminHome;

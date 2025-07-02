@@ -274,57 +274,91 @@ function SetCriteria() {
     }
   };
 
-  const customSelectStyles = {
-    control: (provided) => ({
-      ...provided,
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      width: '100%',
-      minWidth: '0',
-      maxWidth: '400px',
-      borderRadius: 0,
-      minHeight: '20px',
-      fontSize: '16px',
-      padding: '0',
-      border: '2px solid black',
-      boxShadow: 'none',
-      borderColor: '#ccc',
-    }),
-    valueContainer: (provided) => ({
-      ...provided,
-      padding: '0 8px',
-    }),
-    input: (provided) => ({
-      ...provided,
-      margin: 0,
-      padding: 0,
-      fontSize: '16px',
-    }),
-    option: (provided, state) => ({
-      ...provided,
-      backgroundColor: state.isFocused || state.isSelected ? '#A2E494' : undefined,
-      color: state.isFocused || state.isSelected ? 'black' : '#222',
-      borderRadius: 0,
-      fontSize: '16px',
-      border: '1px solid black',
-      textAlign: 'center',
-    }),
-    menu: (provided) => ({
-      ...provided,
-      borderRadius: 0,
-      marginTop: 0,
-      zIndex: 10,
-      width: '216px',
-    }),
-    singleValue: (provided) => ({
-      ...provided,
-      fontSize: '16px',
-    }),
-    indicatorSeparator: () => ({
-      display: 'none',
-    }),
-  };
+{/*_________________Updated July 2, 2025_____________*/}
+const customSelectStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between', // Align text left, arrow right
+    width: '100%',
+    maxWidth: '400px',
+    minWidth: '0',
+    borderRadius: '20px',
+    marginTop: '16px',
+    marginBottom: '8px',
+    height: '40px',
+    minHeight: '40px',
+    fontSize: '14px',
+    padding: '0 12px',
+    border: state.isFocused ? '2px solid #13714C' : '2px solid #ccc',
+    boxShadow: state.isFocused ? '0 0 0 2px rgba(19, 113, 76, 0.2)' : 'none',
+    transition: 'all 0.2s ease-in-out',
+    backgroundColor: 'white',
+    cursor: 'pointer',
+  }),
+
+  valueContainer: (provided) => ({
+    ...provided,
+    padding: '0',
+    margin: '0',
+    display: 'flex',
+    alignItems: 'center',
+    height: '100%',
+  }),
+
+  input: (provided) => ({
+    ...provided,
+    margin: 0,
+    padding: 0,
+    fontSize: '14px',
+  }),
+
+  singleValue: (provided) => ({
+    ...provided,
+    fontSize: '14px',
+    fontWeight: 500,
+    color: '#333',
+  }),
+
+option: (provided, state) => ({
+  ...provided,
+  backgroundColor:
+    state.isSelected || state.isFocused ? '#A2E494' : 'white',
+  color: '#000',
+  fontSize: '14px',
+  textAlign: 'left',
+  padding: '10px 12px',
+  borderBottom: '1px solid #eee',
+  cursor: 'pointer',
+}),
+
+  menu: (provided) => ({
+    ...provided,
+    borderRadius: '10px',
+    marginTop: '4px',
+    zIndex: 20,
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    overflow: 'hidden',
+  }),
+
+  indicatorsContainer: (provided) => ({
+    ...provided,
+    color: '#13714C',
+  }),
+
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    color: state.isFocused ? '#13714C' : '#888',
+    transition: 'transform 0.2s ease',
+    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : null,
+  }),
+
+  indicatorSeparator: () => ({
+    display: 'none',
+  }),
+};
+{/*_________________until here_____________*/}
 
   return (
     <>
@@ -339,11 +373,11 @@ function SetCriteria() {
           <img src={profilePic || Placeholder} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
           <a style={{fontSize:"20px"}}>Manage Jobs</a>
         </div>
-        <a onClick={handleReturn} style={{ cursor: 'pointer', fontSize:"20px" }}>Back</a>
+        <a onClick={handleReturn} style={{ cursor: 'pointer',fontSize:"20px" }}>Back</a>
       </nav>
       <div>
         <div className="criteria">
-          <a onClick={() => setShowAddJob(true)}>Add Job</a>
+          <a onClick={() => setShowAddJob(true)} style={{color:"black"}}>Add Job</a>
           <a style={{ cursor: jobs.length ? 'pointer' : 'not-allowed' }} onClick={() => jobs.length && alert('Select a job to remove from the list below.')}>Remove Job</a>
         </div>
         <div className='jobswrapper'>
@@ -377,23 +411,23 @@ function SetCriteria() {
                     Delete
                   </a>
                 </div>
-{openDetailIdx === idx && (
-  <div
-    className="jobdetailsmodal"
-    style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100vw',
-      height: '100vh',
-      background: 'rgba(0,0,0,0.4)',
-      zIndex: 20,
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center'
-    }}
-    onClick={() => setOpenDetailIdx(null)}
-  >
+    {openDetailIdx === idx && (
+      <div
+        className="jobdetailsmodal"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0,0,0,0.4)',
+          zIndex: 20,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+        onClick={() => setOpenDetailIdx(null)}
+      >
     {/*Updated June 30, 2025*/}
     <div className='jobdetailscontent-MainWrapper'> 
     <div className='jobdetailscontentdarkgreen'    >
@@ -452,8 +486,8 @@ function SetCriteria() {
           </div>
         )}
         {Array.isArray(job.whatWeOffer) && job.whatWeOffer.length > 0 && (
-          <div style={{ marginBottom: 12 }}>
-            <p>            <b>What we Offer:</b>
+          <div >
+            <p>  <b>What we Offer:</b>
             <ul>
               {job.whatWeOffer.map((item, i) => (
                 <li key={i}>{item}</li>
@@ -469,7 +503,7 @@ function SetCriteria() {
             <b>Keywords:</b> {Array.isArray(job.keywords) ? job.keywords.join(', ') : job.keywords}
           </p>
         {Array.isArray(job.gradedQualifications) && job.gradedQualifications.length > 0 && (
-            <p>
+            <p style={{marginBottom: '20px'}}>
             <b>Graded Qualifications:</b>
             <ul>
               {job.gradedQualifications.map((qual, i) => (
@@ -489,13 +523,47 @@ function SetCriteria() {
           )}
         </div>
       </div>
+
+      {/*Add Job in Set Criteria*/}
       {showAddJob && (
         <>
-          <div
-            style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', zIndex: 3 }}
-            onClick={() => setShowAddJob(false)}
-          />
+        <div
+        
+              style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              background: 'rgba(0,0,0,0.4)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 10,
+          }}
+        >
+     
+     <div className='criteriascreen-wrapper'>
           <div className='criteriascreen'>
+        
+            <div className='AddJob-Header'>
+                  <h2 style={{color:"black"}}>Add Job</h2>
+               <a
+                    style={{
+                  fontSize: '30px',
+                  marginRight: '19px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: 'none',
+                    }}
+                    onClick={() => setShowAddJob(false)}
+                    aria-label="Close"
+                  >
+                    ×
+                  </a>
+     
+          </div>
             <div className='criteriascreencontent'>
               {error && (
                 <div style={{ color: 'red', marginBottom: '16px' }}>{error}</div>
@@ -503,7 +571,7 @@ function SetCriteria() {
               {criteriaPage === 1 && (
                 <div className='page1'>
                   <div className="rowcomponent">
-                    <label>Job Name</label>
+                    <label>Job Name:</label>
                     <input
                       type="text"
                       placeholder="Job Name"
@@ -512,7 +580,7 @@ function SetCriteria() {
                     />
                   </div>
                   <div className="rowcomponent">
-                    <label>Department</label>
+                    <label>Department:</label>
                     <input
                       type="text"
                       placeholder="Department"
@@ -521,7 +589,7 @@ function SetCriteria() {
                     />
                   </div>
                   <div className="rowcomponent">
-                    <label>Employment Type</label>
+                    <label>Employment Type:</label>
                     <Select
                       options={employmentTypeOptions}
                       styles={customSelectStyles}
@@ -530,7 +598,7 @@ function SetCriteria() {
                     />
                   </div>
                   <div className="rowcomponent">
-                    <label>Work Schedule</label>
+                    <label>Work Schedule:</label>
                     <Select
                       options={workingScheduleOptions}
                       styles={customSelectStyles}
@@ -539,7 +607,7 @@ function SetCriteria() {
                     />
                   </div>
                   <div className="rowcomponent">
-                    <label>Work Setup</label>
+                    <label>Work Setup:</label>
                     <Select
                       options={workSetupOptions}
                       styles={customSelectStyles}
@@ -554,20 +622,34 @@ function SetCriteria() {
                   />
                 </div>
               )}
+
+              {/*Page 2*/}
               {criteriaPage === 2 && (
                 <div className='page2'>
                   <div className='page2header'>
-                    <h1 style={{ color: 'white' }}>Key Responsibilities</h1>
+                    <h1 >Key Responsibilities</h1>
+                          <div className='addremovewrap'>
+                          <div className='addbuttonwrap'>
+                            <a onClick={handleAddResponsibility}>+</a>
+                          </div>
+                          {keyResponsibilities.length > 1 && (
+                            <div className='removebuttonwrap'>
+                              <a onClick={() => setKeyResponsibilities(prev => prev.slice(0, -1))}>-</a>
+                            </div>
+                          )}
+                        </div>
                   </div>
+                  <div className="responsibility-wrapper">
                   {keyResponsibilities.map((resp, idx) => (
-                    <div className='keyresponsibilities' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+                    <div className='keyresponsibilities' key={idx} >
                       <input
                         value={resp}
                         onChange={(e) => handleResponsibilityChange(idx, e.target.value)}
                       />
                     </div>
                   ))}
-                  <div className='addremovewrap'>
+          
+          {/*                  <div className='addremovewrap'>
                     <div className='addbuttonwrap'>
                       <a onClick={handleAddResponsibility}>+</a>
                     </div>
@@ -576,23 +658,19 @@ function SetCriteria() {
                         <a onClick={() => setKeyResponsibilities(prev => prev.slice(0, -1))}>-</a>
                       </div>
                     )}
-                  </div>
+                  </div>*/}
+
+                        </div>
                 </div>
               )}
+
+
               {criteriaPage === 3 && (
                 <div className='page3'>
-                  <div>
+                  <div className='page3header'>
                     <h1>Qualifications</h1>
-                  </div>
-                  {qualifications.map((qual, idx) => (
-                    <div className='qualifications' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
-                      <input
-                        value={qual}
-                        onChange={(e) => handleQualificationChange(idx, e.target.value)}
-                      />
-                    </div>
-                  ))}
-                  <div className='addremovewrap'>
+
+                     <div className='addremovewrap'>
                     <div className='addbuttonwrap'>
                       <a onClick={handleAddQualifications}>+</a>
                     </div>
@@ -602,37 +680,57 @@ function SetCriteria() {
                       </div>
                     )}
                   </div>
+                  </div>
+
+                  <div className="responsibility-wrapper">
+                      {qualifications.map((qual, idx) => (
+                        <div className='qualifications' key={idx} >
+                          <input
+                            value={qual}
+                            onChange={(e) => handleQualificationChange(idx, e.target.value)}
+                          />
+                        </div>
+                      ))}
+                    </div>
                 </div>
               )}
+
+
               {criteriaPage === 4 && (
                 <div className='page4'>
-                  <div>
+                  <div className='page4header'>
                     <h1>What we Offer:</h1>
-                  </div>
-                  {offers.map((offer, idx) => (
-                    <div className='offers' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
-                      <input
-                        value={offer}
-                        onChange={(e) => handleOfferChange(idx, e.target.value)}
-                      />
-                    </div>
-                  ))}
-                  <div className='addremovewrap'>
-                    <div className='addbuttonwrap'>
-                      <a onClick={handleAddOffer}>+</a>
-                    </div>
-                    {offers.length > 1 && (
-                      <div className='removebuttonwrap'>
-                        <a onClick={handleRemoveOffer}>-</a>
+                      <div className='addremovewrap'>
+                        <div className='addbuttonwrap'>
+                          <a onClick={handleAddOffer}>+</a>
+                        </div>
+                        {offers.length > 1 && (
+                          <div className='removebuttonwrap'>
+                            <a onClick={handleRemoveOffer}>-</a>
+                          </div>
+                        )}
                       </div>
-                    )}
                   </div>
+                    <div className="responsibility-wrapper">
+                      {offers.map((offer, idx) => (
+                        <div className='offers' key={idx} style={{ display: 'flex', alignItems: 'center' }}>
+                          <input
+                            value={offer}
+                            onChange={(e) => handleOfferChange(idx, e.target.value)}
+                          />
+                        </div>
+                      ))}
+                      </div>
                 </div>
               )}
+
+
               {criteriaPage === 5 && (
                 <div className='page5'>
-                  <div className="scrollable-content">
-                    <h1>Customize Criteria</h1>
+                  <div className='page5header'>
+                        <h1>Customize Criteria</h1>
+                    </div>
+
                     <div className="keywords-textarea">
                       <label>Keywords to Search in Resume</label>
                       <div className="keywords-container">
@@ -647,8 +745,9 @@ function SetCriteria() {
                         placeholder="Enter keywords separated by space or comma"
                       />
                     </div>
+
                     <div className="graded-qualifications">
-                      <h2>Graded Qualifications</h2>
+                      <h1 style={{marginTop: '10px'}}>Graded Qualifications</h1>
                       <div className="attribute-header">
                         <label>Attribute and Points (out of 20)</label>
                       </div>
@@ -683,83 +782,90 @@ function SetCriteria() {
                         </div>
                       ))}
                     </div>
+
                     <div className="threshold">
-                      <label>Threshold</label>
+                      <label style={{marginLeft: '20px'}}>Threshold</label>
+                      <div>
                       <input
                         type="number"
                         value={threshold}
                         onChange={(e) => setThreshold(e.target.value)}
                         placeholder="Enter threshold score (0-15)"
                       />
+                      </div>
                     </div>
                     <div className="button-container">
 
                     </div>
                   </div>
-                </div>
+   
               )}
+
+
               {criteriaPage === 6 && (
                 <div className='page6'>
-                  <div className="criteriajobcard">
-                    <h2 style={{ margin: '20px 20px 16px 20px' }}>
+                  <div className="criteriajobcardHeader">
+                    <h2 >
                       {jobData.title || 'Job Title'}
                     </h2>
-                    <div className='tags' style={{ marginBottom: '16px',marginLeft:"25px" }}>
+                </div>
+                    <div className='tags1' >
                       <a>{jobData.department || 'Department'}</a>
                       <a>{jobData.employmentType || 'Employment Type'}</a>
                       <a>{jobData.workSchedule || 'Work Schedule'}</a>
                       <a>{jobData.workSetup || 'Work Setup'}</a>
                     </div>
-                    <div style={{marginLeft:"30px"}}>
-                      <div style={{ marginBottom: '16px' }}>
-                        <b>Description:</b>
-                        <div>{jobData.description || 'No description'}</div>
-                      </div>
-                      <div style={{ marginBottom: '16px' }}>
-                        <b>Key Responsibilities:</b>
+                    
+                    <div className =  "AddJobFinalContent">
+                        <p><b>Description:</b></p>   
+                        <p>{jobData.description || 'No description'}</p>          
+                        <p><b>Key Responsibilities:</b></p>  
                         <ul>
                           {keyResponsibilities.filter(Boolean).map((item, i) => (
                             <li key={i} style={{listStyle:"none"}}>{item}</li>
                           ))}
                         </ul>
-                      </div>
-                      <div style={{ marginBottom: '16px' }}>
-                        <b>Qualifications:</b>
+                        <p><b>Qualifications:</b></p>      
                         <ul>
                           {qualifications.filter(Boolean).map((item, i) => (
                             <li key={i} style={{listStyle:"none"}}>{item}</li>
                           ))}
                         </ul>
-                      </div>
-                      <div>
-                        <b>What we Offer:</b>
+                        <p><b>What we Offer:</b></p> 
                         <ul>
                           {offers.filter(Boolean).map((item, i) => (
                             <li key={i} style={{listStyle:"none"}}>{item}</li>
                           ))}
                         </ul>
-                      </div>
+
                       <button
                         onClick={handleSubmit}
-                        style={{ marginTop: '16px' }}
+                       
                         disabled={isSubmitting}
                         className='submitjob'
                       >
                         {isSubmitting ? 'Submitting...' : 'Submit Job'}
                       </button>
                     </div>
-                  </div>
+                  
                 </div>
-              )}
+              )}           
+             
             </div>
-            <div className="criterianavigate">
-              <ul><a onClick={handlePrevPage} className='left'></a></ul>
-              <ul><a onClick={handleNextPage} className='right'></a></ul>
-            </div>
-          </div>
+ 
+                    <div className="criterianavigate">
+                        <ul><a onClick={handlePrevPage} className='left'></a></ul>
+                        <ul><a onClick={handleNextPage} className='right'></a></ul>
+                    </div>
+ 
+ </div>
+ </div>
+           </div>
         </>
+
       )}
     </>
+
   );
 }
 

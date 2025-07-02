@@ -1,17 +1,15 @@
 import React from 'react'
 import './userProfile.css'
-import {Link, useMatch, useResolvedPath} from "react-router-dom"
+import {Link, useMatch, useResolvedPath, useNavigate} from "react-router-dom"
 
 function Navbar() {
+  const navigate = useNavigate();
+
+  
   return (
   <>
     <nav className="nav">
-    <h1>Collectius</h1>
-      <ul>
-      <CustomLink to ='/Help'>Help</CustomLink>
-      <CustomLink to ='/About'>About</CustomLink>
-      <CustomLink to ='#'>Slider</CustomLink>
-      </ul>
+    <a>Collectius</a>
    </nav>
     </>
   )

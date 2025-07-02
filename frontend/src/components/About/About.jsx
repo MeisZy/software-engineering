@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useNavigate } from "react";
 import "./About.css";
-import Navbar from "../Navbar.jsx";
+import Navbar from "./Navbar.jsx";
 import "./MultiContainerSlider.css";
 
 // Importing images for the carousel Board Members

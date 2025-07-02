@@ -1,6 +1,24 @@
 .criteria {
   margin-top: 10vh;
-  margin-left: 5vw;
+  margin-right: 2vw;
+  display: flex;               /* Enables flexbox */
+  justify-content: flex-end;  /* Pushes content (like buttons) to the right */
+}
+
+.criteria a {
+  width: 130px;
+  height: 30px;
+  background-color: #A2E494;
+  font-weight: 400;
+  border: 1px solid black;
+  border-radius: 3vh;
+  font-size: 20px;
+  margin: 10px;
+  padding: 10px;
+  display: flex;              /* Add this to enable flexbox */
+  justify-content: center;   /* Center text horizontally */
+  align-items: center;       /* Center text vertically */
+  text-align: center;        /* Optional fallback */
 }
 
 .jobswrapper {
@@ -9,18 +27,9 @@
   gap: 25px;
   padding: 25px;
   margin-left: 1vw;
+  margin-top: -20px;
 }
-.criteria a {
-  width: 200px;
-  height: 50px;
-  background-color: #A2E494;
-  font-weight: 400;
-  border: 1px solid black;
-  border-radius: 3vh;
-  font-size: 20px;
-  margin: 10px;
-  padding: 10px;
-}
+
 
 .jobinstancedarkgreen {
   border: 1px solid black;
@@ -55,68 +64,174 @@ textarea {
   cursor: pointer;
 }
 
-.criteriascreen {
+/*Updated July 1, 2025*/
+
+.criteriascreen-wrapper {
   position: fixed;
-  top: 50%;
+  top: 16%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #13714C;
-  padding: 40px 60px;
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 576px;
-  height: 576px;
-  z-index: 3;
-  border: 2px solid black;
+  transform: translateX(-50%);
+  height: 70%;
+  max-height: 100vh;
+  width: 800px;
+  background: #13714C;
+  border-radius: 25px;
+  z-index: 10;
+  border: 1px solid black;
+  overflow: hidden;
 }
 
-.page1 {
+.criteriascreen {
+  background: white;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border: 1px solid black;
+  position: relative;
+  border-radius: 25px;
+  margin-top: 0;
+  margin-left: 0;
+  width: 98%;
+  height: 96%;
+  max-height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.criteriascreencontent {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-top: -20px;
+  margin-left: 0;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
   width: 100%;
+  height: 87%;
+  max-height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 0 16px; /* Reduced horizontal padding */
+  text-align: justify;
+  scrollbar-color: #13714C #A2E494;
 }
 
-.page1 textarea {
-  height: 150px;
+.criteriascreencontent label {
+  width: 300px;
+  font-size: 20px;
+  font-weight: 600;
+  color: black;
+  height: 50px;
+  display: flex;
+  align-items: center;
+}
+
+.AddJob-Header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 25px;
+  width: 100%;
+  padding: 19px 0;
+  background-color: #A2E494;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
+  margin: 0 0 16px 0;
+}
+
+.AddJob-Header h2 {
+  font-size: 20px;
+  margin-left: 30px;
+  padding: 0;
+  font-weight: 600;
 }
 
 .rowcomponent {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: -10px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+  width: 100%; /* Make it responsive */
+  max-width: 680px;
+  margin-left: 0;
+  box-sizing: border-box;
 }
 
-.rowcomponent select {
+.rowcomponent input[type="text"] {
+  flex: 1;
+  height: 20px;
+  width: 100%;
+  font-size: 1rem;
+  border: none;
+  background: white;
+  padding: 8px 12px;
+  margin: 0; /* Reset margins */
+  outline: none;
+  box-shadow: none;
+  box-sizing: border-box;
+}
+
+.page1,
+.page2,
+.page3,
+.page4,
+.page5,
+.page6 {
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
   width: 100%;
-  border-radius: none;
+  max-width: 680px;
+  padding: 20px;
 }
 
-.rowcomponent,
-.rowcomponent select,
-.rowcomponent input,
-.rowcomponent textarea {
-  border-radius: 0 !important;
-}s /*this s is keeping the whole thing together. DO NOT REMOVE THIS*/
+.page1 label {
+  font-size: 20px;
+  font-weight: 600;
+  color: black;
+  height: 50px;
+  width: 200px;
+  display: flex;
+  align-items: center;
+}
 
-.rowcomponent input,
-.rowcomponent textarea {
-  flex: unset;
-  width: 300px;
+.page1 textarea {
+  width: 100%;
+  max-width: 680px;
+  height: 230px;
   font-size: 16px;
+  padding: 8px;
+  border: 1px solid black;
+  border-radius: 6px;
+  resize: vertical;
+  background: none;
+  margin-top: 10px;
   margin-right: 0;
+  margin-left: 0;
+  outline: none;
+  box-shadow: none;
+  box-sizing: border-box;
+
+  /* Scrollbar styles */
+  scrollbar-width: thin;
+  scrollbar-color: #a2e494 #13714C;
 }
 
-.rowcomponent option:hover {
-  background: #13714C;
-  color: #fff;
+.page1 textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.page1 textarea::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.page1 textarea::-webkit-scrollbar-thumb {
+  background-color: #a2e494;
+  border-radius: 4px;
+  border: 2px solid #f0f0f0;
 }
 
 .qualificationswrapper {
@@ -133,53 +248,33 @@ textarea {
   padding: 0;
 }
 
-.page1 label {
-  font-size: 20px;
-  font-weight: 600;
-  color: white;
-  height: 50px;
-  width: 200px;
-  display: flex;
-  align-items: center;
-}
 
-.rowcomponent input {
-  flex: 1;
-  height: 20px;
-  font-size: 16px;
-  padding: 8px 12px;
-  margin-right: 0;
-}
-
-.criteriascreencontent {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 600px;
-  height: 500px;
-}
-
-.criteriascreencontent label {
-  width: 300px;
-  font-size: 20px;
-  font-weight: 600;
-  color: white;
-  height: 50px;
-  display: flex;
-  align-items: center;
-}
 
 .keywords-textarea {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 90%;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;           
+  align-items: stretch;     
+  box-sizing: border-box;
 }
 
-.keywords-textarea label {
-  font-size: 18px;
-  font-weight: 600;
-  color: white;
+
+.keywords-textarea textarea {
+  width: 100%;               
+  height: 230px;
+  font-size: 16px;
+  padding: 8px;
+  border: 1px solid black;
+  border-radius: 6px;
+  resize: vertical;
+  background: none;
+  margin: 10px 0;
+  outline: none;
+  box-shadow: none;
+  box-sizing: border-box;
 }
 
 .keywords-container {
@@ -188,40 +283,35 @@ textarea {
   overflow-y: auto;
   padding: 8px;
   background-color: white;
-  border: 2px solid black;
+  border: 1px solid black;
   border-radius: 6px;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-}
-
-.keywords-textarea textarea {
   width: 100%;
-  height: 100px;
-  font-size: 16px;
-  padding: 8px;
-  border: 2px solid black;
-  border-radius: 6px;
-  background: white;
-  resize: vertical;
+  box-sizing: border-box;
 }
 
 .criterianavigate {
   z-index: 2;
   position: sticky;
+  width: fit-content;
+  margin: 0 auto;  /* This horizontally centers it */
+  margin-bottom: 10px;
 }
 
 .criterianavigate ul {
   padding: 0;
-  margin-top: 25px;
+  margin-top: 0px;
+  margin-bottom: 10px;
   margin-left: 20px;
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background-color: black;
+  background-color: #13714C;
 }
 
 .criterianavigate a {
@@ -233,82 +323,100 @@ textarea {
 
 .criterianavigate ul:hover .left,
 .criterianavigate ul:hover .right {
-  border-right-color: #13714C;
-  border-left-color: #13714C;
+  border-right-color: white;
+  border-left-color: white;
 }
 
 .criterianavigate .left {
-  border-top: 15px solid transparent;
-  border-right: 25px solid #A2E494;
-  border-bottom: 15px solid transparent;
+  border-top: 10px solid transparent;
+  border-right: 20px solid #A2E494;
+  border-bottom: 10px solid transparent;
 }
 
 .criterianavigate .right {
-  border-top: 15px solid transparent;
-  border-left: 25px solid #A2E494;
-  border-bottom: 15px solid transparent;
+  border-top: 10px solid transparent;
+  border-left: 20px solid #A2E494;
+  border-bottom: 10px solid transparent;
 }
 
-.page5 h1 {
-  color: white;
-  font-size: 32px;
-  font-weight: 600;
+
+
+.graded-qualifications label,
+.page2header,
+.page3header,
+.page4header,
+.page5header,
+.criteriajobcardHeader {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100%;
+  max-width: 650px;
+  margin-bottom: 16px;
+  flex-wrap: nowrap !important;
+}
+
+.page2header h1,
+.page3header h1,
+.page4header h1,
+.page5header h1 ,
+.page5 h1,
+.criteriajobcardHeader h2{
   margin: 0;
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background-color: #13714C;
-}
-
-.page5 h2 {
-  color: white;
-  font-size: 24px;
-  font-weight: 600;
-  margin: 0 0 12px 0;
-}
-
-.page2 h1,
-.page3 h1,
-.page4 h1,
-.page6 h1 {
-  position: sticky;
-  left: 0;
-  color: white;
-  margin: 0;
-  padding: 0;
-  z-index: 2;
-  font-size: 36px;
-  font-weight: 600;
-  top: 20px;
-}
-
-.page2 input {
-  width: 200px;
-  border: 3px solid black;
-}
-
-.addbuttonwrap {
-  margin: 10px;
-  width: 25px;
-  height: 25px;
-  border: 1px solid black;
-  background-color: black;
-  border-radius: 50%;
-}
-
-.addbuttonwrap a {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  cursor: pointer;
   font-size: 20px;
+  font-weight: 600;
+  flex-shrink: 0;
+  color: black;
+  position: sticky;
+  z-index: 2;
+  text-align: left;      /* explicitly align text left */
+  align-self: flex-start; /* place the h1 at the left in the flex container */
+  width: 100%;  
+}
+
+.addremovewrap {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 10px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.addbuttonwrap,
+.removebuttonwrap {
+  display: inline-flex; /* Ensure wrapper divs don’t disrupt flex layout */
+  align-items: center;
+}
+
+.addremovewrap a {
+  display: inline-block;
+  font-size: 20px;
+  font-weight: bold;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  background-color: #A2E494;
+  color: #13714C;
+  border-radius: 50%;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
+.responsibility-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;  /* <-- Horizontally centers the children */
+  width: 100%;
 }
 
 .keyresponsibilities,
 .qualifications,
 .offers,
-.gradedqualifications {
+.gradedqualifications,
+.threshold {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -320,93 +428,65 @@ textarea {
 .keyresponsibilities input,
 .qualifications input,
 .offers input,
-.gradedqualifications input {
-  height: 32px;
-  font-size: 16px;
-  border: 2px solid black;
-  width: 96%;
+.gradedqualifications input
+ {
+  height: 12px;
+  border: 2px solid rgba(0, 0, 0, 0.6);
   resize: none;
+  flex: 1;
+  width: 600px;
+  font-size: 1rem;
+  background: white;
+  padding: 0.4rem 0.6rem;
+  margin-left: 60px; 
+  box-shadow: none;
+  box-sizing: border-box;
 }
 
-.removebuttonwrap {
-  margin: 10px;
-  width: 25px;
-  height: 25px;
-  border: 1px solid black;
-  background-color: black;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.removebuttonwrap a {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  cursor: pointer;
-  font-size: 20px;
-  text-decoration: none;
-}
-
-.addremovewrap {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.page1,
-.page2,
-.page3,
-.page4,
-.page6 {
-  padding: 20px;
-  width: 800px;
-  height: 528px;
-  margin: 0;
-  left: 0;
-}
-
-.page5 {
-  padding: 20px;
-  width: 512px;
-  height: 496px;
-  display: flex;
-  flex-direction: column;
-}
-
-.scrollable-content {
-  overflow-y: auto;
-  min-height:512px;
-  max-height: 460px;
-  width:560px;
-  padding-right: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
 
 .graded-qualifications {
+  gap: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  width: 100%;
+  max-width: 680px;
+  padding: 20px;
 }
 
-.attribute-header {
-  display: grid;
-  gap: 20px;
-}
 
-.attribute-header label {
+.keywords-textarea label,
+.attribute-header label,
+.threshold label
+{
   font-size: 18px;
   font-weight: 600;
-  color: white;
+  color: black;
+  margin-bottom: -20px;
+ 
 }
 
-.attribute-row {
+.threshold {
+display: grid;
+margin-left: 0px;
+margin-top: -15px;
+
+}
+
+.threshold input[type="number"] {
+  height: 32px;
+  font-size: 16px;
+  border: 1px solid black;
+  border-radius: 6px;
+  text-align: center;
+  padding: 0 8px;
+  width: 580px;
+  margin-left: 20px;
+  margin-top: -20px;
+  margin-bottom: 30px;
+}
+
+.attribute-row
+ {
   display: grid;
   grid-template-columns: 1fr 80px 32px 32px;
   gap: 12px;
@@ -416,7 +496,7 @@ textarea {
 .attribute-row input[type="text"] {
   height: 32px;
   font-size: 16px;
-  border: 2px solid black;
+  border: 1px solid black;
   border-radius: 6px;
   padding: 0 8px;
 }
@@ -424,10 +504,59 @@ textarea {
 .attribute-row input[type="number"] {
   height: 32px;
   font-size: 16px;
-  border: 2px solid black;
+  border: 1px solid black;
   border-radius: 6px;
   text-align: center;
   padding: 0 8px;
+}
+
+
+
+.tags1
+{
+  display: flex;                 /* Lay out children in a row */
+  flex-direction: row;           /* Explicit row layout */
+  gap: 12px;                     /* Space between items */
+  flex-wrap: nowrap;             /* Prevent wrapping, or change to wrap if you want */
+  margin-left: 25px;
+  margin-bottom: 16px;
+  justify-content: center;       /* Center horizontally in parent */
+  align-items: center;           /* Center vertically */
+}
+
+.tags1 a {
+  background-color: white;
+  box-shadow: 2px 2px 6px #A2E494;
+  border: 1px solid #13714C;
+  border-radius: 5px;
+  color: black;
+  font-size: 13px;
+  width: 120px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0;                     /* Remove margin-top to keep row consistent */
+}
+
+.AddJobFinalContent p,
+.AddJobFinalContent ul,
+.AddJobFinalContent li {
+  font-size: 15px;
+  line-height: 1.6; /* or use 24px for fixed size */
+  padding-left: 16px; /* for indentation if needed */
+  
+}
+
+.AddJobFinalContent ul {
+  list-style-position: inside;
+  padding-left: 16px;
+}
+
+.AddJobFinalContent li {
+  list-style: circle;
+  padding-left: 16px;
 }
 
 .add-button,
@@ -445,32 +574,7 @@ textarea {
   align-items: center;
 }
 
-.threshold {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  justify-content: center;
-  align-items: center;
-}
 
-.threshold label {
-  font-size: 18px;
-  font-weight: 600;
-  color: white;
-  display:flex;
-  justify-content: center;
-  text-align:center;
-}
-
-.threshold input {
-  width: 100px;
-  height: 32px;
-  font-size: 16px;
-  border: 2px solid black;
-  border-radius: 6px;
-  padding: 0 8px;
-  text-align:center;
-}
 
 .button-container {
   display: flex;
@@ -488,38 +592,21 @@ textarea {
   cursor: pointer;
 }
 
-.criteriajobcard {
-  width: 672px;
-  height: 632px;
-  border: 1px solid black;
-  margin: 0 0 25px 0;
+.submitjob {
+  background: #A2E494;
+  color: #13714C;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
   font-size: 16px;
-  background-color: #A2E494;
-  overflow: hidden;
-  border-radius: 25px;
-  z-index: 2;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.criteriajobcard h2 {
-  background-color: #13714C;
-  width: 250px;
-  color: white;
-  padding: 20px;
-  top: 0;
-  left: 0;
-}
-
-
-
-.submitjob{
-    background-color: #13714C;
-    padding:5px;
-    box-shadow: none;
-    color:white;
-    border-radius:2px;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;  
+  position: relative;
+  box-shadow: 2px 2px 6px rgba(19, 113, 76, 0.6);  /* shadow in buttons*/
 }
 
 .jobinstancedarkgreen {
@@ -682,12 +769,10 @@ textarea {
 .jobdetailscontent ul,
 .jobdetailscontent li {
   font-size: 15px;
-  line-height: 1.6; /* or use 24px for fixed size */
+  line-height: 2; /* or use 24px for fixed size */
   padding-left: 16px; /* for indentation if needed */
   
 }
-
-
 
 .jobdetailscontent  ul {
   list-style-position: inside;
@@ -712,7 +797,6 @@ textarea {
   margin-left: 30px; /* Remove default margins from h3 */
   padding: 0%;
   font-weight: 600;
-  color:black;
 
 }
 

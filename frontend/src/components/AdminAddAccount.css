@@ -202,14 +202,14 @@ nav {
     font-size: 24px;
 }
 
-.registrationform {
+.addregistrationform {
     position: relative;
     background-color: #A2E494;
     margin: 0px auto 0;
     width: 90%;
     max-width: 1200px;
     padding: 30px;
-    height:576px;
+    height:720px;
 }
 
 h4 {

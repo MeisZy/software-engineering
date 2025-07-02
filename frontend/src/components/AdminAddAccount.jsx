@@ -87,7 +87,7 @@ function AdminAddAccount() {
         <li onClick={handleAdminMaintainance}>Back</li>
       </div>
       <div className='maintainancerightcomp'>
-        <form className="registrationform" onSubmit={handleSubmit}>
+        <form className="addregistrationform" onSubmit={handleSubmit}>
           <h4 style={{ color: "black" }}>Add User Account</h4>
           <div className="formcaption">
             <p>Add an Applicant's Detail</p>

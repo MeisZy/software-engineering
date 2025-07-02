@@ -684,6 +684,7 @@ app.post('/apply', async (req, res) => {
       jobApplicant &&
       jobApplicant.positionAppliedFor.some(pos => pos.jobTitle === jobTitle)
     ) {
+      alert('You have already applied for this job' )
       return res.status(400).json({ message: 'You have already applied for this job' });
     }
 
@@ -732,7 +733,7 @@ app.post('/apply', async (req, res) => {
     // Improved user notification message
     const userMsg =
       status === 'Accepted'
-        ? `We're delighted to inform you that your application status for "${jobTitle}" has been set to ${status}.`
+        ? `We're delighted to inform you that your application status for "${jobTitle}" has been set to ${status}. Please stand by for further instructions.`
         : `We regret to inform you that your application status for "${jobTitle}" has been set to ${status}.`;
 
     // Save notification for user

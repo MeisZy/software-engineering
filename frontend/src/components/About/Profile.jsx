@@ -176,11 +176,10 @@ function Profile() {
                           readOnly={!isEditing[field]}
                           style={{ 
                             padding: '5px', 
-                            border: isEditing[field] ? '1px solid #ccc' : 'none', 
+                            border: isEditing[field] ? '2px solid black' : 'none', 
                             background: isEditing[field] ? '#fff' : 'transparent',
                             marginLeft: '10px',
-                            width: '120px',
-                            border:"2px solid black"
+                            width: '120px', 
                           }}
                         />
                       </div>
