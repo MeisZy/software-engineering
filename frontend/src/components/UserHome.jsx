@@ -95,7 +95,7 @@ function UserHome() {
   };
 
   const handleFAQs = () => {
-    navigate('/help');
+    navigate('/questions');
   };
 
     const handleAbout = () => {

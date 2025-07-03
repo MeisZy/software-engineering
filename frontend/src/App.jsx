@@ -13,7 +13,6 @@
   import Help from './components/Help.jsx';
   import NewPass from './components/NewPass.jsx';
   import About from './components/About/About.jsx';
-  import GoogleRegistration from './components/GoogleRegistration.jsx';
   import Profile from './components/About/Profile.jsx';
   import UserManagement from './components/UserManagement.jsx';
   import HelpAdmin from './components/HelpAdmin.jsx';
@@ -37,7 +36,6 @@
             <Route path="/help" element={<Help />} />
             <Route path="/newpass" element={<NewPass />} />
             <Route path="/about" element={<About />} />
-            <Route path="/googleregistration" element={<GoogleRegistration />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/usermanagement" element={<UserManagement />} />
             <Route path="/helpadmin" element={<HelpAdmin />} />

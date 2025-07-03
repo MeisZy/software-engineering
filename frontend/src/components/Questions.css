@@ -76,3 +76,12 @@
   overflow-y: auto;
   max-height: 70vh; /* Limit height for scrolling */
 }
+
+.text-body li{
+  margin-left:20px;
+  font-size:20px;
+}
+
+.sectiontext p{
+  margin:10px;
+}

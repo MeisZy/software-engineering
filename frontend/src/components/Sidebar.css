@@ -176,9 +176,13 @@ aside button.selected {
 }
 
 .sidebarwrap {
-  height: 100vh;         /* Full viewport height */
+  height: 100%;         /* Full viewport height */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   margin-left: -2%;
+}
+
+.sidebarwrap div{
+  margin-top:40px;
 }

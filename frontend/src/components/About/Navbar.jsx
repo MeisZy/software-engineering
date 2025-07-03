@@ -7,9 +7,7 @@ function Navbar() {
   <>
     <nav className="nav">
     <h1>Collectius</h1>
-      <ul>
-      <CustomLink to ='/Help'>Help</CustomLink>
-      <CustomLink to ='/About'>About</CustomLink>
+      <ul>  
       </ul>
    </nav>
     </>

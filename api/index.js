@@ -684,7 +684,6 @@ app.post('/apply', async (req, res) => {
       jobApplicant &&
       jobApplicant.positionAppliedFor.some(pos => pos.jobTitle === jobTitle)
     ) {
-      alert('You have already applied for this job' )
       return res.status(400).json({ message: 'You have already applied for this job' });
     }
 
