@@ -1,0 +1,57 @@
+.reportscomponents{
+    width: 100%;
+    display:flex;
+    height: 100vh;
+    box-sizing: border-box;
+    
+}
+
+.statsboard{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+}
+
+nav a:hover{
+    text-decoration:none;
+}
+
+.statswrap{
+    width:86.4vw;
+    min-height:600px;
+    border:1px solid black;
+    margin-top:10vh;
+    margin-left:5vw;
+    display:flex;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.statsinstance {
+    width: 240px;
+    height: 256px;
+    border: 1px solid black;
+    margin: 25px;
+    font-size: 16px;
+    background-color: #A2E494;
+    overflow: hidden;
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Ensure space between children */
+    position: relative; 
+    z-index: 1; 
+}
+
+.gridoption {
+    background-color: #f0f0f0; 
+    border: 1px solid #ccc;
+    padding: 20px;         
+    text-align: center;        
+    border-radius: 8px;    
+    display:flex;    
+    margin-top: auto; /* Pushes it to the bottom */
+}

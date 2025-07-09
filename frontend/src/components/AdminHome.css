@@ -1230,7 +1230,7 @@ td:nth-child(3) {
     display: flex;
     justify-content: center;
     margin-right: 30px;
-    margin-top: -10px;      /* Increase this value as needed */
+    margin-top: -40px;      /* Increase this value as needed */
     position: relative;
   }
 

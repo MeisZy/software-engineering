@@ -1395,8 +1395,40 @@ app.get('/applied-jobs/:email', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+const getJobStatistics = async () => {
+  try {
+    // Fetch all job openings
+    const jobs = await Jobs.find(); // This should retrieve all jobs
+
+    for (const job of jobs) {
+      // Count applicants for this job
+      const applicants = await JobApplicants.find({
+        'positionAppliedFor.jobTitle': job.title,
+      });
+
+      const totalApplicants = applicants.length;
+      const acceptedCount = applicants.filter(applicant =>
+        applicant.positionAppliedFor.some(pos => pos.jobTitle === job.title && pos.status === 'Accepted')
+      ).length;
+      const rejectedCount = applicants.filter(applicant =>
+        applicant.positionAppliedFor.some(pos => pos.jobTitle === job.title && pos.status === 'Rejected')
+      ).length;
+
+      // Log the statistics
+      console.log(`Job Title: ${job.title}`);
+      console.log(`Total Applicants: ${totalApplicants}`);
+      console.log(`Accepted: ${acceptedCount}`);
+      console.log(`Rejected: ${rejectedCount}`);
+      console.log('-----------------------------------');
+    }
+  } catch (err) {
+    console.error('Error fetching job statistics:', err);
+  }
+};
+
 
 // Start server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+  getJobStatistics();
 });

@@ -72,7 +72,7 @@ function Registration() {
           <a>Collectius</a>
         </div>
       </nav>
-      <form className="registrationform" onSubmit={handleSubmit} style={{marginTop:"500px;"}}>
+      <form className="registrationform" onSubmit={handleSubmit}>
         <h4>Registration</h4>
         <div className="formcaption">
           <p>Enter your details to register.</p>

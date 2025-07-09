@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Logo from './images/logo.png';
 import Notification from './images/notification.png';
-import Details from './assets/jobdetailsimg.png';
 import './AdminHome.css';
 
 function AdminHome() {
@@ -287,7 +286,7 @@ function AdminHome() {
 
   const handleLogout = () => navigate('/');
   const handleSetCriteria = () => navigate('/setcriteria');
-  const handleFAQs = () => navigate('/helpAdmin');
+  const handleFAQs = () => navigate('/questions');
   const handleMaintainance = () => navigate('/adminmaintainance');
 
   const handleCheckboxChange = (id, setState, state) => {
@@ -304,6 +303,10 @@ function AdminHome() {
     setShowSuggestions(value.length > 0);
     setHighlightedIndex(-1);
   };
+
+  const handleAnalytics = () => {
+    navigate('/analytics')
+  }
 
   const handleSuggestionClick = (suggestion) => {
     setSearchQuery(suggestion.value);
@@ -421,6 +424,7 @@ function AdminHome() {
           <a onClick={handleSetCriteria}>Manage Jobs</a>
           <a onClick={() => setShowMessageForm(true)}>Send Message</a>
           <a onClick={handleShowUserLogs}>User Logs</a>
+          <a onClick={handleAnalytics}>Weekly Reports</a>
         </div>
         <div className="admin-nav-right">
           <div style={{ position: 'relative', display: 'inline-block' }}>
@@ -1061,7 +1065,7 @@ function AdminHome() {
                         <table style={{ width: '600px', borderCollapse: 'collapse', fontSize:"10px" ,textAlign:"center"}}>
                           <thead>
                             <tr>
-                              <th style={{padding:"10px", fontSize:"10px"}}>Email</th>
+                              <th style={{padding:"10px", fontSize:"10px"}}>Email</th>  
                               <th style={{padding:"10px", fontSize:"10px"}}>Date (dd/mm/yyyy)</th>
                               <th style={{padding:"10px", fontSize:"10px"}}>Type</th>
                               <th style={{padding:"10px", fontSize:"10px"}}>Action</th>
@@ -1070,9 +1074,9 @@ function AdminHome() {
                           <tbody>
                             {interviewList.map((iv, idx) => (
                               <tr key={iv._id || idx}>
-                                <td style={{fontSize:"16px"}}>{iv.email}</td>
-                                <td style={{fontSize:"16px"}}>{iv.date ? new Date(iv.date).toLocaleString() : ''}</td>
-                                <td style={{fontSize:"16px"}}>{iv.type}</td>
+                                <td style={{fontSize:"14px"}}>{iv.email}</td>
+                                <td style={{fontSize:"14px"}}>{iv.date ? new Date(iv.date).toLocaleString() : ''}</td>
+                                <td style={{fontSize:"14px"}}>{iv.type}</td>
                                 <td>
                                   <button
                                     onClick={() => handleDeleteInterview(iv._id)}

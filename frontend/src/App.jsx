@@ -18,6 +18,7 @@
   import HelpAdmin from './components/HelpAdmin.jsx';
   import AdminAddAccount from './components/AdminAddAccount.jsx';
   import DataBackup from './components/DataBackup.jsx'
+  import Analytics from './components/Analytics.jsx';
   import './App.css';
 
   function App() {
@@ -41,6 +42,7 @@
             <Route path="/helpadmin" element={<HelpAdmin />} />
             <Route path="/adminaddaccount" element={<AdminAddAccount/>}/>
             <Route path="/databackup" element={<DataBackup/>}/>
+            <Route path="/analytics" element={<Analytics/>}/>
           </Routes>
       </>
     );

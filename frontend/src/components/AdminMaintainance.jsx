@@ -54,7 +54,6 @@ function AdminMaintainance() {
           <li onClick={handleUserManagement}>User Management</li>
           <li>User Support</li>
           <li onClick={handleDataBackup}>Data Backup</li>
-          <li onClick={handleAdminAddAccount}>Add User</li>
         </div>
 
         {/*Updated June 29, 2025*/}
