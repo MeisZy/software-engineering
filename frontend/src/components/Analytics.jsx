@@ -15,9 +15,7 @@ function Analytics() {
     navigate('/adminhome');
   };
 
-  const reports = [
-    "Job Acceptance Rate"
-  ];
+  const reports = ["Job Acceptance Rate"];
 
   const handleTestClick = () => {
     setIsModalOpen(true);
@@ -76,7 +74,7 @@ function Analytics() {
               <div key={index} className='statsinstance'>
                 <div className='gridoption'>
                   {report} Report
-                  <button className='viewbutton' onClick={handleTestClick}>test</button>
+                  <button className='viewbutton' onClick={handleTestClick}>View</button>
                 </div>
               </div>
             ))}
@@ -86,8 +84,12 @@ function Analytics() {
 
       {isModalOpen && (
         <div className='modal'>
-          <div className='modal-content' style={{ maxHeight: '80vh', overflowY: 'auto' }}>
-            <span><h1 style={{ color: "black" }}>Job Acceptance Reports</h1></span>
+          <div className='modal-content'>
+            <span style={{ padding: 0, margin: 0 }}>
+              <h1 style={{ color: "black", margin: 0, padding: "10px", backgroundColor: "#A2E494", borderRadius: "8px 8px 0 0" }}>
+                Job Acceptance Reports
+              </h1>
+            </span>
             <span className='close' onClick={closeModal}>&times;</span>
             {loading ? (
               <p>Loading job statistics...</p>
@@ -95,19 +97,17 @@ function Analytics() {
               <p style={{ color: 'red' }}>{error}</p>
             ) : (
               jobStatistics.map((job) => (
-                <div key={job.title}>
+                <div key={job.title} style={{ marginBottom: '30px' }}>
                   <h3>{job.title}</h3>
                   <p>Accepted: {job.accepted}</p>
                   <p>Rejected: {job.rejected}</p>
-                  <PieChart
-                    series={[
-                      { data: [job.accepted, job.rejected] }
-                    ]}
-                    height={290}
-                    xAxis={[
-                      { data: ['Accepted', 'Rejected'] }
-                    ]}
-                  />
+                  <div style={{ marginTop: '20px' }}>
+                    <PieChart
+                      series={[{ data: [job.accepted, job.rejected] }]}
+                      height={290}
+                      xAxis={[{ data: ['Accepted', 'Rejected'] }]}
+                    />
+                  </div>
                 </div>
               ))
             )}
