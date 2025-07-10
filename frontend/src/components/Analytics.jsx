@@ -19,7 +19,7 @@ function Analytics() {
     navigate('/setcriteria')
   }
 
-  const reports = ["Job Acceptance Rate","Another one"];
+  const reports = ["Job Acceptance Rate"];
 
   const handleTestClick = () => {
     setIsModalOpen(true);
@@ -78,11 +78,12 @@ function Analytics() {
       </nav>
       <div className='reportscomponents'>
         <div className='statsboard'>
-          <div className='statswrap'>
+          <div className='statswrap'> 
             {reports.map((report, index) => (
               <div key={index} className='statsinstance'>
+                <h2>{report} Report</h2>
                 <div className='gridoption'>
-                  {report} Report
+                  
                   <button className='viewbutton' onClick={handleTestClick}>View</button>
                 </div>
               </div>

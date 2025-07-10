@@ -44,6 +44,13 @@ nav a:hover {
     z-index: 1;
 }
 
+.statsinstance h2 {
+    margin: 10px;
+    padding:20px;
+    font-size: 20px;
+    color: black;
+}
+
 .gridoption {
     background-color: #f0f0f0;
     border: 1px solid #ccc;
@@ -55,8 +62,8 @@ nav a:hover {
 }
 
 .viewbutton {
-    margin-left: auto;
     margin: 10px;
+    margin-left:50px;
     padding: 10px 20px;
     border-radius: 10px;
 }

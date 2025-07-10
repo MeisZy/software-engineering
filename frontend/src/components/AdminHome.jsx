@@ -424,7 +424,7 @@ function AdminHome() {
           <a onClick={handleSetCriteria}>Manage Jobs</a>
           <a onClick={() => setShowMessageForm(true)}>Send Message</a>
           <a onClick={handleShowUserLogs}>User Logs</a>
-          <a onClick={handleAnalytics}>Weekly Reports</a>
+          <a onClick={handleAnalytics}>Statistics</a>
         </div>
         <div className="admin-nav-right">
           <div style={{ position: 'relative', display: 'inline-block' }}>
