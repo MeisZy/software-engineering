@@ -21,7 +21,6 @@ nav a:hover {
 .statswrap {
     width: 86.4vw;
     min-height: 600px;
-    border: 1px solid black;
     margin-top: 10vh;
     margin-left: 5vw;
     display: flex;
@@ -66,6 +65,19 @@ nav a:hover {
     cursor: pointer;
 }
 
+.redirectcriteria{
+    color: #13714C;
+
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 24px;
+    margin: 20px;
+}
+
+.redirectcriteria:hover{
+    text-decoration: underline;
+}
+
 .modal {
     display: flex;
     justify-content: center;
@@ -77,17 +89,27 @@ nav a:hover {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0; /* Start hidden */
+    transform: translateY(-50px); /* Start from above */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Transition for fade-in and slide */
 }
+
+.modal.open {
+    opacity: 1; /* Fully visible */
+    transform: translateY(0); /* Move to original position */
+}
+
 
 .modal-content {
     margin: 0 auto;
-    background-color: white;
-    padding: 0; /* No padding for the header */
+    background-color: #A2E494;
+    padding: 0;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     position: relative;
     max-height: 80vh;
     overflow-y: auto;
+    max-width: 600px; /* Constrain modal width */
 }
 
 .close {
@@ -99,11 +121,11 @@ nav a:hover {
 }
 
 .modal-content span h1 {
-    margin: 0; /* No margin */
-    padding: 10px; /* Add padding for better spacing */
-    background-color: #A2E494; /* Header background color */
+    margin: 0;
+    padding: 10px;
+    background-color: #A2E494;
     font-size: 24px;
-    border-radius: 8px 8px 0 0; /* Rounded corners for header */
+    border-radius: 8px 8px 0 0;
     text-align: left;
 }
 
@@ -115,8 +137,25 @@ nav a:hover {
     margin: 10px;
 }
 
-.pie-chart {
-    margin: 20px 0; /* Space between text and pie chart */
-    width: 100%; /* Make chart responsive */
-    max-width: 300px; /* Limit max width */
+/* Style for MUI PieChart tooltip */
+.MuiChartsTooltip-root {
+    max-width: 300px !important;
+    white-space: normal !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: white !important;
+    border-radius: 4px !important;
+    padding: 8px !important;
+}
+
+h3 {
+    font-size: 24px;
+    margin: 10px;
+}
+
+.chartwrapper{
+    margin-top:20px;
+    border:1px solid black;
+    margin:20px;
+    padding:20px;
 }
